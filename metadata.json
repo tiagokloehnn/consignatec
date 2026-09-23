@@ -1,0 +1,6 @@
+{
+  "name": "FinanZen - Controle Financeiro & Orçamento Mensal",
+  "description": "Sistema executivo de gestão financeira pessoal e orçamento mensal com análise inteligente via IA, acompanhamento de metas por categoria e controle de despesas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
