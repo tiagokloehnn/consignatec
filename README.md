@@ -27,11 +27,9 @@ Preencha com suas chaves:
 # Chave da API Gemini (IA)
 CONSIGNATEC_GEMINI_KEY="sua_chave_gemini_aqui"
 # ou GEMINI_API_KEY="sua_chave_gemini_aqui"
-
-# Supabase (Banco de dados na nuvem e autenticação)
-VITE_CONSIGNATEC_SUPABASE_URL="https://seu-projeto.supabase.co"
-VITE_CONSIGNATEC_SUPABASE_ANON_KEY="sua_chave_anonima_supabase"
 ```
+
+A persistência e sincronização de dados entre computador e celular é gerenciada diretamente pelo banco na nuvem (Firestore), com configuração nativa em `firebase-applet-config.json`.
 
 ### 4. Executando em Modo de Desenvolvimento
 ```bash
@@ -49,12 +47,10 @@ Os arquivos otimizados prontos para publicação estarão na pasta `dist/`.
 
 ## 🌐 Publicação (Deploy) em Domínio Próprio ou Vercel
 
-1. Suba esta pasta para um repositório no seu GitHub.
+1. Suba esta pasta para um repositório no seu GitHub (branch `develop` ou `main`).
 2. Acesse [vercel.com](https://vercel.com) e importe o repositório.
-3. Adicione as variáveis de ambiente:
-   - `VITE_CONSIGNATEC_SUPABASE_URL`
-   - `VITE_CONSIGNATEC_SUPABASE_ANON_KEY`
-   - `CONSIGNATEC_GEMINI_KEY`
+3. Adicione a variável de ambiente:
+   - `CONSIGNATEC_GEMINI_KEY` (ou `GEMINI_API_KEY`)
 4. Clique em **Deploy**.
 5. Em **Settings > Domains**, aponte o seu domínio `consignatec.com.br` ou subdomínio `app.consignatec.com.br`.
 

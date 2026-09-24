@@ -19,6 +19,7 @@ import {
   Settings,
   User as UserIcon,
 } from 'lucide-react';
+import { PWAInstallButton } from './PWAInstallButton';
 
 export type ToolId = 'finance_manager' | 'consignado_sim' | 'margem_calc' | 'quitar_dividas';
 
@@ -156,6 +157,9 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* PWA Install Quick Action */}
+            <PWAInstallButton variant="header" />
+
             {onOpenProfile && (
               <button
                 type="button"

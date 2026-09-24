@@ -18,9 +18,8 @@ import {
   Info,
 } from 'lucide-react';
 import {
-  updateSupabaseUserProfile,
-  isSupabaseConfigured,
-} from '../services/supabase';
+  updateFirebaseUserProfile,
+} from '../services/firebase';
 
 export interface UserProfileData {
   id: string;
@@ -122,50 +121,28 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         setNewPassword('');
         setConfirmPassword('');
         setCurrentPassword('');
-      } else if (isSupabaseConfigured) {
-        // Cloud Supabase update
-        const res = await updateSupabaseUserProfile({
-          name: name.trim(),
-          email: email.trim() !== currentUser.email ? email.trim() : undefined,
-          phone: phone.trim(),
-          password: newPassword ? newPassword.trim() : undefined,
-        });
-
-        if (!res.success) {
-          setErrorMessage(res.error || 'Erro ao atualizar dados no servidor.');
-          setLoading(false);
-          return;
-        }
-
-        const updated: UserProfileData = {
-          ...currentUser,
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-        };
-        onUpdateUser(updated);
-
-        if (res.emailNeedsConfirmation) {
-          setSuccessMessage(
-            'Dados atualizados! Foi enviado um link de confirmação para o novo e-mail para validar a alteração.'
-          );
-        } else {
-          setSuccessMessage('Seu perfil e credenciais foram atualizados com sucesso!');
-        }
-
-        setNewPassword('');
-        setConfirmPassword('');
-        setCurrentPassword('');
       } else {
-        // Local account mode (localStorage)
+        // Cloud Firestore update
         const updated: UserProfileData = {
           ...currentUser,
           name: name.trim(),
           email: email.trim(),
           phone: phone.trim(),
         };
+
+        const updatePayload: any = {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+        };
+        if (newPassword) {
+          updatePayload.passwordHash = btoa(newPassword.trim());
+        }
+
+        await updateFirebaseUserProfile(currentUser.id, updatePayload);
         onUpdateUser(updated);
-        setSuccessMessage('Dados do usuário e senha atualizados com sucesso!');
+
+        setSuccessMessage('Seu perfil e dados foram atualizados e sincronizados no banco de dados na nuvem!');
         setNewPassword('');
         setConfirmPassword('');
         setCurrentPassword('');

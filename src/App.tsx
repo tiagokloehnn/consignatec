@@ -10,12 +10,12 @@ import { CategoryModal } from './components/CategoryModal';
 import { DiagnosisModal } from './components/DiagnosisModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { ResetModal } from './components/ResetModal';
-import { SupabaseModal } from './components/SupabaseModal';
 import { AuthScreen } from './components/AuthScreen';
 import { ToolsDashboard, ToolId } from './components/ToolsDashboard';
 import { ProfileSettings, UserProfileData } from './components/ProfileSettings';
 import { CategoryIcon } from './components/CategoryIcon';
 import { MobileBottomNav, MobileTab } from './components/MobileBottomNav';
+import { OfflineIndicator } from './components/OfflineIndicator';
 import {
   CategoryItem,
   Expense,
@@ -24,98 +24,68 @@ import {
 import {
   DEFAULT_INCOME,
   DEFAULT_CATEGORIES,
+  DEFAULT_ZERO_CATEGORIES,
   INITIAL_EXPENSES,
   formatBRL,
   formatDateBR,
   getCategoryStatus,
   monthYearToISOYearMonth,
+  getCurrentMonthLabel,
 } from './utils/formatters';
 import { generateFinancialDiagnosis } from './services/aiService';
 import {
-  isSupabaseConfigured,
-  fetchFromSupabase,
-  saveExpenseToSupabase,
-  deleteExpenseFromSupabase,
-  saveIncomeToSupabase,
-  getCurrentSupabaseUser,
-  signOutSupabase,
-} from './services/supabase';
+  subscribeToUserFinancialData,
+  subscribeToUserExpenses,
+  saveUserFinancialProfile,
+  saveUserExpense,
+  deleteUserExpense,
+  addUserMonth,
+  resetAllUserDataInFirebase,
+  testFirestoreConnection,
+} from './services/firebase';
 import {
   BarChart3,
   Calendar,
-  Archive,
-  History,
-  CheckCircle2,
   Sparkles,
   Target,
+  Cloud,
+  CheckCircle2,
 } from 'lucide-react';
 
-const STORAGE_KEYS = {
-  INCOME: 'finanzen_income_v2',
-  MONTHLY_INCOMES: 'finanzen_monthly_incomes_v2',
-  CATEGORIES: 'finanzen_categories_v2',
-  EXPENSES: 'finanzen_expenses_v2',
-  MONTH: 'finanzen_month_v2',
-};
-
 export default function App() {
-  // Base default income
-  const [baseIncome, setBaseIncome] = useState<number>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.INCOME);
-    if (saved !== null) {
-      const parsed = parseFloat(saved);
-      if (!isNaN(parsed)) return parsed;
-    }
-    return DEFAULT_INCOME;
-  });
-
-  // Monthly income storage (e.g. distinct salary/freelance for each month)
-  const [monthlyIncomes, setMonthlyIncomes] = useState<Record<string, number>>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.MONTHLY_INCOMES);
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState<UserProfileData | null>(() => {
+    const saved = localStorage.getItem('finanzen_session_user');
     if (saved) {
       try {
         return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to parse monthly incomes', e);
+      } catch {
+        return null;
       }
     }
-    return { 'Setembro 2026': DEFAULT_INCOME };
+    return null;
   });
 
-  // Dynamic Categories State
-  const [categories, setCategories] = useState<CategoryItem[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      } catch (e) {
-        console.error('Failed to parse saved categories', e);
-      }
-    }
-    return DEFAULT_CATEGORIES;
-  });
+  // Base default income (defaults to 0 for authenticated users)
+  const [baseIncome, setBaseIncome] = useState<number>(0);
 
-  // Expenses State (Stores ALL expenses across all historical months)
-  const [expenses, setExpenses] = useState<Expense[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.EXPENSES);
-    if (saved !== null) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
-      } catch (e) {
-        return INITIAL_EXPENSES;
-      }
-    }
-    return INITIAL_EXPENSES;
-  });
+  // Monthly income storage
+  const [monthlyIncomes, setMonthlyIncomes] = useState<Record<string, number>>({});
+
+  // Active months list added by user
+  const [activeMonths, setActiveMonths] = useState<string[]>([getCurrentMonthLabel()]);
 
   // Current Month State
-  const [currentMonth, setCurrentMonth] = useState<string>(() => {
-    return localStorage.getItem(STORAGE_KEYS.MONTH) || 'Setembro 2026';
-  });
+  const [currentMonth, setCurrentMonth] = useState<string>(() => getCurrentMonthLabel());
+
+  // Dynamic Categories State
+  const [categories, setCategories] = useState<CategoryItem[]>(DEFAULT_ZERO_CATEGORIES);
+
+  // Expenses State (Stores ALL expenses across all historical months)
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+
+  // Cloud Sync state
+  const [isCloudSynced, setIsCloudSynced] = useState(true);
 
   // Modals & UI State
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
@@ -131,20 +101,6 @@ export default function App() {
 
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
-
-  // Authentication State
-  const [currentUser, setCurrentUser] = useState<UserProfileData | null>(() => {
-    const saved = localStorage.getItem('finanzen_session_user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  });
 
   // User Profile Settings Screen View State
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -153,6 +109,70 @@ export default function App() {
   const [selectedTool, setSelectedTool] = useState<ToolId | null>(() => {
     return (localStorage.getItem('consignatec_active_tool') as ToolId) || null;
   });
+
+  // Mobile View Switcher (Dashboard / Gastos / Metas / Tudo)
+  const [mobileTab, setMobileTab] = useState<MobileTab>('dashboard');
+
+  // Test Firestore Connection on startup
+  useEffect(() => {
+    testFirestoreConnection();
+  }, []);
+
+  // Real-time Firestore synchronization for the logged-in user
+  useEffect(() => {
+    if (!currentUser) return;
+
+    if (currentUser.isGuest) {
+      // Guest Demo Mode: load sample demo data
+      setExpenses(INITIAL_EXPENSES);
+      setCategories(DEFAULT_CATEGORIES);
+      setBaseIncome(DEFAULT_INCOME);
+      setMonthlyIncomes({ [getCurrentMonthLabel()]: DEFAULT_INCOME });
+      setActiveMonths([getCurrentMonthLabel()]);
+      setCurrentMonth(getCurrentMonthLabel());
+      return;
+    }
+
+    // REAL USER: Attach Firestore real-time listeners for multi-device sync
+    const unsubFinancial = subscribeToUserFinancialData(
+      currentUser.id,
+      (data) => {
+        if (data) {
+          setBaseIncome(data.baseIncome ?? 0);
+          setMonthlyIncomes(data.monthlyIncomes || {});
+          if (data.activeMonths && data.activeMonths.length > 0) {
+            setActiveMonths(data.activeMonths);
+          }
+          if (data.currentMonth) {
+            setCurrentMonth(data.currentMonth);
+          }
+          if (data.categories && data.categories.length > 0) {
+            setCategories(data.categories);
+          }
+          setIsCloudSynced(true);
+        }
+      },
+      (err) => {
+        console.warn('Financial Firestore listener error:', err);
+      }
+    );
+
+    const unsubExpenses = subscribeToUserExpenses(
+      currentUser.id,
+      (remoteExpenses) => {
+        setExpenses(remoteExpenses);
+        setIsCloudSynced(true);
+      },
+      (err) => {
+        console.warn('Expenses Firestore listener error:', err);
+      }
+    );
+
+    return () => {
+      unsubFinancial();
+      unsubExpenses();
+    };
+  }, [currentUser?.id, currentUser?.isGuest]);
 
   const handleSelectTool = (toolId: ToolId) => {
     setSelectedTool(toolId);
@@ -170,70 +190,12 @@ export default function App() {
     localStorage.setItem('finanzen_session_user', JSON.stringify(updated));
   };
 
-  // Mobile View Switcher (Dashboard / Gastos / Metas / Tudo) - Defaults to 'dashboard' to prevent mobile overload
-  const [mobileTab, setMobileTab] = useState<MobileTab>('dashboard');
-
-  const loadUserCloudData = async () => {
-    if (!isSupabaseConfigured) return;
-    try {
-      const remote = await fetchFromSupabase();
-      if (remote) {
-        if (remote.expenses && remote.expenses.length > 0) {
-          setExpenses(remote.expenses);
-        }
-        if (remote.categories && remote.categories.length > 0) {
-          setCategories(remote.categories);
-        }
-        if (remote.baseIncome !== undefined) {
-          setBaseIncome(remote.baseIncome);
-        }
-        if (remote.monthlyIncomes && Object.keys(remote.monthlyIncomes).length > 0) {
-          setMonthlyIncomes(remote.monthlyIncomes);
-        }
-      }
-    } catch (e) {
-      console.warn('Error loading cloud data:', e);
-    }
-  };
-
-  // Supabase Initial Session Check
-  useEffect(() => {
-    if (isSupabaseConfigured) {
-      getCurrentSupabaseUser().then((user) => {
-        if (user) {
-          const userName = (user.user_metadata?.full_name as string) || (user.user_metadata?.name as string) || '';
-          const u = { id: user.id, email: user.email || '', name: userName };
-          setCurrentUser(u);
-          localStorage.setItem('finanzen_session_user', JSON.stringify(u));
-          loadUserCloudData();
-        } else {
-          // If no active or confirmed Supabase session, invalidate any non-guest local session
-          const saved = localStorage.getItem('finanzen_session_user');
-          if (saved) {
-            try {
-              const parsed = JSON.parse(saved);
-              if (!parsed.isGuest) {
-                setCurrentUser(null);
-                localStorage.removeItem('finanzen_session_user');
-              }
-            } catch {
-              setCurrentUser(null);
-            }
-          }
-        }
-      });
-    }
-  }, []);
-
-  const handleLoginSuccess = async (user: { id: string; email: string; name?: string; phone?: string; isGuest?: boolean }) => {
+  const handleLoginSuccess = (user: { id: string; email: string; name?: string; phone?: string; isGuest?: boolean }) => {
     setCurrentUser(user);
     setSelectedTool(null);
     setIsProfileOpen(false);
     localStorage.removeItem('consignatec_active_tool');
     localStorage.setItem('finanzen_session_user', JSON.stringify(user));
-    if (!user.isGuest && isSupabaseConfigured) {
-      await loadUserCloudData();
-    }
   };
 
   const handleExploreAsGuest = () => {
@@ -246,40 +208,22 @@ export default function App() {
     setExpenses(INITIAL_EXPENSES);
     setCategories(DEFAULT_CATEGORIES);
     setBaseIncome(DEFAULT_INCOME);
+    setMonthlyIncomes({ [getCurrentMonthLabel()]: DEFAULT_INCOME });
+    setActiveMonths([getCurrentMonthLabel()]);
   };
 
-  const handleLogout = async () => {
-    if (isSupabaseConfigured) {
-      await signOutSupabase();
-    }
+  const handleLogout = () => {
     localStorage.removeItem('finanzen_session_user');
     localStorage.removeItem('consignatec_active_tool');
     setCurrentUser(null);
     setSelectedTool(null);
     setIsProfileOpen(false);
     setDiagnosisData(null);
+    setExpenses([]);
+    setBaseIncome(0);
+    setMonthlyIncomes({});
+    setCategories(DEFAULT_ZERO_CATEGORIES);
   };
-
-  // Persistence Effects
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.INCOME, baseIncome.toString());
-  }, [baseIncome]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.MONTHLY_INCOMES, JSON.stringify(monthlyIncomes));
-  }, [monthlyIncomes]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
-  }, [categories]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
-  }, [expenses]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.MONTH, currentMonth);
-  }, [currentMonth]);
 
   // Year-Month ISO representation (e.g. "2026-09")
   const currentYearMonth = useMemo(() => {
@@ -325,26 +269,61 @@ export default function App() {
     return categories.map((c) => c.name);
   }, [categories]);
 
+  // Handlers for Month Management
+  const handleMonthChange = (newMonth: string) => {
+    setCurrentMonth(newMonth);
+    if (currentUser && !currentUser.isGuest) {
+      saveUserFinancialProfile(currentUser.id, { currentMonth: newMonth });
+    }
+  };
+
+  const handleAddMonth = async (newMonth: string) => {
+    if (!activeMonths.includes(newMonth)) {
+      const updatedMonths = [...activeMonths, newMonth];
+      setActiveMonths(updatedMonths);
+    }
+    setCurrentMonth(newMonth);
+
+    if (currentUser && !currentUser.isGuest) {
+      await addUserMonth(currentUser.id, newMonth, 0, monthlyIncomes, activeMonths);
+    }
+  };
+
   // Handlers for Expenses
-  const handleAddExpense = (expenseData: Omit<Expense, 'id'>) => {
+  const handleAddExpense = async (expenseData: Omit<Expense, 'id'>) => {
     const newExpense: Expense = {
       ...expenseData,
       id: `exp-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
     };
+
+    // Optimistic local update
     setExpenses((prev) => [newExpense, ...prev]);
-    if (isSupabaseConfigured) {
-      saveExpenseToSupabase(newExpense);
+
+    // Ensure expense's month is in activeMonths
+    const expenseYearMonth = newExpense.data.substring(0, 7);
+    const [y, m] = expenseYearMonth.split('-');
+    const mNum = parseInt(m, 10);
+    const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    if (mNum >= 1 && mNum <= 12) {
+      const expMonthLabel = `${MONTHS[mNum - 1]} ${y}`;
+      if (!activeMonths.includes(expMonthLabel)) {
+        setActiveMonths((prev) => [...prev, expMonthLabel]);
+      }
+    }
+
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserExpense(currentUser.id, newExpense);
     }
   };
 
-  const handleEditExpense = (expenseData: Omit<Expense, 'id'>, id?: string) => {
+  const handleEditExpense = async (expenseData: Omit<Expense, 'id'>, id?: string) => {
     if (!id) return;
     const updated: Expense = { ...expenseData, id };
     setExpenses((prev) =>
       prev.map((item) => (item.id === id ? updated : item))
     );
-    if (isSupabaseConfigured) {
-      saveExpenseToSupabase(updated);
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserExpense(currentUser.id, updated);
     }
   };
 
@@ -352,12 +331,12 @@ export default function App() {
     setExpenseToDelete(expense);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (expenseToDelete) {
       const id = expenseToDelete.id;
       setExpenses((prev) => prev.filter((item) => item.id !== id));
-      if (isSupabaseConfigured) {
-        deleteExpenseFromSupabase(id);
+      if (currentUser && !currentUser.isGuest) {
+        await deleteUserExpense(currentUser.id, id);
       }
       setExpenseToDelete(null);
     }
@@ -384,10 +363,11 @@ export default function App() {
     setIsCategoryModalOpen(true);
   };
 
-  const handleSaveCategory = (
+  const handleSaveCategory = async (
     categoryData: Omit<CategoryItem, 'id'>,
     id?: string
   ) => {
+    let updatedCategories: CategoryItem[];
     if (id) {
       const oldCat = categories.find((c) => c.id === id);
       if (oldCat && oldCat.name !== categoryData.name) {
@@ -397,15 +377,19 @@ export default function App() {
           )
         );
       }
-      setCategories((prev) =>
-        prev.map((c) => (c.id === id ? { ...categoryData, id } : c))
-      );
+      updatedCategories = categories.map((c) => (c.id === id ? { ...categoryData, id } : c));
     } else {
       const newCat: CategoryItem = {
         ...categoryData,
         id: `cat-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       };
-      setCategories((prev) => [...prev, newCat]);
+      updatedCategories = [...categories, newCat];
+    }
+
+    setCategories(updatedCategories);
+
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserFinancialProfile(currentUser.id, { categories: updatedCategories });
     }
   };
 
@@ -413,9 +397,13 @@ export default function App() {
     setCategoryToDelete(category);
   };
 
-  const handleConfirmDeleteCategory = () => {
+  const handleConfirmDeleteCategory = async () => {
     if (categoryToDelete) {
-      setCategories((prev) => prev.filter((c) => c.id !== categoryToDelete.id));
+      const updated = categories.filter((c) => c.id !== categoryToDelete.id);
+      setCategories(updated);
+      if (currentUser && !currentUser.isGuest) {
+        await saveUserFinancialProfile(currentUser.id, { categories: updated });
+      }
       setCategoryToDelete(null);
     }
   };
@@ -427,31 +415,35 @@ export default function App() {
     ).length;
   }, [categoryToDelete, expenses]);
 
-  const handleUpdateBudget = (categoryName: string, newLimit: number) => {
-    setCategories((prev) =>
-      prev.map((cat) =>
-        cat.name.toLowerCase() === categoryName.toLowerCase()
-          ? { ...cat, budget: newLimit }
-          : cat
-      )
+  const handleUpdateBudget = async (categoryName: string, newLimit: number) => {
+    const updated = categories.map((cat) =>
+      cat.name.toLowerCase() === categoryName.toLowerCase()
+        ? { ...cat, budget: newLimit }
+        : cat
     );
+    setCategories(updated);
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserFinancialProfile(currentUser.id, { categories: updated });
+    }
   };
 
   // Handlers for Income
-  const handleUpdateIncome = (newIncome: number) => {
+  const handleUpdateIncome = async (newIncome: number) => {
     setBaseIncome(newIncome);
+    let updatedMonthly = monthlyIncomes;
     if (currentMonth !== 'all') {
-      setMonthlyIncomes((prev) => ({
-        ...prev,
+      updatedMonthly = {
+        ...monthlyIncomes,
         [currentMonth]: newIncome,
-      }));
-      if (isSupabaseConfigured) {
-        saveIncomeToSupabase(currentMonth, newIncome);
-      }
-    } else {
-      if (isSupabaseConfigured) {
-        saveIncomeToSupabase('base', newIncome);
-      }
+      };
+      setMonthlyIncomes(updatedMonthly);
+    }
+
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserFinancialProfile(currentUser.id, {
+        baseIncome: newIncome,
+        monthlyIncomes: updatedMonthly,
+      });
     }
   };
 
@@ -460,58 +452,87 @@ export default function App() {
     setIsResetModalOpen(true);
   };
 
-  const handleResetSelectedMonth = () => {
+  const handleResetSelectedMonth = async () => {
     if (currentMonth === 'all' || !currentYearMonth) {
       handleResetAllMonths();
       return;
     }
     // Remove only expenses of the currently selected month
+    const expensesToDelete = expenses.filter((e) => e.data.startsWith(currentYearMonth));
     setExpenses((prev) => prev.filter((e) => !e.data.startsWith(currentYearMonth)));
-    // Reset income of this month to 0
-    setMonthlyIncomes((prev) => ({
-      ...prev,
+    
+    const updatedMonthly = {
+      ...monthlyIncomes,
       [currentMonth]: 0,
-    }));
+    };
+    setMonthlyIncomes(updatedMonthly);
     setDiagnosisData(null);
     setIsResetModalOpen(false);
+
+    if (currentUser && !currentUser.isGuest) {
+      for (const exp of expensesToDelete) {
+        await deleteUserExpense(currentUser.id, exp.id);
+      }
+      await saveUserFinancialProfile(currentUser.id, {
+        monthlyIncomes: updatedMonthly,
+      });
+    }
   };
 
-  const handleResetAllMonths = () => {
+  const handleResetAllMonths = async () => {
     setBaseIncome(0);
     setMonthlyIncomes({});
-    // Keep categories intact so users can immediately create or configure their budgets
-    setCategories((prev) => {
-      if (prev.length === 0) return DEFAULT_CATEGORIES;
-      return prev;
-    });
+    setCategories(DEFAULT_ZERO_CATEGORIES);
     setExpenses([]);
     setDiagnosisData(null);
     setIsResetModalOpen(false);
+
+    if (currentUser && !currentUser.isGuest) {
+      await resetAllUserDataInFirebase(currentUser.id);
+    }
   };
 
-  const handleResetBudgetsToZero = () => {
-    setCategories((prev) =>
-      prev.map((c) => ({
-        ...c,
-        budget: 0,
-      }))
-    );
+  const handleResetBudgetsToZero = async () => {
+    const zeroCats = categories.map((c) => ({
+      ...c,
+      budget: 0,
+    }));
+    setCategories(zeroCats);
     setIsResetModalOpen(false);
+
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserFinancialProfile(currentUser.id, { categories: zeroCats });
+    }
   };
 
-  const handleRestoreDefaultCategories = () => {
+  const handleRestoreDefaultCategories = async () => {
     setCategories(DEFAULT_CATEGORIES);
     setIsResetModalOpen(false);
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserFinancialProfile(currentUser.id, { categories: DEFAULT_CATEGORIES });
+    }
   };
 
-  const handleRestoreSampleData = () => {
+  const handleRestoreSampleData = async () => {
     setBaseIncome(DEFAULT_INCOME);
-    setMonthlyIncomes({ 'Setembro 2026': DEFAULT_INCOME });
+    setMonthlyIncomes({ [getCurrentMonthLabel()]: DEFAULT_INCOME });
     setCategories(DEFAULT_CATEGORIES);
     setExpenses(INITIAL_EXPENSES);
-    setCurrentMonth('Setembro 2026');
+    setCurrentMonth(getCurrentMonthLabel());
     setDiagnosisData(null);
     setIsResetModalOpen(false);
+
+    if (currentUser && !currentUser.isGuest) {
+      await saveUserFinancialProfile(currentUser.id, {
+        baseIncome: DEFAULT_INCOME,
+        monthlyIncomes: { [getCurrentMonthLabel()]: DEFAULT_INCOME },
+        categories: DEFAULT_CATEGORIES,
+        currentMonth: getCurrentMonthLabel(),
+      });
+      for (const exp of INITIAL_EXPENSES) {
+        await saveUserExpense(currentUser.id, exp);
+      }
+    }
   };
 
   // Export Data to CSV
@@ -587,37 +608,46 @@ export default function App() {
 
   if (!currentUser) {
     return (
-      <AuthScreen
-        onLoginSuccess={handleLoginSuccess}
-        onExploreAsGuest={handleExploreAsGuest}
-      />
+      <>
+        <AuthScreen
+          onLoginSuccess={handleLoginSuccess}
+          onExploreAsGuest={handleExploreAsGuest}
+        />
+        <OfflineIndicator />
+      </>
     );
   }
 
   // If user is accessing Profile Settings, render ProfileSettings
   if (isProfileOpen) {
     return (
-      <ProfileSettings
-        currentUser={currentUser}
-        onUpdateUser={handleUpdateUserProfile}
-        onBack={() => setIsProfileOpen(false)}
-        onLogout={handleLogout}
-      />
+      <>
+        <ProfileSettings
+          currentUser={currentUser}
+          onUpdateUser={handleUpdateUserProfile}
+          onBack={() => setIsProfileOpen(false)}
+          onLogout={handleLogout}
+        />
+        <OfflineIndicator />
+      </>
     );
   }
 
   // If user is authenticated but hasn't selected a specific tool yet, show Tools Hub Dashboard
   if (!selectedTool) {
     return (
-      <ToolsDashboard
-        userName={currentUser.name}
-        userEmail={currentUser.email}
-        userPhone={currentUser.phone}
-        isGuest={currentUser.isGuest}
-        onSelectTool={handleSelectTool}
-        onOpenProfile={() => setIsProfileOpen(true)}
-        onLogout={handleLogout}
-      />
+      <>
+        <ToolsDashboard
+          userName={currentUser.name}
+          userEmail={currentUser.email}
+          userPhone={currentUser.phone}
+          isGuest={currentUser.isGuest}
+          onSelectTool={handleSelectTool}
+          onOpenProfile={() => setIsProfileOpen(true)}
+          onLogout={handleLogout}
+        />
+        <OfflineIndicator />
+      </>
     );
   }
 
@@ -626,12 +656,13 @@ export default function App() {
       {/* Executive Header */}
       <Header
         currentMonth={currentMonth}
-        onMonthChange={setCurrentMonth}
+        onMonthChange={handleMonthChange}
+        activeMonths={activeMonths}
+        onAddMonth={handleAddMonth}
         onOpenDiagnosis={handleOpenDiagnosis}
         onExportData={handleExportCSV}
         onResetData={handleResetData}
-        onOpenSupabase={() => setIsSupabaseModalOpen(true)}
-        isSupabaseConnected={isSupabaseConfigured}
+        isCloudSynced={isCloudSynced}
         currentUser={currentUser}
         onLogout={handleLogout}
         onBackToTools={handleBackToTools}
@@ -643,8 +674,8 @@ export default function App() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6 pb-24 md:pb-12">
-        {/* Month Context Banner & Archiving Guarantee (Desktop only to save mobile screen height) */}
-        <section aria-label="Status do Mês e Arquivamento" className="hidden md:block">
+        {/* Month Context Banner & Cloud Sync Guarantee (Desktop only to save mobile screen height) */}
+        <section aria-label="Status do Mês e Nuvem" className="hidden md:block">
           <div className="bg-white rounded-xl border border-slate-200/90 p-3.5 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
             <div className="flex items-start sm:items-center gap-3">
               <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-teal-50 border border-teal-200/90 text-teal-800 flex items-center justify-center shrink-0">
@@ -658,12 +689,12 @@ export default function App() {
                       : `Mês de Referência: ${currentMonth}`}
                   </h2>
                   <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                    <span>Dados salvos</span>
+                    <Cloud className="h-3 w-3 text-emerald-600" />
+                    <span>Sincronizado na Nuvem</span>
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
-                  <strong>{activeExpenses.length} lançamento(s)</strong> ({formatBRL(totalExpenses)}). Histórico de <strong>{expenses.length} despesa(s)</strong> gravado.
+                  <strong>{activeExpenses.length} lançamento(s)</strong> no mês ({formatBRL(totalExpenses)}). Total acumulado de <strong>{expenses.length} despesa(s)</strong> gravadas no banco.
                 </p>
               </div>
             </div>
@@ -672,13 +703,15 @@ export default function App() {
             <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
               <MonthYearPicker
                 currentMonth={currentMonth}
-                onMonthChange={setCurrentMonth}
+                onMonthChange={handleMonthChange}
+                activeMonths={activeMonths}
+                onAddMonth={handleAddMonth}
               />
             </div>
           </div>
         </section>
 
-        {/* Informative notice if active month has no expenses (e.g. freshly zeroed or new month) */}
+        {/* Informative notice if active month has no expenses (Fresh clean slate for new users / months) */}
         {activeExpenses.length === 0 && (
           <div className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-50/80 via-emerald-50/50 to-white border border-teal-200/90 text-teal-950 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 animate-fadeIn shadow-xs">
             <div className="flex items-start sm:items-center gap-3">
@@ -692,11 +725,11 @@ export default function App() {
                     : `Lançamentos de ${currentMonth} estão zerados.`}
                 </h3>
                 <p className="text-[11px] sm:text-xs text-teal-800/90 mt-0.5">
-                  1. Ajuste a renda deste mês no primeiro card de Indicadores.<br className="hidden sm:inline" />
-                  2. Cadastre despesas pelo botão verde <strong>+ Novo Lançamento</strong> ou leitor com IA.
+                  1. Defina a receita prevista para este mês clicando no ícone de lápis em <strong>Receita Total</strong>.<br className="hidden sm:inline" />
+                  2. Lance suas despesas pelo botão verde <strong>+ Novo Lançamento</strong> ou leitor rápido com IA.
                   {expenses.length > 0 && currentMonth !== 'all' && (
                     <span className="block mt-1 font-semibold text-emerald-800">
-                      ✓ Seus outros meses continuam gravados com segurança ({expenses.length} no histórico).
+                      ✓ Seus outros meses continuam gravados com segurança no banco ({expenses.length} no histórico).
                     </span>
                   )}
                 </p>
@@ -709,7 +742,7 @@ export default function App() {
                   setMobileTab('metas');
                   handleOpenNewCategoryModal();
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-teal-900 border border-teal-300 rounded-xl text-xs font-bold hover:bg-teal-50 transition-colors shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-teal-900 border border-teal-300 rounded-xl text-xs font-bold hover:bg-teal-50 transition-colors shadow-2xs cursor-pointer"
               >
                 <Target className="h-3.5 w-3.5 text-teal-700" />
                 <span>+ Configurar Metas</span>
@@ -717,9 +750,9 @@ export default function App() {
               <button
                 type="button"
                 onClick={handleOpenNewModal}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-800 text-white rounded-xl text-xs font-bold hover:bg-teal-900 transition-colors shrink-0 shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-800 text-white rounded-xl text-xs font-bold hover:bg-teal-900 transition-colors shrink-0 shadow-xs cursor-pointer"
               >
-                <span>+ Novo Lançamento em {currentMonth === 'all' ? 'Novo Mês' : currentMonth}</span>
+                <span>+ Novo Lançamento</span>
               </button>
             </div>
           </div>
@@ -773,7 +806,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* 1. Painel de Indicadores Executivos (KPI Cards) - Visível no Resumo e Tudo no mobile; sempre no desktop */}
+        {/* 1. Painel de Indicadores Executivos (KPI Cards) */}
         <section
           aria-label="Indicadores Executivos"
           className={
@@ -789,7 +822,7 @@ export default function App() {
           />
         </section>
 
-        {/* 2. Visual Distribution Summary Card - Fica no Resumo e Metas no mobile; sempre no desktop */}
+        {/* 2. Visual Distribution Summary Card */}
         <section
           aria-label="Distribuição dos Gastos"
           className={`bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs ${
@@ -872,7 +905,7 @@ export default function App() {
           )}
         </section>
 
-        {/* 3. Recursos Inteligentes: Leitor Rápido de Gastos com IA - No mobile fica na aba Gastos ou Tudo; sempre no desktop */}
+        {/* 3. Recursos Inteligentes: Leitor Rápido de Gastos com IA */}
         <section
           aria-label="Leitor Inteligente de Gastos"
           className={
@@ -887,7 +920,7 @@ export default function App() {
           />
         </section>
 
-        {/* 4. Tabela de Metas & Orçamento por Categoria - No mobile fica na aba Metas ou Tudo; sempre no desktop */}
+        {/* 4. Tabela de Metas & Orçamento por Categoria */}
         <section
           aria-label="Orçamento por Categoria"
           className={
@@ -907,7 +940,7 @@ export default function App() {
           />
         </section>
 
-        {/* 5. Registro de Despesas Diárias (Lançamentos) - No mobile fica na aba Gastos ou Tudo; sempre no desktop */}
+        {/* 5. Registro de Despesas Diárias (Lançamentos) */}
         <section
           aria-label="Lançamentos de Despesas"
           className={
@@ -942,7 +975,7 @@ export default function App() {
           Consignatec &copy; {new Date().getFullYear()} &mdash; Ferramenta de Gestão Financeira &amp; Orçamento Pessoal.
         </p>
         <p className="mt-1 text-[11px] text-slate-400">
-          Valores formatados no padrão nacional (R$). Arquivamento mensal contínuo e análise cognitiva potencializada por Google Gemini.
+          Valores formatados no padrão nacional (R$). Sincronização em tempo real na nuvem (Firestore) &amp; inteligência artificial Google Gemini.
         </p>
       </footer>
 
@@ -1063,15 +1096,8 @@ export default function App() {
         onRefresh={fetchDiagnosis}
       />
 
-      {/* Supabase Cloud Database Integration Modal */}
-      <SupabaseModal
-        isOpen={isSupabaseModalOpen}
-        onClose={() => setIsSupabaseModalOpen(false)}
-        expenses={expenses}
-        categories={categories}
-        baseIncome={baseIncome}
-        monthlyIncomes={monthlyIncomes}
-      />
+      {/* Real-time Connectivity / Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

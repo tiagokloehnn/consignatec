@@ -354,6 +354,16 @@ export function getShiftedMonthLabel(currentLabel: string, shift: number): strin
   return `${MONTH_NAMES_PT[newMonth - 1]} ${newYear}`;
 }
 
+export function getCurrentMonthLabel(): string {
+  const now = new Date();
+  return `${MONTH_NAMES_PT[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+export const DEFAULT_ZERO_CATEGORIES: CategoryItem[] = DEFAULT_CATEGORIES.map((c) => ({
+  ...c,
+  budget: 0,
+}));
+
 export const DEFAULT_INCOME = 8500.0;
 
 // Obter a data corrente em formato YYYY-MM-DD

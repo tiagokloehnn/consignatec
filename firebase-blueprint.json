@@ -1,0 +1,70 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with authentication and contact information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "passwordHash": { "type": "string" },
+        "phone": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "email", "name"]
+    },
+    "FinancialProfile": {
+      "title": "FinancialProfile",
+      "description": "User overall financial configuration, income, added months, and categories",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "baseIncome": { "type": "number" },
+        "monthlyIncomes": { "type": "object" },
+        "currentMonth": { "type": "string" },
+        "activeMonths": { "type": "array" },
+        "categories": { "type": "array" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "baseIncome"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Individual financial expense entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "data": { "type": "string" },
+        "descricao": { "type": "string" },
+        "categoria": { "type": "string" },
+        "forma_pagamento": { "type": "string" },
+        "valor": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "data", "descricao", "categoria", "valor", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile records"
+    },
+    "/users_by_email/{emailHash}": {
+      "schema": "UserProfile",
+      "description": "User lookup index for cross-device authentication"
+    },
+    "/users/{userId}/financial/main": {
+      "schema": "FinancialProfile",
+      "description": "Financial configuration and settings per user"
+    },
+    "/users/{userId}/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "User expense documents"
+    }
+  }
+}
