@@ -43,6 +43,16 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [sortField, setSortField] = useState<'data' | 'valor'>('data');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [isMobileFiltersExpanded, setIsMobileFiltersExpanded] = useState(false);
+
+  // Active filter count for mobile badge
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (selectedCategory !== 'all') count++;
+    if (selectedPayment !== 'all') count++;
+    if (selectedStatus !== 'all') count++;
+    return count;
+  }, [selectedCategory, selectedPayment, selectedStatus]);
 
   // Filter and Sort
   const filteredExpenses = useMemo(() => {
@@ -150,22 +160,48 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
         </button>
       </div>
 
-      {/* Filters Bar */}
-      <div className="p-3 sm:p-4 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center gap-2.5 text-xs">
-        {/* Search */}
-        <div className="relative flex-1 w-full min-w-0">
-          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por descrição..."
-            className="w-full pl-9 pr-3 py-2 sm:py-1.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white text-base sm:text-xs transition-colors"
-          />
+      {/* Filters Bar with Mobile Clean Collapsible */}
+      <div className="p-3 sm:p-4 border-b border-slate-100 bg-white flex flex-col gap-2.5 text-xs">
+        {/* Top search line + Mobile filter toggle */}
+        <div className="flex items-center gap-2">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-0">
+            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por descrição..."
+              className="w-full pl-9 pr-3 py-2 sm:py-1.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white text-base sm:text-xs transition-colors"
+            />
+          </div>
+
+          {/* Mobile Filter Toggle Button (hides crowded dropdowns by default) */}
+          <button
+            type="button"
+            onClick={() => setIsMobileFiltersExpanded(!isMobileFiltersExpanded)}
+            className={`sm:hidden flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-colors shrink-0 touch-manipulation min-h-[40px] font-semibold text-xs ${
+              isMobileFiltersExpanded || activeFiltersCount > 0
+                ? 'bg-teal-50 border-teal-300 text-teal-900'
+                : 'bg-slate-50 border-slate-200 text-slate-700'
+            }`}
+          >
+            <Filter className="h-3.5 w-3.5 text-teal-800" />
+            <span>Filtros</span>
+            {activeFiltersCount > 0 && (
+              <span className="h-4 w-4 rounded-full bg-teal-800 text-white text-[10px] font-bold flex items-center justify-center">
+                {activeFiltersCount}
+              </span>
+            )}
+          </button>
         </div>
 
-        {/* Filters Group */}
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+        {/* Dropdowns Row (Always visible on Desktop, collapsible on Mobile) */}
+        <div
+          className={`${
+            isMobileFiltersExpanded ? 'flex' : 'hidden sm:flex'
+          } flex-wrap sm:flex-nowrap items-center gap-2 w-full animate-fadeIn`}
+        >
           {/* Filter Categoria */}
           <select
             value={selectedCategory}
@@ -205,22 +241,22 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
             <option value="Pendente">Pendente</option>
             <option value="Agendado">Agendado</option>
           </select>
-        </div>
 
-        {/* Reset Filters */}
-        {(searchTerm || selectedCategory !== 'all' || selectedPayment !== 'all' || selectedStatus !== 'all') && (
-          <button
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedCategory('all');
-              setSelectedPayment('all');
-              setSelectedStatus('all');
-            }}
-            className="text-teal-800 hover:underline font-semibold py-1 px-1 self-start sm:self-auto text-xs shrink-0 touch-manipulation"
-          >
-            Limpar filtros
-          </button>
-        )}
+          {/* Reset Filters */}
+          {(searchTerm || selectedCategory !== 'all' || selectedPayment !== 'all' || selectedStatus !== 'all') && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('all');
+                setSelectedPayment('all');
+                setSelectedStatus('all');
+              }}
+              className="text-teal-800 hover:underline font-semibold py-1 px-1 self-start sm:self-auto text-xs shrink-0 touch-manipulation"
+            >
+              Limpar filtros
+            </button>
+          )}
+        </div>
       </div>
 
       {/* MOBILE CARDS VIEW (md:hidden) */}

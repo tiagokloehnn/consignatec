@@ -169,8 +169,8 @@ export default function App() {
     localStorage.setItem('finanzen_session_user', JSON.stringify(updated));
   };
 
-  // Mobile View Switcher (Dashboard / Gastos / Metas / Tudo)
-  const [mobileTab, setMobileTab] = useState<MobileTab>('tudo');
+  // Mobile View Switcher (Dashboard / Gastos / Metas / Tudo) - Defaults to 'dashboard' to prevent mobile overload
+  const [mobileTab, setMobileTab] = useState<MobileTab>('dashboard');
 
   const loadUserCloudData = async () => {
     if (!isSupabaseConfigured) return;
@@ -628,8 +628,8 @@ export default function App() {
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6 pb-24 md:pb-12">
-        {/* Month Context Banner & Archiving Guarantee */}
-        <section aria-label="Status do Mês e Arquivamento">
+        {/* Month Context Banner & Archiving Guarantee (Desktop only to save mobile screen height) */}
+        <section aria-label="Status do Mês e Arquivamento" className="hidden md:block">
           <div className="bg-white rounded-xl border border-slate-200/90 p-3.5 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
             <div className="flex items-start sm:items-center gap-3">
               <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-teal-50 border border-teal-200/90 text-teal-800 flex items-center justify-center shrink-0">
@@ -744,7 +744,7 @@ export default function App() {
           </button>
         </div>
 
-        {/* 1. Painel de Indicadores Executivos (KPI Cards) */}
+        {/* 1. Painel de Indicadores Executivos (KPI Cards) - Visível no Resumo ou Tudo */}
         {(mobileTab === 'tudo' || mobileTab === 'dashboard') && (
           <section aria-label="Indicadores Executivos">
             <KpiCards
@@ -755,31 +755,7 @@ export default function App() {
           </section>
         )}
 
-        {/* 2. Recursos Inteligentes: Leitor Rápido de Gastos com IA */}
-        {(mobileTab === 'tudo' || mobileTab === 'dashboard' || mobileTab === 'despesas') && (
-          <section aria-label="Leitor Inteligente de Gastos">
-            <NaturalLanguageInput
-              onAddExpense={handleAddExpense}
-              availableCategories={availableCategoryNames}
-            />
-          </section>
-        )}
-
-        {/* 3. Tabela de Metas & Orçamento por Categoria */}
-        {(mobileTab === 'tudo' || mobileTab === 'metas') && (
-          <section aria-label="Orçamento por Categoria">
-            <CategoryBudgetTable
-              categories={categories}
-              spendingByCategory={spendingByCategory}
-              onUpdateBudget={handleUpdateBudget}
-              onOpenNewCategoryModal={handleOpenNewCategoryModal}
-              onEditCategory={handleOpenEditCategoryModal}
-              onDeleteCategory={handleDeleteCategory}
-            />
-          </section>
-        )}
-
-        {/* Visual Distribution Summary Card */}
+        {/* 2. Visual Distribution Summary Card - Fica no Resumo e Metas para análise visual limpa */}
         {(mobileTab === 'tudo' || mobileTab === 'dashboard' || mobileTab === 'metas') && (
           <section
             aria-label="Distribuição dos Gastos"
@@ -857,6 +833,30 @@ export default function App() {
                 Nenhuma despesa registrada em {currentMonth} para calcular a distribuição.
               </div>
             )}
+          </section>
+        )}
+
+        {/* 3. Recursos Inteligentes: Leitor Rápido de Gastos com IA - No mobile fica na aba Gastos ou Tudo */}
+        {(mobileTab === 'tudo' || mobileTab === 'despesas') && (
+          <section aria-label="Leitor Inteligente de Gastos">
+            <NaturalLanguageInput
+              onAddExpense={handleAddExpense}
+              availableCategories={availableCategoryNames}
+            />
+          </section>
+        )}
+
+        {/* 4. Tabela de Metas & Orçamento por Categoria */}
+        {(mobileTab === 'tudo' || mobileTab === 'metas') && (
+          <section aria-label="Orçamento por Categoria">
+            <CategoryBudgetTable
+              categories={categories}
+              spendingByCategory={spendingByCategory}
+              onUpdateBudget={handleUpdateBudget}
+              onOpenNewCategoryModal={handleOpenNewCategoryModal}
+              onEditCategory={handleOpenEditCategoryModal}
+              onDeleteCategory={handleDeleteCategory}
+            />
           </section>
         )}
 
