@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react';
+import { X, Check, Plus } from 'lucide-react';
 import { Expense, CategoryName, PaymentMethod, ExpenseStatus, CategoryItem } from '../types/finance';
 import { PAYMENT_METHODS } from '../utils/formatters';
 
@@ -10,6 +10,7 @@ interface ExpenseModalProps {
   initialExpense?: Expense | null;
   categories: CategoryItem[];
   defaultYearMonth?: string;
+  onOpenNewCategory?: () => void;
 }
 
 export const ExpenseModal: React.FC<ExpenseModalProps> = ({
@@ -19,6 +20,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
   initialExpense,
   categories,
   defaultYearMonth,
+  onOpenNewCategory,
 }) => {
   const [data, setData] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -177,20 +179,53 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
           {/* Grid: Categoria & Forma de Pagamento */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Categoria *
-              </label>
-              <select
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
-                className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent bg-white"
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                  Categoria *
+                </label>
+                {onOpenNewCategory && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenNewCategory();
+                    }}
+                    className="text-[11px] font-semibold text-teal-800 hover:text-teal-950 hover:underline flex items-center gap-0.5"
+                  >
+                    <Plus className="h-3 w-3" />
+                    <span>Nova Categoria</span>
+                  </button>
+                )}
+              </div>
+              {categories.length === 0 ? (
+                <div className="p-2 border border-dashed border-rose-300 rounded-lg bg-rose-50 text-xs text-rose-700">
+                  <span>Nenhuma categoria cadastrada. </span>
+                  {onOpenNewCategory && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onOpenNewCategory();
+                      }}
+                      className="font-bold underline text-rose-900"
+                    >
+                      Criar agora
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <select
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value)}
+                  className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent bg-white"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <div>

@@ -7,6 +7,7 @@ import {
   Plus,
   Trash2,
   Settings2,
+  RotateCcw,
 } from 'lucide-react';
 import { CategoryItem } from '../types/finance';
 import {
@@ -24,6 +25,7 @@ interface CategoryBudgetTableProps {
   onOpenNewCategoryModal: () => void;
   onEditCategory: (category: CategoryItem) => void;
   onDeleteCategory: (category: CategoryItem) => void;
+  onRestoreDefaultCategories?: () => void;
 }
 
 export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
@@ -33,6 +35,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
   onOpenNewCategoryModal,
   onEditCategory,
   onDeleteCategory,
+  onRestoreDefaultCategories,
 }) => {
   const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [tempBudgetValue, setTempBudgetValue] = useState<string>('');
@@ -86,7 +89,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-500">
             <span className="inline-flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500"></span> &lt;90%
@@ -98,6 +101,18 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
               <span className="h-2 w-2 rounded-full bg-rose-500"></span> &ge;100%
             </span>
           </div>
+
+          {onRestoreDefaultCategories && (
+            <button
+              type="button"
+              onClick={onRestoreDefaultCategories}
+              title="Restaurar categorias e metas padrão recomendadas"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-slate-500" />
+              <span>Restaurar Padrão</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenNewCategoryModal}
@@ -112,16 +127,37 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
       {/* MOBILE CARDS VIEW (md:hidden) */}
       <div className="block md:hidden divide-y divide-slate-100">
         {categories.length === 0 ? (
-          <div className="py-8 px-4 text-center text-slate-400">
-            <p className="text-sm font-medium text-slate-500">
-              Nenhuma categoria cadastrada.
-            </p>
-            <button
-              onClick={onOpenNewCategoryModal}
-              className="mt-2 text-xs font-semibold text-teal-800 hover:underline"
-            >
-              + Criar primeira categoria
-            </button>
+          <div className="py-10 px-4 text-center text-slate-500 space-y-3">
+            <div className="h-12 w-12 rounded-2xl bg-teal-50 text-teal-800 flex items-center justify-center mx-auto border border-teal-200">
+              <Plus className="h-6 w-6" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800">
+                Nenhum orçamento ou meta cadastrada
+              </p>
+              <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+                Crie suas categorias de gastos com seus limites mensais ou carregue a estrutura padrão.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 pt-2 max-w-xs mx-auto">
+              <button
+                type="button"
+                onClick={onOpenNewCategoryModal}
+                className="w-full py-2.5 px-4 bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 touch-manipulation"
+              >
+                <Plus className="h-4 w-4" />
+                <span>+ Criar Primeira Categoria</span>
+              </button>
+              {onRestoreDefaultCategories && (
+                <button
+                  type="button"
+                  onClick={onRestoreDefaultCategories}
+                  className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors touch-manipulation"
+                >
+                  Restaurar Categorias Padrão
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           categories.map((cat) => {
@@ -302,16 +338,36 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
           <tbody className="divide-y divide-slate-100 text-slate-700">
             {categories.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-10 text-center text-slate-400">
-                  <p className="text-sm font-medium text-slate-500">
-                    Nenhuma categoria cadastrada.
-                  </p>
-                  <button
-                    onClick={onOpenNewCategoryModal}
-                    className="mt-2 text-xs font-semibold text-teal-800 hover:underline"
-                  >
-                    + Criar primeira categoria
-                  </button>
+                <td colSpan={8} className="py-12 px-4 text-center text-slate-500">
+                  <div className="max-w-sm mx-auto space-y-3">
+                    <div className="h-10 w-10 rounded-xl bg-teal-50 text-teal-800 flex items-center justify-center mx-auto border border-teal-200">
+                      <Plus className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-slate-800">
+                        Nenhuma categoria ou meta configurada
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Defina limites por categoria para acompanhar sua regra orçamentária 50-30-20.
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 pt-1">
+                      <button
+                        onClick={onOpenNewCategoryModal}
+                        className="px-3.5 py-1.5 rounded-lg bg-teal-800 text-white font-semibold text-xs hover:bg-teal-900 transition-colors"
+                      >
+                        + Criar Categoria
+                      </button>
+                      {onRestoreDefaultCategories && (
+                        <button
+                          onClick={onRestoreDefaultCategories}
+                          className="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors"
+                        >
+                          Carregar Categorias Padrão
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </td>
               </tr>
             ) : (

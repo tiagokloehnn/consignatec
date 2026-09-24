@@ -7,6 +7,7 @@ import {
   Calendar,
   AlertTriangle,
   Layers,
+  Target,
 } from 'lucide-react';
 import { formatBRL } from '../utils/formatters';
 
@@ -15,7 +16,9 @@ interface ResetModalProps {
   onClose: () => void;
   onResetSelectedMonth: () => void;
   onResetAllMonths: () => void;
+  onResetBudgetsToZero?: () => void;
   onRestoreDemoData: () => void;
+  onRestoreDefaultCategories?: () => void;
   currentMonth: string;
   selectedMonthExpenseCount: number;
   selectedMonthTotalSpent: number;
@@ -27,7 +30,9 @@ export const ResetModal: React.FC<ResetModalProps> = ({
   onClose,
   onResetSelectedMonth,
   onResetAllMonths,
+  onResetBudgetsToZero,
   onRestoreDemoData,
+  onRestoreDefaultCategories,
   currentMonth,
   selectedMonthExpenseCount,
   selectedMonthTotalSpent,
@@ -144,16 +149,59 @@ export const ResetModal: React.FC<ResetModalProps> = ({
           </div>
         )}
 
+        {/* Gerenciamento de Metas & Orçamentos */}
+        <div className="px-4 sm:px-5 py-3 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+          <div className="flex items-center gap-2 text-xs text-slate-700 font-semibold">
+            <Target className="h-4 w-4 text-teal-800 shrink-0" />
+            <span>Orçamentos & Metas por Categoria:</span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {onResetBudgetsToZero && (
+              <button
+                type="button"
+                onClick={onResetBudgetsToZero}
+                className="px-2.5 py-1 rounded-lg bg-amber-100/80 hover:bg-amber-200 text-amber-900 text-[11px] font-bold transition-colors"
+                title="Define o limite de todas as categorias para R$ 0,00 para preencher novos valores"
+              >
+                Zerar Metas (R$ 0,00)
+              </button>
+            )}
+            {onRestoreDefaultCategories && (
+              <button
+                type="button"
+                onClick={onRestoreDefaultCategories}
+                className="px-2.5 py-1 rounded-lg bg-teal-100/80 hover:bg-teal-200 text-teal-950 text-[11px] font-bold transition-colors"
+                title="Restaura a lista e tetos das categorias padrão"
+              >
+                Restaurar Categorias Padrão
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Actions */}
         <div className="p-4 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={onRestoreDemoData}
-            className="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline flex items-center gap-1.5 self-start sm:self-auto py-1"
-          >
-            <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
-            <span>Restaurar dados de exemplo</span>
-          </button>
+          <div className="flex items-center gap-3 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={onRestoreDemoData}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline flex items-center gap-1.5 py-1"
+            >
+              <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
+              <span>Restaurar dados de exemplo</span>
+            </button>
+
+            {onRestoreDefaultCategories && (
+              <button
+                type="button"
+                onClick={onRestoreDefaultCategories}
+                className="text-xs font-semibold text-teal-800 hover:text-teal-950 hover:underline flex items-center gap-1.5 py-1"
+              >
+                <Layers className="h-3.5 w-3.5 text-teal-700" />
+                <span>Restaurar categorias padrão</span>
+              </button>
+            )}
+          </div>
 
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             <button

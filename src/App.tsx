@@ -47,6 +47,7 @@ import {
   History,
   CheckCircle2,
   Sparkles,
+  Target,
 } from 'lucide-react';
 
 const STORAGE_KEYS = {
@@ -478,14 +479,28 @@ export default function App() {
   const handleResetAllMonths = () => {
     setBaseIncome(0);
     setMonthlyIncomes({});
+    // Keep categories intact so users can immediately create or configure their budgets
+    setCategories((prev) => {
+      if (prev.length === 0) return DEFAULT_CATEGORIES;
+      return prev;
+    });
+    setExpenses([]);
+    setDiagnosisData(null);
+    setIsResetModalOpen(false);
+  };
+
+  const handleResetBudgetsToZero = () => {
     setCategories((prev) =>
       prev.map((c) => ({
         ...c,
         budget: 0,
       }))
     );
-    setExpenses([]);
-    setDiagnosisData(null);
+    setIsResetModalOpen(false);
+  };
+
+  const handleRestoreDefaultCategories = () => {
+    setCategories(DEFAULT_CATEGORIES);
     setIsResetModalOpen(false);
   };
 
@@ -687,12 +702,26 @@ export default function App() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleOpenNewModal}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-800 text-white rounded-xl text-xs font-bold hover:bg-teal-900 transition-colors shrink-0 shadow-xs self-start sm:self-auto"
-            >
-              <span>+ Novo Lançamento em {currentMonth === 'all' ? 'Novo Mês' : currentMonth}</span>
-            </button>
+            <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileTab('metas');
+                  handleOpenNewCategoryModal();
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-teal-900 border border-teal-300 rounded-xl text-xs font-bold hover:bg-teal-50 transition-colors shadow-2xs"
+              >
+                <Target className="h-3.5 w-3.5 text-teal-700" />
+                <span>+ Configurar Metas</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleOpenNewModal}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-800 text-white rounded-xl text-xs font-bold hover:bg-teal-900 transition-colors shrink-0 shadow-xs"
+              >
+                <span>+ Novo Lançamento em {currentMonth === 'all' ? 'Novo Mês' : currentMonth}</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -744,135 +773,158 @@ export default function App() {
           </button>
         </div>
 
-        {/* 1. Painel de Indicadores Executivos (KPI Cards) - Visível no Resumo ou Tudo */}
-        {(mobileTab === 'tudo' || mobileTab === 'dashboard') && (
-          <section aria-label="Indicadores Executivos">
-            <KpiCards
-              income={activeIncome}
-              totalExpenses={totalExpenses}
-              onUpdateIncome={handleUpdateIncome}
-            />
-          </section>
-        )}
+        {/* 1. Painel de Indicadores Executivos (KPI Cards) - Visível no Resumo e Tudo no mobile; sempre no desktop */}
+        <section
+          aria-label="Indicadores Executivos"
+          className={
+            mobileTab === 'tudo' || mobileTab === 'dashboard'
+              ? 'block'
+              : 'hidden md:block'
+          }
+        >
+          <KpiCards
+            income={activeIncome}
+            totalExpenses={totalExpenses}
+            onUpdateIncome={handleUpdateIncome}
+          />
+        </section>
 
-        {/* 2. Visual Distribution Summary Card - Fica no Resumo e Metas para análise visual limpa */}
-        {(mobileTab === 'tudo' || mobileTab === 'dashboard' || mobileTab === 'metas') && (
-          <section
-            aria-label="Distribuição dos Gastos"
-            className="bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-3 sm:mb-4">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-teal-800" />
-                <h3 className="text-xs sm:text-sm font-bold text-slate-900">
-                  Distribuição Proporcional dos Gastos ({currentMonth})
-                </h3>
-              </div>
-              <span className="text-[11px] sm:text-xs text-slate-500">
-                Total gasto no período:{' '}
-                <strong className="text-slate-800">{formatBRL(totalExpenses)}</strong>
-              </span>
+        {/* 2. Visual Distribution Summary Card - Fica no Resumo e Metas no mobile; sempre no desktop */}
+        <section
+          aria-label="Distribuição dos Gastos"
+          className={`bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs ${
+            mobileTab === 'tudo' || mobileTab === 'dashboard' || mobileTab === 'metas'
+              ? 'block'
+              : 'hidden md:block'
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-3 sm:mb-4">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-teal-800" />
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900">
+                Distribuição Proporcional dos Gastos ({currentMonth})
+              </h3>
             </div>
+            <span className="text-[11px] sm:text-xs text-slate-500">
+              Total gasto no período:{' '}
+              <strong className="text-slate-800">{formatBRL(totalExpenses)}</strong>
+            </span>
+          </div>
 
-            {/* Segmented Distribution Bar */}
-            {totalExpenses > 0 ? (
-              <div className="space-y-3">
-                <div className="h-3.5 w-full bg-slate-100 rounded-full flex overflow-hidden p-0.5 border border-slate-200">
-                  {categories.map((cat) => {
-                    const spent = spendingByCategory[cat.name] || 0;
-                    const ratio = (spent / totalExpenses) * 100;
-                    if (ratio <= 0) return null;
-                    return (
-                      <div
-                        key={cat.id}
-                        title={`${cat.name}: ${formatBRL(spent)} (${ratio.toFixed(1)}%)`}
-                        style={{
-                          width: `${ratio}%`,
-                          backgroundColor: cat.color,
-                        }}
-                        className="h-full first:rounded-l-full last:rounded-r-full hover:opacity-90 transition-opacity"
-                      />
-                    );
-                  })}
-                </div>
+          {/* Segmented Distribution Bar */}
+          {totalExpenses > 0 ? (
+            <div className="space-y-3">
+              <div className="h-3.5 w-full bg-slate-100 rounded-full flex overflow-hidden p-0.5 border border-slate-200">
+                {categories.map((cat) => {
+                  const spent = spendingByCategory[cat.name] || 0;
+                  const ratio = (spent / totalExpenses) * 100;
+                  if (ratio <= 0) return null;
+                  return (
+                    <div
+                      key={cat.id}
+                      title={`${cat.name}: ${formatBRL(spent)} (${ratio.toFixed(1)}%)`}
+                      style={{
+                        width: `${ratio}%`,
+                        backgroundColor: cat.color,
+                      }}
+                      className="h-full first:rounded-l-full last:rounded-r-full hover:opacity-90 transition-opacity"
+                    />
+                  );
+                })}
+              </div>
 
-                {/* Legend Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 pt-2">
-                  {categories.map((cat) => {
-                    const spent = spendingByCategory[cat.name] || 0;
-                    const ratio = totalExpenses > 0 ? (spent / totalExpenses) * 100 : 0;
-                    return (
-                      <div
-                        key={cat.id}
-                        className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex flex-col justify-between"
-                      >
-                        <div className="flex items-center gap-1.5 truncate">
-                          <span
-                            className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full shrink-0"
-                            style={{ backgroundColor: cat.color }}
-                          />
-                          <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 truncate">
-                            {cat.name}
-                          </span>
-                        </div>
-                        <div className="mt-1 flex items-baseline justify-between text-[10px] sm:text-[11px]">
-                          <span className="text-slate-500 font-medium">
-                            {ratio.toFixed(0)}%
-                          </span>
-                          <span className="font-bold text-slate-800">
-                            {formatBRL(spent).replace('R$', '').trim()}
-                          </span>
-                        </div>
+              {/* Legend Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 pt-2">
+                {categories.map((cat) => {
+                  const spent = spendingByCategory[cat.name] || 0;
+                  const ratio = totalExpenses > 0 ? (spent / totalExpenses) * 100 : 0;
+                  return (
+                    <div
+                      key={cat.id}
+                      className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex flex-col justify-between"
+                    >
+                      <div className="flex items-center gap-1.5 truncate">
+                        <span
+                          className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: cat.color }}
+                        />
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 truncate">
+                          {cat.name}
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
+                      <div className="mt-1 flex items-baseline justify-between text-[10px] sm:text-[11px]">
+                        <span className="text-slate-500 font-medium">
+                          {ratio.toFixed(0)}%
+                        </span>
+                        <span className="font-bold text-slate-800">
+                          {formatBRL(spent).replace('R$', '').trim()}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ) : (
-              <div className="py-6 text-center text-xs text-slate-400">
-                Nenhuma despesa registrada em {currentMonth} para calcular a distribuição.
-              </div>
-            )}
-          </section>
-        )}
+            </div>
+          ) : (
+            <div className="py-6 text-center text-xs text-slate-400">
+              Nenhuma despesa registrada em {currentMonth} para calcular a distribuição.
+            </div>
+          )}
+        </section>
 
-        {/* 3. Recursos Inteligentes: Leitor Rápido de Gastos com IA - No mobile fica na aba Gastos ou Tudo */}
-        {(mobileTab === 'tudo' || mobileTab === 'despesas') && (
-          <section aria-label="Leitor Inteligente de Gastos">
-            <NaturalLanguageInput
-              onAddExpense={handleAddExpense}
-              availableCategories={availableCategoryNames}
-            />
-          </section>
-        )}
+        {/* 3. Recursos Inteligentes: Leitor Rápido de Gastos com IA - No mobile fica na aba Gastos ou Tudo; sempre no desktop */}
+        <section
+          aria-label="Leitor Inteligente de Gastos"
+          className={
+            mobileTab === 'tudo' || mobileTab === 'despesas'
+              ? 'block'
+              : 'hidden md:block'
+          }
+        >
+          <NaturalLanguageInput
+            onAddExpense={handleAddExpense}
+            availableCategories={availableCategoryNames}
+          />
+        </section>
 
-        {/* 4. Tabela de Metas & Orçamento por Categoria */}
-        {(mobileTab === 'tudo' || mobileTab === 'metas') && (
-          <section aria-label="Orçamento por Categoria">
-            <CategoryBudgetTable
-              categories={categories}
-              spendingByCategory={spendingByCategory}
-              onUpdateBudget={handleUpdateBudget}
-              onOpenNewCategoryModal={handleOpenNewCategoryModal}
-              onEditCategory={handleOpenEditCategoryModal}
-              onDeleteCategory={handleDeleteCategory}
-            />
-          </section>
-        )}
+        {/* 4. Tabela de Metas & Orçamento por Categoria - No mobile fica na aba Metas ou Tudo; sempre no desktop */}
+        <section
+          aria-label="Orçamento por Categoria"
+          className={
+            mobileTab === 'tudo' || mobileTab === 'metas'
+              ? 'block'
+              : 'hidden md:block'
+          }
+        >
+          <CategoryBudgetTable
+            categories={categories}
+            spendingByCategory={spendingByCategory}
+            onUpdateBudget={handleUpdateBudget}
+            onOpenNewCategoryModal={handleOpenNewCategoryModal}
+            onEditCategory={handleOpenEditCategoryModal}
+            onDeleteCategory={handleDeleteCategory}
+            onRestoreDefaultCategories={handleRestoreDefaultCategories}
+          />
+        </section>
 
-        {/* 4. Registro de Despesas Diárias (Lançamentos) */}
-        {(mobileTab === 'tudo' || mobileTab === 'despesas') && (
-          <section aria-label="Lançamentos de Despesas">
-            <ExpenseTable
-              expenses={activeExpenses}
-              categories={categories}
-              currentMonthLabel={currentMonth === 'all' ? 'Todos os Meses' : currentMonth}
-              onOpenNewExpenseModal={handleOpenNewModal}
-              onEditExpense={handleOpenEditModal}
-              onDeleteExpense={handleDeleteExpense}
-            />
-          </section>
-        )}
+        {/* 5. Registro de Despesas Diárias (Lançamentos) - No mobile fica na aba Gastos ou Tudo; sempre no desktop */}
+        <section
+          aria-label="Lançamentos de Despesas"
+          className={
+            mobileTab === 'tudo' || mobileTab === 'despesas'
+              ? 'block'
+              : 'hidden md:block'
+          }
+        >
+          <ExpenseTable
+            expenses={activeExpenses}
+            categories={categories}
+            currentMonthLabel={currentMonth === 'all' ? 'Todos os Meses' : currentMonth}
+            onOpenNewExpenseModal={handleOpenNewModal}
+            onEditExpense={handleOpenEditModal}
+            onDeleteExpense={handleDeleteExpense}
+          />
+        </section>
       </main>
 
       {/* Floating Bottom Nav for Mobile */}
@@ -902,6 +954,7 @@ export default function App() {
         initialExpense={editingExpense}
         categories={categories}
         defaultYearMonth={currentYearMonth}
+        onOpenNewCategory={handleOpenNewCategoryModal}
       />
 
       {/* Category Modal (Add / Edit) */}
@@ -992,7 +1045,9 @@ export default function App() {
         onClose={() => setIsResetModalOpen(false)}
         onResetSelectedMonth={handleResetSelectedMonth}
         onResetAllMonths={handleResetAllMonths}
+        onResetBudgetsToZero={handleResetBudgetsToZero}
         onRestoreDemoData={handleRestoreSampleData}
+        onRestoreDefaultCategories={handleRestoreDefaultCategories}
         currentMonth={currentMonth}
         selectedMonthExpenseCount={activeExpenses.length}
         selectedMonthTotalSpent={totalExpenses}
