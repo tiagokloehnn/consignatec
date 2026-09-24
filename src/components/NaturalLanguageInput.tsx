@@ -125,14 +125,14 @@ export const NaturalLanguageInput: React.FC<NaturalLanguageInputProps> = ({
       </form>
 
       {/* Example Chips - scrollable horizontally on mobile */}
-      <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+      <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
         <span className="text-[11px] font-medium text-teal-300 shrink-0">Sugestões:</span>
         {EXAMPLE_PHRASES.map((phrase, idx) => (
           <button
             key={idx}
             type="button"
             onClick={() => handleSelectExample(phrase)}
-            className="text-[11px] bg-white/10 hover:bg-white/20 text-teal-100 hover:text-white px-2.5 py-1 rounded-full border border-white/10 transition-colors shrink-0 whitespace-nowrap"
+            className="text-[11px] bg-white/10 hover:bg-white/20 active:bg-white/30 text-teal-100 hover:text-white px-2.5 py-1 rounded-full border border-white/10 transition-colors shrink-0 whitespace-nowrap touch-manipulation"
           >
             {phrase}
           </button>

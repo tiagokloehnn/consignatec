@@ -41,15 +41,15 @@ export const ResetModal: React.FC<ResetModalProps> = ({
   const otherMonthsCount = Math.max(0, totalExpenseCount - selectedMonthExpenseCount);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-auto max-h-[94vh] flex flex-col">
         {/* Header */}
-        <div className="p-5 border-b border-slate-100 flex items-start gap-3.5 bg-gradient-to-r from-rose-50/60 via-amber-50/30 to-white">
-          <div className="h-10 w-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
-            <Trash2 className="h-5 w-5" />
+        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-start gap-3 sm:gap-3.5 bg-gradient-to-r from-rose-50/60 via-amber-50/30 to-white shrink-0">
+          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
-          <div className="flex-1 pr-2">
-            <h3 className="text-base font-bold text-slate-900">
+          <div className="flex-1 pr-2 min-w-0">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
               {isAllView
                 ? 'Zerar Lançamentos de Todos os Meses'
                 : `Zerar Apenas o Mês de ${currentMonth}`}
@@ -62,14 +62,14 @@ export const ResetModal: React.FC<ResetModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Breakdown Card */}
-        <div className="p-5 space-y-3 bg-slate-50/70 border-b border-slate-100">
+        <div className="p-4 sm:p-5 space-y-3 bg-slate-50/70 border-b border-slate-100 overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {/* Active Month Box */}
             <div className="p-3 bg-white rounded-xl border border-rose-200 shadow-2xs">

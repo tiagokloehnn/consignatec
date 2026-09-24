@@ -654,7 +654,7 @@ export default function App() {
             </div>
 
             {/* Quick Month Switcher Controls */}
-            <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+            <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
               <MonthYearPicker
                 currentMonth={currentMonth}
                 onMonthChange={setCurrentMonth}

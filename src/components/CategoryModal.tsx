@@ -99,10 +99,10 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
   const parsedBudgetPreview = parseFloat(budgetStr.replace(/\./g, '').replace(',', '.')) || 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-8 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-auto max-h-[94vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
+        <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
           <div>
             <h3 className="text-base font-bold text-slate-900">
               {initialCategory ? 'Editar Categoria' : 'Nova Categoria de Orçamento'}
@@ -113,14 +113,14 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-4.5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-4">
           {error && (
             <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
               {error}
@@ -138,12 +138,12 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Pets, Viagens & Férias, Streaming, Reforma"
-              className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
+              className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
             />
           </div>
 
           {/* Grid: Orçamento Limite & Classificação 50-30-20 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Orçamento Limite (R$) *
@@ -160,7 +160,7 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
                   value={budgetStr}
                   onChange={(e) => setBudgetStr(e.target.value)}
                   placeholder="0,00"
-                  className="w-full text-sm rounded-lg border border-slate-200 pl-10 pr-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent font-medium"
+                  className="w-full text-base sm:text-sm rounded-lg border border-slate-200 pl-10 pr-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent font-medium"
                 />
               </div>
             </div>
@@ -176,7 +176,7 @@ export const CategoryModal: React.FC<CategoryModalProps> = ({
                     e.target.value as 'necessidades' | 'desejos' | 'investimentos'
                   )
                 }
-                className="w-full text-xs sm:text-sm rounded-lg border border-slate-200 px-2.5 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent bg-white"
+                className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-2.5 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent bg-white"
               >
                 <option value="necessidades">Necessidades (50%)</option>
                 <option value="desejos">Desejos & Estilo de Vida (30%)</option>

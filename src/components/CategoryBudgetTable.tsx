@@ -204,31 +204,33 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                 </div>
 
                 {/* 3 Metrics: Limite, Gasto, Saldo */}
-                <div className="mt-3 grid grid-cols-3 gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs">
-                  <div>
-                    <span className="text-[10px] text-slate-400 block font-medium">Meta (Limite)</span>
+                <div className="mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block font-medium truncate">Meta (Limite)</span>
                     {isEditing ? (
                       <div className="flex items-center gap-1 mt-0.5">
                         <input
                           type="number"
                           value={tempBudgetValue}
                           onChange={(e) => setTempBudgetValue(e.target.value)}
-                          className="w-full text-xs font-bold p-1 border border-teal-600 rounded bg-white"
+                          className="w-full text-xs font-bold p-1 border border-teal-600 rounded bg-white min-w-0"
                           autoFocus
                         />
                         <button
                           onClick={() => handleSaveBudget(cat)}
-                          className="p-1 rounded bg-teal-800 text-white"
+                          className="p-1 rounded bg-teal-800 text-white shrink-0"
                         >
                           <Check className="h-3 w-3" />
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1">
-                        <span className="font-bold text-slate-800 text-xs">{formatBRL(budget)}</span>
+                      <div className="flex items-center gap-1 mt-0.5 min-w-0">
+                        <span className="font-bold text-slate-800 text-[11px] sm:text-xs truncate" title={formatBRL(budget)}>
+                          {formatBRL(budget)}
+                        </span>
                         <button
                           onClick={() => handleStartEdit(cat)}
-                          className="text-slate-400 hover:text-teal-800 p-0.5"
+                          className="text-slate-400 hover:text-teal-800 p-0.5 shrink-0 touch-manipulation"
                           title="Ajustar Meta"
                         >
                           <Edit2 className="h-2.5 w-2.5" />
@@ -237,17 +239,20 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                     )}
                   </div>
 
-                  <div>
-                    <span className="text-[10px] text-slate-400 block font-medium">Gasto Real</span>
-                    <span className="font-bold text-slate-900 text-xs mt-0.5 block">{formatBRL(spent)}</span>
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block font-medium truncate">Gasto Real</span>
+                    <span className="font-bold text-slate-900 text-[11px] sm:text-xs mt-0.5 block truncate" title={formatBRL(spent)}>
+                      {formatBRL(spent)}
+                    </span>
                   </div>
 
-                  <div>
-                    <span className="text-[10px] text-slate-400 block font-medium">Saldo Livre</span>
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 block font-medium truncate">Saldo Livre</span>
                     <span
-                      className={`font-bold text-xs mt-0.5 block ${
+                      className={`font-bold text-[11px] sm:text-xs mt-0.5 block truncate ${
                         remaining < 0 ? 'text-rose-600' : 'text-emerald-700'
                       }`}
+                      title={formatBRL(remaining)}
                     >
                       {formatBRL(remaining)}
                     </span>
@@ -260,18 +265,18 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
 
         {/* Mobile Total Row */}
         {categories.length > 0 && (
-          <div className="p-3.5 bg-slate-50/90 border-t border-slate-200 flex items-center justify-between text-xs">
-            <div>
-              <span className="text-slate-500 font-semibold block text-[11px]">Total Orçado:</span>
-              <span className="font-bold text-slate-900">{formatBRL(totalBudget)}</span>
+          <div className="p-3.5 bg-slate-50/90 border-t border-slate-200 grid grid-cols-3 gap-2 text-xs">
+            <div className="min-w-0">
+              <span className="text-slate-500 font-semibold block text-[10px] sm:text-[11px] truncate">Total Orçado:</span>
+              <span className="font-bold text-slate-800 text-xs sm:text-sm truncate block">{formatBRL(totalBudget)}</span>
             </div>
-            <div>
-              <span className="text-slate-500 font-semibold block text-[11px]">Total Gasto:</span>
-              <span className="font-bold text-slate-900">{formatBRL(totalSpent)}</span>
+            <div className="min-w-0">
+              <span className="text-slate-500 font-semibold block text-[10px] sm:text-[11px] truncate">Total Gasto:</span>
+              <span className="font-bold text-slate-900 text-xs sm:text-sm truncate block">{formatBRL(totalSpent)}</span>
             </div>
-            <div className="text-right">
-              <span className="text-slate-500 font-semibold block text-[11px]">Saldo Geral:</span>
-              <span className={`font-bold ${totalRemaining < 0 ? 'text-rose-600' : 'text-emerald-700'}`}>
+            <div className="text-right min-w-0">
+              <span className="text-slate-500 font-semibold block text-[10px] sm:text-[11px] truncate">Saldo Geral:</span>
+              <span className={`font-bold text-xs sm:text-sm truncate block ${totalRemaining < 0 ? 'text-rose-600' : 'text-emerald-700'}`}>
                 {formatBRL(totalRemaining)}
               </span>
             </div>
@@ -281,7 +286,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
 
       {/* DESKTOP TABLE VIEW (hidden md:block) */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm min-w-[760px]">
           <thead>
             <tr className="bg-slate-50/80 text-[11px] font-semibold tracking-wider text-slate-500 uppercase border-b border-slate-200">
               <th className="py-3 px-4">Categoria</th>

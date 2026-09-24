@@ -135,35 +135,35 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-100 selection:text-teal-900 flex flex-col">
       {/* Header Corporativo Consignatec */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-teal-800 text-white flex items-center justify-center shadow-sm shadow-teal-900/20">
-              <Layers className="h-5 w-5" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-teal-800 text-white flex items-center justify-center shadow-sm shadow-teal-900/20 shrink-0">
+              <Layers className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h1 className="text-base sm:text-xl font-bold tracking-tight text-slate-900 truncate">
                   Consignatec
                 </h1>
-                <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 shrink-0 hidden sm:inline-block">
                   Hub de Ferramentas
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
-                Painel Central de Utilitários Financeiros &bull; consignatec.com.br
+              <p className="text-[10px] sm:text-xs text-slate-500 truncate">
+                Central de Ferramentas &bull; consignatec.com.br
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {onOpenProfile && (
               <button
                 type="button"
                 onClick={onOpenProfile}
                 title="Configurações da Conta (Nome, E-mail, Senha, Celular)"
-                className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-teal-50 hover:text-teal-800 border border-slate-200 hover:border-teal-200 rounded-xl transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-teal-50 hover:text-teal-800 border border-slate-200 hover:border-teal-200 rounded-xl transition-colors cursor-pointer touch-manipulation"
               >
-                <div className="h-6 w-6 rounded-lg bg-teal-800 text-white flex items-center justify-center text-[11px] font-bold">
+                <div className="h-6 w-6 rounded-lg bg-teal-800 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
                   {userName ? userName.slice(0, 1).toUpperCase() : 'U'}
                 </div>
                 <div className="hidden sm:flex flex-col text-left">
@@ -172,13 +172,13 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
                   </span>
                   <span className="text-[10px] text-teal-700 font-medium">Configurações</span>
                 </div>
-                <Settings className="h-3.5 w-3.5 text-slate-500" />
+                <Settings className="h-3.5 w-3.5 text-slate-500 shrink-0" />
               </button>
             )}
 
             <button
               onClick={onLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-xl transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 text-xs font-medium text-slate-600 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-xl transition-colors cursor-pointer touch-manipulation"
               title="Sair da conta"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -189,22 +189,22 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full space-y-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10 flex-1 w-full space-y-5 sm:space-y-8">
         {/* Welcome Banner */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 shadow-xs relative overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-8 shadow-xs relative overflow-hidden">
           <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="max-w-2xl relative z-10 space-y-3">
+          <div className="max-w-2xl relative z-10 space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Plataforma Integrada Consignatec</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Olá, {userName ? userName.split(' ')[0] : 'seja bem-vindo(a)'}! Escolha uma ferramenta:
             </h2>
 
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Tenha controle total sobre suas receitas, despesas, planejamento e simulações de crédito.
               Selecione abaixo o módulo que deseja utilizar no momento:
             </p>
@@ -212,15 +212,15 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
         </div>
 
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {tools.map((tool) => {
             const Icon = tool.icon;
             return (
               <div
                 key={tool.id}
-                className={`bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between p-6 sm:p-7 relative ${
+                className={`bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between p-5 sm:p-7 relative ${
                   tool.isAvailable
-                    ? 'border-slate-200/90 hover:border-teal-500/60 hover:shadow-lg hover:shadow-teal-900/5 cursor-pointer ring-1 ring-transparent hover:ring-teal-500/20'
+                    ? 'border-slate-200/90 hover:border-teal-500/60 hover:shadow-lg hover:shadow-teal-900/5 cursor-pointer ring-1 ring-transparent hover:ring-teal-500/20 active:scale-[0.99]'
                     : 'border-slate-200/60 bg-slate-50/50 opacity-80'
                 }`}
                 onClick={() => {
@@ -229,17 +229,17 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
                   }
                 }}
               >
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {/* Top line: Icon & Badge */}
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-3">
                     <div
-                      className={`h-12 w-12 rounded-xl flex items-center justify-center border ${tool.iconBg} ${tool.iconColor}`}
+                      className={`h-11 w-11 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center border ${tool.iconBg} ${tool.iconColor} shrink-0`}
                     >
-                      <Icon className="h-6 w-6" />
+                      <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
 
                     <span
-                      className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${tool.badgeColor}`}
+                      className={`text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border ${tool.badgeColor} shrink-0`}
                     >
                       {tool.badge}
                     </span>
@@ -247,13 +247,13 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
 
                   {/* Title & Description */}
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-teal-800 transition-colors">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-teal-800 transition-colors">
                       {tool.title}
                     </h3>
-                    <p className="text-xs font-medium text-teal-800/80 mt-0.5">
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">
                       {tool.subtitle}
                     </p>
-                    <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
                       {tool.description}
                     </p>
                   </div>

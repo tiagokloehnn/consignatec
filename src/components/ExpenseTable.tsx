@@ -153,26 +153,26 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
       {/* Filters Bar */}
       <div className="p-3 sm:p-4 border-b border-slate-100 bg-white flex flex-col sm:flex-row sm:items-center gap-2.5 text-xs">
         {/* Search */}
-        <div className="relative flex-1 w-full">
-          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <div className="relative flex-1 w-full min-w-0">
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por descrição..."
-            className="w-full pl-9 pr-3 py-2 sm:py-1.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white text-sm sm:text-xs"
+            className="w-full pl-9 pr-3 py-2 sm:py-1.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white text-base sm:text-xs transition-colors"
           />
         </div>
 
         {/* Filters Group */}
-        <div className="grid grid-cols-3 sm:flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
           {/* Filter Categoria */}
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full sm:w-auto py-2 sm:py-1.5 px-2 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-700 text-xs truncate"
+            className="flex-1 sm:flex-none sm:w-auto py-2 sm:py-1.5 px-2.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-700 text-xs truncate min-w-[100px]"
           >
-            <option value="all">Categorias</option>
+            <option value="all">Categorias (Todas)</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.name}>
                 {cat.name}
@@ -184,9 +184,9 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
           <select
             value={selectedPayment}
             onChange={(e) => setSelectedPayment(e.target.value)}
-            className="w-full sm:w-auto py-2 sm:py-1.5 px-2 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-700 text-xs truncate"
+            className="flex-1 sm:flex-none sm:w-auto py-2 sm:py-1.5 px-2.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-700 text-xs truncate min-w-[100px]"
           >
-            <option value="all">Pagamentos</option>
+            <option value="all">Pagamentos (Todos)</option>
             {PAYMENT_METHODS.map((pm) => (
               <option key={pm} value={pm}>
                 {pm}
@@ -198,9 +198,9 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full sm:w-auto py-2 sm:py-1.5 px-2 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-700 text-xs truncate"
+            className="flex-1 sm:flex-none sm:w-auto py-2 sm:py-1.5 px-2.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-teal-700 text-xs truncate min-w-[85px]"
           >
-            <option value="all">Status</option>
+            <option value="all">Status (Todos)</option>
             <option value="Pago">Pago</option>
             <option value="Pendente">Pendente</option>
             <option value="Agendado">Agendado</option>
@@ -216,7 +216,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
               setSelectedPayment('all');
               setSelectedStatus('all');
             }}
-            className="text-teal-800 hover:underline font-semibold py-1 px-1 self-start sm:self-auto text-xs"
+            className="text-teal-800 hover:underline font-semibold py-1 px-1 self-start sm:self-auto text-xs shrink-0 touch-manipulation"
           >
             Limpar filtros
           </button>
@@ -338,7 +338,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
 
       {/* DESKTOP TABLE VIEW (hidden md:block) */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm min-w-[680px]">
           <thead>
             <tr className="bg-slate-50/80 text-[11px] font-semibold tracking-wider text-slate-500 uppercase border-b border-slate-200">
               <th
