@@ -1,6 +1,6 @@
 {
-  "name": "FinanZen - Controle Financeiro & Orçamento Mensal",
-  "description": "Sistema executivo de gestão financeira pessoal e orçamento mensal com análise inteligente via IA, acompanhamento de metas por categoria e controle de despesas.",
+  "name": "Consignatec - Central de Ferramentas",
+  "description": "Plataforma oficial Consignatec: Central de ferramentas e utilitários financeiros para planejamento, crédito e orçamentos.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

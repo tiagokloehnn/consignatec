@@ -25,11 +25,12 @@ cp .env.example .env
 Preencha com suas chaves:
 ```env
 # Chave da API Gemini (IA)
-GEMINI_API_KEY="sua_chave_gemini_aqui"
+CONSIGNATEC_GEMINI_KEY="sua_chave_gemini_aqui"
+# ou GEMINI_API_KEY="sua_chave_gemini_aqui"
 
 # Supabase (Banco de dados na nuvem e autenticação)
-VITE_SUPABASE_URL="https://seu-projeto.supabase.co"
-VITE_SUPABASE_ANON_KEY="sua_chave_anonima_supabase"
+VITE_CONSIGNATEC_SUPABASE_URL="https://seu-projeto.supabase.co"
+VITE_CONSIGNATEC_SUPABASE_ANON_KEY="sua_chave_anonima_supabase"
 ```
 
 ### 4. Executando em Modo de Desenvolvimento
@@ -50,7 +51,10 @@ Os arquivos otimizados prontos para publicação estarão na pasta `dist/`.
 
 1. Suba esta pasta para um repositório no seu GitHub.
 2. Acesse [vercel.com](https://vercel.com) e importe o repositório.
-3. Adicione as variáveis de ambiente (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `GEMINI_API_KEY`).
+3. Adicione as variáveis de ambiente:
+   - `VITE_CONSIGNATEC_SUPABASE_URL`
+   - `VITE_CONSIGNATEC_SUPABASE_ANON_KEY`
+   - `CONSIGNATEC_GEMINI_KEY`
 4. Clique em **Deploy**.
 5. Em **Settings > Domains**, aponte o seu domínio `consignatec.com.br` ou subdomínio `app.consignatec.com.br`.
 

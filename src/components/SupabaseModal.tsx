@@ -250,8 +250,8 @@ export const SupabaseModal: React.FC<SupabaseModalProps> = ({
             </ol>
 
             <div className="p-3 bg-slate-100 rounded-lg font-mono text-[11px] text-slate-800 space-y-1">
-              <div>VITE_SUPABASE_URL="https://seu-projeto.supabase.co"</div>
-              <div>VITE_SUPABASE_ANON_KEY="sua-chave-anon-publica"</div>
+              <div>VITE_CONSIGNATEC_SUPABASE_URL="https://seu-projeto.supabase.co"</div>
+              <div>VITE_CONSIGNATEC_SUPABASE_ANON_KEY="sua-chave-anon-publica"</div>
             </div>
           </div>
         </div>
