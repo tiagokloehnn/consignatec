@@ -60,16 +60,20 @@ import {
 
 interface StockRecommendationsProps {
   userName?: string;
+  userId?: string;
+  isGuest?: boolean;
   onBack: () => void;
 }
 
 export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
   userName,
+  userId,
+  isGuest,
   onBack,
 }) => {
-  const [stocks, setStocks] = useState<StockItem[]>(() => getSavedStocks());
-  const [watchlist, setWatchlist] = useState<string[]>(() => getWatchlist());
-  const [userPortfolio, setUserPortfolio] = useState<UserPortfolioItem[]>(() => getUserPortfolio());
+  const [stocks, setStocks] = useState<StockItem[]>(() => getSavedStocks(userId, isGuest));
+  const [watchlist, setWatchlist] = useState<string[]>(() => getWatchlist(userId, isGuest));
+  const [userPortfolio, setUserPortfolio] = useState<UserPortfolioItem[]>(() => getUserPortfolio(userId, isGuest));
   const [selectedStockTicker, setSelectedStockTicker] = useState<string>('BBAS3');
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1M');
   const [activeTab, setActiveTab] = useState<'explore' | 'portfolio'>('explore');
@@ -148,7 +152,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
   // Toggle watchlist
   const handleToggleWatchlist = (ticker: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    const updated = toggleWatchlistTicker(ticker);
+    const updated = toggleWatchlistTicker(userId, ticker);
     setWatchlist(updated);
   };
 
@@ -180,7 +184,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
     setIsSearchingTicker(true);
     setTickerSearchError(null);
     try {
-      const analyzed = await analyzeAnyStock(raw);
+      const analyzed = await analyzeAnyStock(raw, userId, isGuest);
       setStocks((prev) => {
         const exists = prev.some((s) => s.ticker === analyzed.ticker);
         return exists
@@ -1081,7 +1085,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const updated = removeUserPortfolioItem(item.id);
+                                  const updated = removeUserPortfolioItem(userId, isGuest, item.id);
                                   setUserPortfolio(updated);
                                 }}
                                 className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-600 font-semibold text-[11px] transition-colors cursor-pointer"
@@ -1122,7 +1126,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (!portTicker || portShares <= 0 || portAvgPrice <= 0) return;
-                  const updated = addUserPortfolioItem({
+                  const updated = addUserPortfolioItem(userId, isGuest, {
                     ticker: portTicker.toUpperCase(),
                     shares: Number(portShares),
                     averagePrice: Number(portAvgPrice),

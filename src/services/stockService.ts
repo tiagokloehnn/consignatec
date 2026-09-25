@@ -1103,9 +1103,10 @@ export const INITIAL_STOCKS: StockItem[] = [
 /**
  * Loads stock list including any custom stocks added by user
  */
-export function getSavedStocks(): StockItem[] {
+export function getSavedStocks(userId?: string, isGuest?: boolean): StockItem[] {
   try {
-    const raw = localStorage.getItem('consignatec_stocks_custom');
+    const key = userId ? `consignatec_stocks_custom_${userId}` : 'consignatec_stocks_custom';
+    const raw = localStorage.getItem(key);
     if (!raw) return INITIAL_STOCKS;
     const custom: StockItem[] = JSON.parse(raw);
     const customTickers = new Set(custom.map((c) => c.ticker));
@@ -1120,31 +1121,38 @@ export function getSavedStocks(): StockItem[] {
 }
 
 /**
- * Watchlist management
+ * Watchlist management (User-scoped or Guest demo)
  */
-export function getWatchlist(): string[] {
+export function getWatchlist(userId?: string, isGuest?: boolean): string[] {
   try {
-    const raw = localStorage.getItem('consignatec_watchlist');
-    return raw ? JSON.parse(raw) : ['BBAS3', 'NVDA', 'PRIO3', 'GOOGL', 'WEGE3'];
+    const key = userId ? `consignatec_watchlist_${userId}` : 'consignatec_watchlist';
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+    if (isGuest) {
+      return ['BBAS3', 'NVDA', 'PRIO3', 'GOOGL', 'WEGE3'];
+    }
+    return []; // New users start with empty/zerado watchlist
   } catch {
-    return ['BBAS3', 'NVDA', 'PRIO3'];
+    return [];
   }
 }
 
-export function toggleWatchlistTicker(ticker: string): string[] {
-  const current = getWatchlist();
+export function toggleWatchlistTicker(userId?: string, ticker?: string): string[] {
+  if (!ticker) return [];
+  const key = userId ? `consignatec_watchlist_${userId}` : 'consignatec_watchlist';
+  const current = getWatchlist(userId);
   let updated: string[];
   if (current.includes(ticker)) {
     updated = current.filter((t) => t !== ticker);
   } else {
     updated = [...current, ticker];
   }
-  localStorage.setItem('consignatec_watchlist', JSON.stringify(updated));
+  localStorage.setItem(key, JSON.stringify(updated));
   return updated;
 }
 
 /**
- * User Real Portfolio Management
+ * User Real Portfolio Management (User-scoped or Guest demo)
  */
 export interface UserPortfolioItem {
   id: string;
@@ -1154,18 +1162,22 @@ export interface UserPortfolioItem {
   purchaseDate: string;
 }
 
-export function getUserPortfolio(): UserPortfolioItem[] {
+export function getUserPortfolio(userId?: string, isGuest?: boolean): UserPortfolioItem[] {
   try {
-    const raw = localStorage.getItem('consignatec_user_portfolio');
+    const key = userId ? `consignatec_user_portfolio_${userId}` : 'consignatec_user_portfolio';
+    const raw = localStorage.getItem(key);
     if (!raw) {
-      // Default initial sample portfolio for demonstration
-      const defaults: UserPortfolioItem[] = [
-        { id: '1', ticker: 'BBAS3', shares: 100, averagePrice: 27.50, purchaseDate: '2026-02-15' },
-        { id: '2', ticker: 'WEGE3', shares: 50, averagePrice: 48.20, purchaseDate: '2026-03-10' },
-        { id: '3', ticker: 'NVDA', shares: 10, averagePrice: 125.00, purchaseDate: '2026-04-01' },
-      ];
-      localStorage.setItem('consignatec_user_portfolio', JSON.stringify(defaults));
-      return defaults;
+      if (isGuest) {
+        // Default initial sample portfolio for demonstration
+        const defaults: UserPortfolioItem[] = [
+          { id: '1', ticker: 'BBAS3', shares: 100, averagePrice: 27.50, purchaseDate: '2026-02-15' },
+          { id: '2', ticker: 'WEGE3', shares: 50, averagePrice: 48.20, purchaseDate: '2026-03-10' },
+          { id: '3', ticker: 'NVDA', shares: 10, averagePrice: 125.00, purchaseDate: '2026-04-01' },
+        ];
+        localStorage.setItem(key, JSON.stringify(defaults));
+        return defaults;
+      }
+      return []; // New users start completely zerados (empty portfolio)
     }
     return JSON.parse(raw);
   } catch {
@@ -1173,29 +1185,33 @@ export function getUserPortfolio(): UserPortfolioItem[] {
   }
 }
 
-export function saveUserPortfolio(items: UserPortfolioItem[]) {
+export function saveUserPortfolio(userId?: string, items?: UserPortfolioItem[]) {
+  if (!items) return;
   try {
-    localStorage.setItem('consignatec_user_portfolio', JSON.stringify(items));
+    const key = userId ? `consignatec_user_portfolio_${userId}` : 'consignatec_user_portfolio';
+    localStorage.setItem(key, JSON.stringify(items));
   } catch (e) {
     console.error('Error saving portfolio:', e);
   }
 }
 
-export function addUserPortfolioItem(item: Omit<UserPortfolioItem, 'id'>): UserPortfolioItem[] {
-  const current = getUserPortfolio();
+export function addUserPortfolioItem(userId?: string, isGuest?: boolean, item?: Omit<UserPortfolioItem, 'id'>): UserPortfolioItem[] {
+  if (!item) return getUserPortfolio(userId, isGuest);
+  const current = getUserPortfolio(userId, isGuest);
   const newItem: UserPortfolioItem = {
     ...item,
     id: 'port_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
   };
   const updated = [newItem, ...current];
-  saveUserPortfolio(updated);
+  saveUserPortfolio(userId, updated);
   return updated;
 }
 
-export function removeUserPortfolioItem(id: string): UserPortfolioItem[] {
-  const current = getUserPortfolio();
+export function removeUserPortfolioItem(userId?: string, isGuest?: boolean, id?: string): UserPortfolioItem[] {
+  if (!id) return getUserPortfolio(userId, isGuest);
+  const current = getUserPortfolio(userId, isGuest);
   const updated = current.filter((i) => i.id !== id);
-  saveUserPortfolio(updated);
+  saveUserPortfolio(userId, updated);
   return updated;
 }
 
@@ -1885,17 +1901,19 @@ export const QUICK_SUGGESTION_TICKERS = [
 /**
  * Saves or updates a custom analyzed stock in localStorage
  */
-export function saveCustomStock(stock: StockItem): StockItem[] {
+export function saveCustomStock(userId?: string, stock?: StockItem): StockItem[] {
+  if (!stock) return getSavedStocks(userId);
   try {
-    const raw = localStorage.getItem('consignatec_stocks_custom');
+    const key = userId ? `consignatec_stocks_custom_${userId}` : 'consignatec_stocks_custom';
+    const raw = localStorage.getItem(key);
     const existing: StockItem[] = raw ? JSON.parse(raw) : [];
     const filtered = existing.filter((s) => s.ticker !== stock.ticker);
     const updated = [stock, ...filtered];
-    localStorage.setItem('consignatec_stocks_custom', JSON.stringify(updated));
-    return getSavedStocks();
+    localStorage.setItem(key, JSON.stringify(updated));
+    return getSavedStocks(userId);
   } catch (e) {
     console.warn('Erro ao salvar stock customizado:', e);
-    return getSavedStocks();
+    return getSavedStocks(userId);
   }
 }
 
@@ -1904,7 +1922,7 @@ export function saveCustomStock(stock: StockItem): StockItem[] {
  * pulls known metrics or dynamically builds fundamentals, chart history,
  * Google Finance link, and requests Gemini AI analysis.
  */
-export async function analyzeAnyStock(rawTicker: string): Promise<StockItem> {
+export async function analyzeAnyStock(rawTicker: string, userId?: string, isGuest?: boolean): Promise<StockItem> {
   const cleanTicker = rawTicker
     .trim()
     .toUpperCase()
@@ -1918,7 +1936,7 @@ export async function analyzeAnyStock(rawTicker: string): Promise<StockItem> {
   }
 
   // Check if stock already exists in current loaded database
-  const currentStocks = getSavedStocks();
+  const currentStocks = getSavedStocks(userId, isGuest);
   const existingStock = currentStocks.find((s) => s.ticker === cleanTicker);
   if (existingStock) {
     return existingStock;
@@ -2022,7 +2040,7 @@ export async function analyzeAnyStock(rawTicker: string): Promise<StockItem> {
   }
 
   // Persist in localStorage
-  saveCustomStock(newStock);
+  saveCustomStock(userId, newStock);
 
   return newStock;
 }

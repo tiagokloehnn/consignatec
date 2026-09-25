@@ -659,6 +659,8 @@ export default function App() {
       <>
         <AmortizationCalculator
           userName={currentUser.name}
+          userId={currentUser.id}
+          isGuest={currentUser.isGuest}
           onBack={handleBackToTools}
         />
         <OfflineIndicator />
@@ -672,6 +674,8 @@ export default function App() {
       <>
         <StockRecommendations
           userName={currentUser.name}
+          userId={currentUser.id}
+          isGuest={currentUser.isGuest}
           onBack={handleBackToTools}
         />
         <OfflineIndicator />

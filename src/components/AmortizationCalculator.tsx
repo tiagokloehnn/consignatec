@@ -39,6 +39,8 @@ import { ThemeToggle } from './ThemeToggle';
 
 interface AmortizationCalculatorProps {
   userName?: string;
+  userId?: string;
+  isGuest?: boolean;
   onBack: () => void;
 }
 
@@ -86,6 +88,8 @@ const PRESETS: PresetOption[] = [
 
 export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
   userName,
+  userId,
+  isGuest,
   onBack,
 }) => {
   // Inputs da Simulação
@@ -116,17 +120,46 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
   const [page, setPage] = useState<number>(1);
   const pageSize = 24; // 2 anos por página
 
-  // Salvar Simulações locais
+  // Salvar Simulações locais (User-scoped or Guest demo)
+  const storageKey = userId ? `consignatec_saved_amort_${userId}` : 'consignatec_saved_amort';
   const [savedSimulations, setSavedSimulations] = useState<
     Array<{ id: string; name: string; date: string; input: AmortizationInput }>
   >(() => {
     try {
-      const saved = localStorage.getItem('consignatec_saved_amort');
-      return saved ? JSON.parse(saved) : [];
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return JSON.parse(saved);
+      if (isGuest) {
+        return [
+          {
+            id: 'demo_1',
+            name: 'Financiamento Imobiliário Padrão',
+            date: '2026-03-01',
+            input: {
+              saldoDevedor: 250000,
+              prazoMeses: 360,
+              taxaJurosAnual: 9.9,
+              sistema: 'SAC',
+              estrategia: 'REDUCE_TERM',
+              aporteMensalRecorrente: 500,
+              aportesPontuais: [],
+              taxasMensaisFixas: 45,
+            },
+          },
+        ];
+      }
+      return []; // New users start completely zerados (empty)
     } catch {
       return [];
     }
   });
+
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(savedSimulations));
+    } catch (e) {
+      console.warn('Could not save simulations:', e);
+    }
+  }, [savedSimulations, storageKey]);
 
   // Executar simulação reativamente
   const inputData: AmortizationInput = useMemo(
