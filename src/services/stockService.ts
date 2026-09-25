@@ -747,6 +747,62 @@ export function toggleWatchlistTicker(ticker: string): string[] {
 }
 
 /**
+ * User Real Portfolio Management
+ */
+export interface UserPortfolioItem {
+  id: string;
+  ticker: string;
+  shares: number;
+  averagePrice: number;
+  purchaseDate: string;
+}
+
+export function getUserPortfolio(): UserPortfolioItem[] {
+  try {
+    const raw = localStorage.getItem('consignatec_user_portfolio');
+    if (!raw) {
+      // Default initial sample portfolio for demonstration
+      const defaults: UserPortfolioItem[] = [
+        { id: '1', ticker: 'BBAS3', shares: 100, averagePrice: 27.50, purchaseDate: '2026-02-15' },
+        { id: '2', ticker: 'WEGE3', shares: 50, averagePrice: 48.20, purchaseDate: '2026-03-10' },
+        { id: '3', ticker: 'NVDA', shares: 10, averagePrice: 125.00, purchaseDate: '2026-04-01' },
+      ];
+      localStorage.setItem('consignatec_user_portfolio', JSON.stringify(defaults));
+      return defaults;
+    }
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function saveUserPortfolio(items: UserPortfolioItem[]) {
+  try {
+    localStorage.setItem('consignatec_user_portfolio', JSON.stringify(items));
+  } catch (e) {
+    console.error('Error saving portfolio:', e);
+  }
+}
+
+export function addUserPortfolioItem(item: Omit<UserPortfolioItem, 'id'>): UserPortfolioItem[] {
+  const current = getUserPortfolio();
+  const newItem: UserPortfolioItem = {
+    ...item,
+    id: 'port_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+  };
+  const updated = [newItem, ...current];
+  saveUserPortfolio(updated);
+  return updated;
+}
+
+export function removeUserPortfolioItem(id: string): UserPortfolioItem[] {
+  const current = getUserPortfolio();
+  const updated = current.filter((i) => i.id !== id);
+  saveUserPortfolio(updated);
+  return updated;
+}
+
+/**
  * Investment Simulator Calculation
  */
 export function calculateInvestmentSimulation(

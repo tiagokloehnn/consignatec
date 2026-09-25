@@ -40,6 +40,7 @@ import {
   PricePoint,
   SimulatorStrategy,
   SimulationResult,
+  UserPortfolioItem,
 } from '../types/stocks';
 import { ThemeToggle } from './ThemeToggle';
 import {
@@ -52,6 +53,9 @@ import {
   exportStocksToCSV,
   analyzeAnyStock,
   QUICK_SUGGESTION_TICKERS,
+  getUserPortfolio,
+  addUserPortfolioItem,
+  removeUserPortfolioItem,
 } from '../services/stockService';
 
 interface StockRecommendationsProps {
@@ -65,9 +69,10 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 }) => {
   const [stocks, setStocks] = useState<StockItem[]>(() => getSavedStocks());
   const [watchlist, setWatchlist] = useState<string[]>(() => getWatchlist());
+  const [userPortfolio, setUserPortfolio] = useState<UserPortfolioItem[]>(() => getUserPortfolio());
   const [selectedStockTicker, setSelectedStockTicker] = useState<string>('BBAS3');
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1M');
-  const [activeTab, setActiveTab] = useState<'top10' | 'analyze' | 'all' | 'simulator'>('top10');
+  const [activeTab, setActiveTab] = useState<'top10' | 'analyze' | 'watchlist' | 'portfolio' | 'all' | 'simulator'>('top10');
   const [marketFilter, setMarketFilter] = useState<'ALL' | MarketType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'score' | 'upside' | 'dy' | 'pe'>('score');
@@ -82,6 +87,12 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
   const [tickerSearchInput, setTickerSearchInput] = useState('');
   const [isSearchingTicker, setIsSearchingTicker] = useState(false);
   const [tickerSearchError, setTickerSearchError] = useState<string | null>(null);
+
+  // Portfolio Modal State
+  const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
+  const [portTicker, setPortTicker] = useState('BBAS3');
+  const [portShares, setPortShares] = useState<number>(100);
+  const [portAvgPrice, setPortAvgPrice] = useState<number>(28.00);
 
   // Simulator State
   const [simBudget, setSimBudget] = useState<number>(2000);
@@ -836,6 +847,32 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 
           <button
             type="button"
+            onClick={() => setActiveTab('watchlist')}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'watchlist'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
+            }`}
+          >
+            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
+            Watchlist ({watchlist.length})
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('portfolio')}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'portfolio'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
+            }`}
+          >
+            <Wallet className="h-4 w-4 text-teal-400" />
+            Minha Carteira Real ({userPortfolio.length})
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('all')}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'all'
@@ -860,6 +897,367 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
             Simulador de Aporte & Carteira
           </button>
         </div>
+
+        {/* ========================================================================= */}
+        {/* TAB: WATCHLIST (FAVORITAS)                                                 */}
+        {/* ========================================================================= */}
+        {activeTab === 'watchlist' && (
+          <div className="mt-6">
+            {isAnalysisOpen && renderStockAnalysisCard(true)}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+                  Minha Watchlist de Ações Favoritas
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Ações que você favoritou para acompanhar cotações, preço teto e oportunidades em tempo real.
+                </p>
+              </div>
+            </div>
+
+            {watchlistStocks.length === 0 ? (
+              <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <Star className="h-12 w-12 text-slate-400 mx-auto mb-3 opacity-40" />
+                <h4 className="font-bold text-slate-900 dark:text-white text-base">Sua Watchlist está vazia</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Clique no ícone de estrela nas ações para salvá-las na sua watchlist.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {watchlistStocks.map((stock) => {
+                  const isSelected = selectedStockTicker === stock.ticker && isAnalysisOpen;
+                  const isBelowTarget = stock.price <= stock.thesis.idealBuyPrice;
+                  return (
+                    <div
+                      key={stock.ticker}
+                      onClick={() => handleOpenStockAnalysis(stock.ticker)}
+                      className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
+                        isSelected
+                          ? 'bg-white dark:bg-slate-900 border-teal-500 shadow-lg'
+                          : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-slate-800 hover:border-teal-300 dark:hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-slate-900 dark:text-white text-base">
+                            {stock.ticker}
+                          </span>
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
+                            {stock.name}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => handleToggleWatchlist(stock.ticker, e)}
+                          className="text-amber-400 p-1"
+                        >
+                          <Star className="h-4 w-4 fill-amber-400" />
+                        </button>
+                      </div>
+
+                      {isBelowTarget && (
+                        <div className="mb-2 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                          <Zap className="h-3.5 w-3.5" />
+                          🔥 Abaixo do Preço Teto Ideal (Oportunidade)
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+                        <div>
+                          <div className="text-[11px] text-slate-400">Cotação Atual</div>
+                          <div className="text-base font-bold text-slate-900 dark:text-white">
+                            {stock.currency === 'BRL' ? 'R$ ' : '$ '}
+                            {stock.price.toFixed(2)}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-[11px] text-slate-400">Upside / Alvo</div>
+                          <div className="text-sm font-bold text-teal-600 dark:text-teal-400">
+                            +{stock.upsidePercent.toFixed(1)}%
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB: MINHA CARTEIRA REAL                                                   */}
+        {/* ========================================================================= */}
+        {activeTab === 'portfolio' && (
+          <div className="mt-6">
+            {isAnalysisOpen && renderStockAnalysisCard(true)}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-teal-500" />
+                  Minha Carteira de Ações (Acompanhamento Real)
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Gerencie suas ações compradas, preço médio, rentabilidade e dividendos projetados.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsPortfolioModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-md cursor-pointer transition-all"
+              >
+                <PlusCircle className="h-4 w-4" />
+                Adicionar Posição na Carteira
+              </button>
+            </div>
+
+            {/* Portfolio Summary KPIs */}
+            {(() => {
+              const totalInv = userPortfolio.reduce((acc, item) => {
+                return acc + item.shares * item.averagePrice;
+              }, 0);
+
+              const totalVal = userPortfolio.reduce((acc, item) => {
+                const s = stocks.find((st) => st.ticker === item.ticker);
+                const currentPrice = s ? s.price : item.averagePrice;
+                return acc + item.shares * currentPrice;
+              }, 0);
+
+              const profitLoss = totalVal - totalInv;
+              const profitLossPct = totalInv > 0 ? (profitLoss / totalInv) * 100 : 0;
+
+              const totalAnnualDivs = userPortfolio.reduce((acc, item) => {
+                const s = stocks.find((st) => st.ticker === item.ticker);
+                const currentPrice = s ? s.price : item.averagePrice;
+                const dy = s ? s.dividendYield : 5.0;
+                return acc + ((item.shares * currentPrice * dy) / 100);
+              }, 0);
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Total Investido</span>
+                    <span className="text-xl font-black text-slate-900 dark:text-white">
+                      R$ {totalInv.toFixed(2)}
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">Preço de aquisição</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Valor Atual da Carteira</span>
+                    <span className="text-xl font-black text-teal-600 dark:text-teal-400">
+                      R$ {totalVal.toFixed(2)}
+                    </span>
+                    <span className="text-[11px] text-teal-600/80 block mt-0.5">Cotações em tempo real</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Rentabilidade Total (P&L)</span>
+                    <span className={`text-xl font-black ${profitLoss >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {profitLoss >= 0 ? '+' : ''}R$ {profitLoss.toFixed(2)} ({profitLoss >= 0 ? '+' : ''}{profitLossPct.toFixed(2)}%)
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">Ganho de capital</span>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Dividendos Anuais Estimados</span>
+                    <span className="text-xl font-black text-amber-500 dark:text-amber-400">
+                      R$ {totalAnnualDivs.toFixed(2)}
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">Proventos projetados a.a.</span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {userPortfolio.length === 0 ? (
+              <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <Wallet className="h-12 w-12 text-slate-400 mx-auto mb-3 opacity-40" />
+                <h4 className="font-bold text-slate-900 dark:text-white text-base">Sua carteira está vazia</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Adicione ações que você comprou para acompanhar a valorização e os dividendos.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-slate-800">
+                      <tr>
+                        <th className="py-3 px-4">Ativo</th>
+                        <th className="py-3 px-3">Cotas</th>
+                        <th className="py-3 px-3">Preço Médio</th>
+                        <th className="py-3 px-3">Cotação Atual</th>
+                        <th className="py-3 px-3">Total Investido</th>
+                        <th className="py-3 px-3">Valor Atual</th>
+                        <th className="py-3 px-3">Lucro / Prejuízo</th>
+                        <th className="py-3 px-3">Div. Anual</th>
+                        <th className="py-3 px-4 text-right">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                      {userPortfolio.map((item) => {
+                        const stock = stocks.find((s) => s.ticker === item.ticker);
+                        const curPrice = stock ? stock.price : item.averagePrice;
+                        const totalInv = item.shares * item.averagePrice;
+                        const totalVal = item.shares * curPrice;
+                        const profit = totalVal - totalInv;
+                        const profitPct = totalInv > 0 ? (profit / totalInv) * 100 : 0;
+                        const annualDiv = (totalVal * (stock ? stock.dividendYield : 5)) / 100;
+
+                        return (
+                          <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                            <td className="py-3 px-4">
+                              <span className="font-bold text-slate-900 dark:text-white text-sm">
+                                {item.ticker}
+                              </span>
+                              <span className="text-[11px] text-slate-500 block">
+                                {stock?.name || 'Ação'}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3 font-semibold text-slate-800 dark:text-slate-200">
+                              {item.shares}
+                            </td>
+                            <td className="py-3 px-3 text-slate-600 dark:text-slate-400">
+                              R$ {item.averagePrice.toFixed(2)}
+                            </td>
+                            <td className="py-3 px-3 font-bold text-slate-900 dark:text-white">
+                              R$ {curPrice.toFixed(2)}
+                            </td>
+                            <td className="py-3 px-3 text-slate-600 dark:text-slate-400">
+                              R$ {totalInv.toFixed(2)}
+                            </td>
+                            <td className="py-3 px-3 font-bold text-teal-600 dark:text-teal-400">
+                              R$ {totalVal.toFixed(2)}
+                            </td>
+                            <td className={`py-3 px-3 font-bold ${profit >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                              {profit >= 0 ? '+' : ''}R$ {profit.toFixed(2)} ({profit >= 0 ? '+' : ''}{profitPct.toFixed(1)}%)
+                            </td>
+                            <td className="py-3 px-3 font-bold text-amber-500">
+                              R$ {annualDiv.toFixed(2)}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = removeUserPortfolioItem(item.id);
+                                  setUserPortfolio(updated);
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-600 font-semibold text-[11px] transition-colors cursor-pointer"
+                              >
+                                Remover
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Add Portfolio Modal */}
+        {isPortfolioModalOpen && (
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Wallet className="h-5 w-5 text-teal-500" />
+                  Adicionar Ação na Carteira
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsPortfolioModalOpen(false)}
+                  className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!portTicker || portShares <= 0 || portAvgPrice <= 0) return;
+                  const updated = addUserPortfolioItem({
+                    ticker: portTicker.toUpperCase(),
+                    shares: Number(portShares),
+                    averagePrice: Number(portAvgPrice),
+                    purchaseDate: new Date().toISOString().split('T')[0],
+                  });
+                  setUserPortfolio(updated);
+                  setIsPortfolioModalOpen(false);
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Ticker da Ação (ex: BBAS3, PETR4, NVDA)
+                  </label>
+                  <select
+                    value={portTicker}
+                    onChange={(e) => setPortTicker(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold"
+                  >
+                    {stocks.map((s) => (
+                      <option key={s.ticker} value={s.ticker}>
+                        {s.ticker} - {s.name} ({s.market})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Quantidade de Cotas / Ações
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={portShares}
+                    onChange={(e) => setPortShares(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Preço Médio de Aquisição (R$ / US$)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={portAvgPrice}
+                    onChange={(e) => setPortAvgPrice(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-semibold"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsPortfolioModalOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-md cursor-pointer"
+                  >
+                    Salvar Posição
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* ========================================================================= */}
         {/* TAB 1: TOP 10 MELHORES AÇÕES DO DIA                                       */}

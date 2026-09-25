@@ -46,6 +46,14 @@ export interface StockItem {
   isCustom?: boolean;
 }
 
+export interface UserPortfolioItem {
+  id: string;
+  ticker: string;
+  shares: number;
+  averagePrice: number;
+  purchaseDate: string;
+}
+
 export interface SimulationAllocation {
   stock: StockItem;
   shares: number;
