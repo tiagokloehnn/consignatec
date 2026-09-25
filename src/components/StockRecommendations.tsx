@@ -17,6 +17,8 @@ import {
   Zap,
   Info,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Filter,
   CheckCircle2,
   RefreshCw,
@@ -25,6 +27,11 @@ import {
   Building2,
   ArrowUpRight,
   Calculator,
+  X,
+  Minimize2,
+  Maximize2,
+  PlusCircle,
+  Clock,
 } from 'lucide-react';
 import {
   StockItem,
@@ -42,6 +49,8 @@ import {
   calculateInvestmentSimulation,
   fetchStockAIAnalysis,
   exportStocksToCSV,
+  analyzeAnyStock,
+  QUICK_SUGGESTION_TICKERS,
 } from '../services/stockService';
 
 interface StockRecommendationsProps {
@@ -57,12 +66,21 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
   const [watchlist, setWatchlist] = useState<string[]>(() => getWatchlist());
   const [selectedStockTicker, setSelectedStockTicker] = useState<string>('BBAS3');
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1M');
-  const [activeTab, setActiveTab] = useState<'top10' | 'all' | 'simulator'>('top10');
+  const [activeTab, setActiveTab] = useState<'top10' | 'analyze' | 'all' | 'simulator'>('top10');
   const [marketFilter, setMarketFilter] = useState<'ALL' | MarketType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'score' | 'upside' | 'dy' | 'pe'>('score');
   const [hoveredPoint, setHoveredPoint] = useState<PricePoint | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+
+  // Analysis visibility controls (prevents stock from being permanently stuck at top)
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [isAnalysisMinimized, setIsAnalysisMinimized] = useState(false);
+
+  // Universal custom ticker search state
+  const [tickerSearchInput, setTickerSearchInput] = useState('');
+  const [isSearchingTicker, setIsSearchingTicker] = useState(false);
+  const [tickerSearchError, setTickerSearchError] = useState<string | null>(null);
 
   // Simulator State
   const [simBudget, setSimBudget] = useState<number>(2000);
@@ -136,6 +154,39 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
     }
   };
 
+  // Open stock analysis panel smoothly without locking the screen
+  const handleOpenStockAnalysis = (ticker: string) => {
+    setSelectedStockTicker(ticker);
+    setIsAnalysisOpen(true);
+    setIsAnalysisMinimized(false);
+  };
+
+  // Universal ticker analyzer (works with ANY stock from B3 or US)
+  const handleAnalyzeCustomTicker = async (tickerToAnalyze?: string) => {
+    const raw = (tickerToAnalyze || tickerSearchInput).trim();
+    if (!raw) return;
+    setIsSearchingTicker(true);
+    setTickerSearchError(null);
+    try {
+      const analyzed = await analyzeAnyStock(raw);
+      setStocks((prev) => {
+        const exists = prev.some((s) => s.ticker === analyzed.ticker);
+        return exists
+          ? prev.map((s) => (s.ticker === analyzed.ticker ? analyzed : s))
+          : [analyzed, ...prev];
+      });
+      setSelectedStockTicker(analyzed.ticker);
+      setIsAnalysisOpen(true);
+      setIsAnalysisMinimized(false);
+      setTickerSearchInput('');
+      setActiveTab('analyze');
+    } catch (err: any) {
+      setTickerSearchError(err?.message || 'Não foi possível analisar este ativo.');
+    } finally {
+      setIsSearchingTicker(false);
+    }
+  };
+
   // Price history points for the selected period
   const historyPoints = useMemo(() => {
     return selectedStock?.history?.[selectedPeriod] || [];
@@ -176,6 +227,480 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 
     return { path, area, min, max, coords, isPositive };
   }, [historyPoints]);
+
+  const renderStockAnalysisCard = (showCloseButton = false) => {
+    if (!selectedStock) return null;
+
+    if (isAnalysisMinimized) {
+      return (
+        <div className="mb-6 bg-slate-900 border border-teal-500/30 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-teal-900/60 border border-teal-500/30 flex items-center justify-center font-bold text-white text-sm">
+              {selectedStock.ticker.slice(0, 3)}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-white text-base">{selectedStock.ticker}</span>
+                <span className="text-xs text-slate-400 truncate max-w-[180px]">&bull; {selectedStock.name}</span>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
+                    selectedStock.market === 'B3'
+                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                      : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                  }`}
+                >
+                  {selectedStock.market === 'B3' ? '🇧🇷 B3' : '🇺🇸 EUA'}
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-xs mt-0.5">
+                <span className="font-bold text-white">
+                  {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+                  {selectedStock.price.toFixed(2)}
+                </span>
+                <span
+                  className={`font-semibold ${
+                    selectedStock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                  }`}
+                >
+                  {selectedStock.changePercent >= 0 ? '+' : ''}
+                  {selectedStock.changePercent.toFixed(2)}%
+                </span>
+                <span className="text-slate-400 hidden sm:inline">
+                  Score: <strong className="text-teal-300">{selectedStock.score}/100</strong>
+                </span>
+                <span className="text-slate-400 hidden md:inline">
+                  Alvo:{' '}
+                  <strong className="text-emerald-400">
+                    {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+                    {selectedStock.targetPrice.toFixed(2)} (+{selectedStock.upsidePercent.toFixed(1)}%)
+                  </strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={selectedStock.googleFinanceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition-colors"
+            >
+              <Globe2 className="h-3.5 w-3.5 text-teal-400" />
+              <span className="hidden sm:inline">Google Finance</span>
+              <ArrowUpRight className="h-3 w-3" />
+            </a>
+            <button
+              type="button"
+              onClick={() => setIsAnalysisMinimized(false)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold cursor-pointer transition-all"
+            >
+              <Maximize2 className="h-3.5 w-3.5" />
+              <span>Expandir Raio-X</span>
+            </button>
+            {showCloseButton && (
+              <button
+                type="button"
+                onClick={() => setIsAnalysisOpen(false)}
+                className="p-1.5 rounded-xl bg-slate-800 hover:bg-rose-950/60 hover:text-rose-300 text-slate-400 text-xs transition-colors cursor-pointer"
+                title="Fechar Análise"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="mb-8 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl overflow-hidden backdrop-blur-sm">
+        {/* Stock Header & Live Price */}
+        <div className="p-5 sm:p-6 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-900/70 to-slate-800 border border-teal-500/20 flex items-center justify-center font-bold text-white text-base shadow-sm">
+              {selectedStock.ticker.slice(0, 3)}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  {selectedStock.ticker}
+                </h2>
+                <span className="text-xs text-slate-400 font-medium">
+                  &bull; {selectedStock.name}
+                </span>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
+                    selectedStock.market === 'B3'
+                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                      : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                  }`}
+                >
+                  {selectedStock.market === 'B3' ? '🇧🇷 B3 Brasil' : '🇺🇸 EUA / ' + selectedStock.exchange}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => handleToggleWatchlist(selectedStock.ticker, e)}
+                  title="Salvar na Watchlist"
+                  className="text-slate-500 hover:text-amber-400 transition-colors p-1"
+                >
+                  <Star
+                    className={`h-4 w-4 ${
+                      watchlist.includes(selectedStock.ticker)
+                        ? 'text-amber-400 fill-amber-400'
+                        : ''
+                    }`}
+                  />
+                </button>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {selectedStock.sector} &bull; Cap: {selectedStock.marketCap}
+              </p>
+            </div>
+          </div>
+
+          {/* Price & Signal Badges + Controls */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="text-right">
+              <div className="text-2xl sm:text-3xl font-black text-white">
+                {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+                {selectedStock.price.toFixed(2)}
+              </div>
+              <div
+                className={`text-xs font-bold inline-flex items-center gap-1 ${
+                  selectedStock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                }`}
+              >
+                {selectedStock.changePercent >= 0 ? '+' : ''}
+                {selectedStock.change.toFixed(2)} ({selectedStock.changePercent >= 0 ? '+' : ''}
+                {selectedStock.changePercent.toFixed(2)}%)
+                {selectedStock.changePercent >= 0 ? (
+                  <TrendingUp className="h-3.5 w-3.5" />
+                ) : (
+                  <TrendingDown className="h-3.5 w-3.5" />
+                )}
+              </div>
+            </div>
+
+            <div className="border-l border-slate-800 pl-4 flex flex-col items-end gap-1.5">
+              <span
+                className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase border shadow-sm ${
+                  selectedStock.recommendation === 'COMPRA FORTE'
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                    : selectedStock.recommendation === 'COMPRA'
+                    ? 'bg-teal-500/20 text-teal-300 border-teal-500/40'
+                    : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                }`}
+              >
+                {selectedStock.recommendation}
+              </span>
+              <div className="text-[11px] text-slate-400">
+                Score:{' '}
+                <span className="font-bold text-teal-300">{selectedStock.score}/100</span>
+              </div>
+            </div>
+
+            {/* Window Controls: Minimize & Close */}
+            <div className="border-l border-slate-800 pl-3 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsAnalysisMinimized(true)}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title="Minimizar Raio-X"
+              >
+                <Minimize2 className="h-4 w-4" />
+              </button>
+              {showCloseButton && (
+                <button
+                  type="button"
+                  onClick={() => setIsAnalysisOpen(false)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-rose-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                  title="Fechar Raio-X da Ação"
+                >
+                  <X className="h-4 w-4" />
+                  <span>Fechar</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Google Finance External Link + Period Bar */}
+        <div className="px-5 py-3 bg-slate-950/60 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <a
+            href={selectedStock.googleFinanceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-950/60 hover:bg-teal-900/60 border border-teal-600/30 text-teal-300 font-semibold transition-all hover:scale-102"
+          >
+            <Globe2 className="h-3.5 w-3.5 text-teal-400" />
+            <span>Ver cotação oficial no Google Finance ({selectedStock.ticker})</span>
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </a>
+
+          {/* Chart Period Switcher */}
+          <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+            {(['1D', '5D', '1M', '6M', '1A', '5A'] as ChartPeriod[]).map((period) => (
+              <button
+                key={period}
+                type="button"
+                onClick={() => {
+                  setSelectedPeriod(period);
+                  setHoveredPoint(null);
+                }}
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  selectedPeriod === period
+                    ? 'bg-teal-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Interactive SVG Chart */}
+        <div className="p-4 sm:p-6 relative">
+          {hoveredPoint && (
+            <div className="absolute top-2 left-6 z-10 bg-slate-900/95 border border-teal-500/40 px-3 py-1.5 rounded-xl shadow-lg text-xs">
+              <div className="text-[10px] text-slate-400">Data/Hora: {hoveredPoint.date}</div>
+              <div className="text-white font-bold">
+                {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+                {hoveredPoint.price.toFixed(2)}
+              </div>
+            </div>
+          )}
+
+          <div className="w-full h-64 relative">
+            <svg
+              viewBox="0 0 800 260"
+              preserveAspectRatio="none"
+              className="w-full h-full cursor-crosshair overflow-visible"
+              onMouseLeave={() => setHoveredPoint(null)}
+            >
+              <defs>
+                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="0%"
+                    stopColor={chartData.isPositive ? '#10b981' : '#f43f5e'}
+                    stopOpacity="0.25"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={chartData.isPositive ? '#10b981' : '#f43f5e'}
+                    stopOpacity="0.0"
+                  />
+                </linearGradient>
+              </defs>
+
+              <line x1="20" y1="50" x2="780" y2="50" stroke="#1e293b" strokeDasharray="3 3" />
+              <line x1="20" y1="120" x2="780" y2="120" stroke="#1e293b" strokeDasharray="3 3" />
+              <line x1="20" y1="190" x2="780" y2="190" stroke="#1e293b" strokeDasharray="3 3" />
+
+              {chartData.area && (
+                <path d={chartData.area} fill="url(#chartGradient)" />
+              )}
+
+              {chartData.path && (
+                <path
+                  d={chartData.path}
+                  fill="none"
+                  stroke={chartData.isPositive ? '#10b981' : '#f43f5e'}
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              )}
+
+              <line
+                x1="20"
+                y1={20}
+                x2="780"
+                y2={20}
+                stroke="#14b8a6"
+                strokeWidth="1.5"
+                strokeDasharray="4 4"
+                opacity="0.6"
+              />
+
+              {chartData.coords?.map((c, i) => (
+                <circle
+                  key={i}
+                  cx={c.x}
+                  cy={c.y}
+                  r={hoveredPoint?.date === c.point.date ? 6 : 3}
+                  className="cursor-pointer transition-all"
+                  fill={hoveredPoint?.date === c.point.date ? '#ffffff' : (chartData.isPositive ? '#10b981' : '#f43f5e')}
+                  stroke="#0f172a"
+                  strokeWidth="2"
+                  onMouseEnter={() => setHoveredPoint(c.point)}
+                />
+              ))}
+            </svg>
+
+            <div className="absolute top-2 right-4 text-[11px] font-semibold text-teal-400 bg-teal-950/80 px-2 py-0.5 rounded border border-teal-800">
+              Preço Alvo / Teto: {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+              {selectedStock.targetPrice.toFixed(2)} (+{selectedStock.upsidePercent.toFixed(1)}%)
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-3">
+            <div>
+              Mínima do período:{' '}
+              <span className="font-semibold text-slate-200">
+                {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+                {chartData.min.toFixed(2)}
+              </span>
+            </div>
+            <div>
+              Máxima do período:{' '}
+              <span className="font-semibold text-slate-200">
+                {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+                {chartData.max.toFixed(2)}
+              </span>
+            </div>
+            <div>
+              Potencial (Upside):{' '}
+              <span className="font-bold text-teal-300">
+                +{selectedStock.upsidePercent.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Fundamental Valuation Grid */}
+        <div className="bg-slate-950/50 p-5 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <span className="text-[11px] text-slate-400 block mb-0.5">Preço Teto / Alvo</span>
+            <span className="text-base font-bold text-teal-300">
+              {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+              {selectedStock.targetPrice.toFixed(2)}
+            </span>
+            <span className="text-[10px] text-emerald-400 block font-medium">
+              +{selectedStock.upsidePercent.toFixed(1)}% upside
+            </span>
+          </div>
+
+          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <span className="text-[11px] text-slate-400 block mb-0.5">P/L (P/E Ratio)</span>
+            <span className="text-base font-bold text-white">
+              {selectedStock.peRatio.toFixed(1)}x
+            </span>
+            <span className="text-[10px] text-slate-400 block font-medium">
+              {selectedStock.peRatio < 10 ? 'Muito Barato' : selectedStock.peRatio < 25 ? 'Justo' : 'Crescimento'}
+            </span>
+          </div>
+
+          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <span className="text-[11px] text-slate-400 block mb-0.5">Dividend Yield</span>
+            <span className="text-base font-bold text-emerald-400">
+              {selectedStock.dividendYield.toFixed(2)}%
+            </span>
+            <span className="text-[10px] text-slate-400 block font-medium">
+              Projeção anual
+            </span>
+          </div>
+
+          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <span className="text-[11px] text-slate-400 block mb-0.5">RSI (14 Dias)</span>
+            <span className="text-base font-bold text-white">
+              {selectedStock.rsi}
+            </span>
+            <span className="text-[10px] text-slate-400 block font-medium">
+              {selectedStock.rsi < 45 ? 'Zona de Compra' : 'Neutro'}
+            </span>
+          </div>
+
+          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <span className="text-[11px] text-slate-400 block mb-0.5">52 Semanas (Mín / Máx)</span>
+            <span className="text-xs font-bold text-slate-200 block truncate">
+              {selectedStock.fiftyTwoWeekLow.toFixed(1)} - {selectedStock.fiftyTwoWeekHigh.toFixed(1)}
+            </span>
+            <span className="text-[10px] text-slate-400 block font-medium">
+              Faixa de 1 ano
+            </span>
+          </div>
+
+          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+            <span className="text-[11px] text-slate-400 block mb-0.5">Preço Ideal de Entrada</span>
+            <span className="text-base font-bold text-amber-300">
+              {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
+              {selectedStock.thesis.idealBuyPrice.toFixed(2)}
+            </span>
+            <span className="text-[10px] text-amber-400/80 block font-medium">
+              Margem de segurança
+            </span>
+          </div>
+        </div>
+
+        {/* AI Investment Thesis & Highlights */}
+        <div className="p-5 sm:p-6 border-t border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">
+                  Tese de Investimento & Parecer com IA
+                </h3>
+                <span className="text-[11px] text-slate-400">
+                  Racional estratégico e análise de risco para compra hoje
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGenerateAIThesis}
+              disabled={isAiLoading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isAiLoading ? 'animate-spin' : ''}`} />
+              {isAiLoading ? 'Analisando Mercado...' : 'Atualizar Análise com IA'}
+            </button>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+            {selectedStock.thesis.summary}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
+              <span className="font-bold text-emerald-400 flex items-center gap-1.5 mb-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Pontos Fortes & Catalisadores
+              </span>
+              <ul className="space-y-1.5 text-slate-300">
+                {selectedStock.thesis.highlights.map((h, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-emerald-500 font-bold">&bull;</span>
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-900/30">
+              <span className="font-bold text-rose-400 flex items-center gap-1.5 mb-2">
+                <Info className="h-4 w-4" />
+                Principais Fatores de Risco
+              </span>
+              <ul className="space-y-1.5 text-slate-300">
+                {selectedStock.thesis.risks.map((r, i) => (
+                  <li key={i} className="flex items-start gap-1.5">
+                    <span className="text-rose-500 font-bold">&bull;</span>
+                    <span>{r}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-teal-500 selection:text-white pb-16">
@@ -270,18 +795,18 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mt-5 border-b border-slate-800 pb-3">
+        <div className="flex items-center gap-2 mt-5 border-b border-slate-800 pb-3 overflow-x-auto scrollbar-none">
           <button
             type="button"
             onClick={() => setActiveTab('top10')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'top10'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
-            <Sparkles className="h-4 w-4" />
-            Top 10 Melhores Ações do Dia
+            <Sparkles className="h-4 w-4 text-amber-300" />
+            Top 10 Melhores Ações
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-950/60 text-teal-200">
               Hoje
             </span>
@@ -289,21 +814,41 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 
           <button
             type="button"
+            onClick={() => {
+              setActiveTab('analyze');
+              setIsAnalysisOpen(true);
+              setIsAnalysisMinimized(false);
+            }}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+              activeTab === 'analyze'
+                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+            }`}
+          >
+            <Search className="h-4 w-4 text-teal-300" />
+            Analisar Qualquer Ação
+            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-teal-500/20 text-teal-200 border border-teal-500/30">
+              Raio-X & IA
+            </span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'all'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
             <Layers className="h-4 w-4" />
-            Todas as Ações (B3 & Wall Street)
+            Todas as Ações (B3 & Wall St)
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('simulator')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'simulator'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
@@ -315,390 +860,13 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         </div>
 
         {/* ========================================================================= */}
-        {/* MAIN INTERACTIVE CARD: STOCK CHART & DETAILS VIEW                         */}
-        {/* ========================================================================= */}
-        {selectedStock && (
-          <div className="mt-6 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl overflow-hidden backdrop-blur-sm">
-            {/* Stock Header & Live Price */}
-            <div className="p-5 sm:p-6 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-900/70 to-slate-800 border border-teal-500/20 flex items-center justify-center font-bold text-white text-base shadow-sm">
-                  {selectedStock.ticker.slice(0, 3)}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                      {selectedStock.ticker}
-                    </h2>
-                    <span className="text-xs text-slate-400 font-medium">
-                      &bull; {selectedStock.name}
-                    </span>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
-                        selectedStock.market === 'B3'
-                          ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                          : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
-                      }`}
-                    >
-                      {selectedStock.market === 'B3' ? '🇧🇷 B3 Brasil' : '🇺🇸 EUA / ' + selectedStock.exchange}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => handleToggleWatchlist(selectedStock.ticker, e)}
-                      title="Salvar na Watchlist"
-                      className="text-slate-500 hover:text-amber-400 transition-colors p-1"
-                    >
-                      <Star
-                        className={`h-4 w-4 ${
-                          watchlist.includes(selectedStock.ticker)
-                            ? 'text-amber-400 fill-amber-400'
-                            : ''
-                        }`}
-                      />
-                    </button>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {selectedStock.sector} &bull; Cap: {selectedStock.marketCap}
-                  </p>
-                </div>
-              </div>
-
-              {/* Price & Signal Badges */}
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-2xl sm:text-3xl font-black text-white">
-                    {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                    {selectedStock.price.toFixed(2)}
-                  </div>
-                  <div
-                    className={`text-xs font-bold inline-flex items-center gap-1 ${
-                      selectedStock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                    }`}
-                  >
-                    {selectedStock.changePercent >= 0 ? '+' : ''}
-                    {selectedStock.change.toFixed(2)} ({selectedStock.changePercent >= 0 ? '+' : ''}
-                    {selectedStock.changePercent.toFixed(2)}%)
-                    {selectedStock.changePercent >= 0 ? (
-                      <TrendingUp className="h-3.5 w-3.5" />
-                    ) : (
-                      <TrendingDown className="h-3.5 w-3.5" />
-                    )}
-                  </div>
-                </div>
-
-                <div className="border-l border-slate-800 pl-4 flex flex-col items-end gap-1.5">
-                  <span
-                    className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase border shadow-sm ${
-                      selectedStock.recommendation === 'COMPRA FORTE'
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                        : selectedStock.recommendation === 'COMPRA'
-                        ? 'bg-teal-500/20 text-teal-300 border-teal-500/40'
-                        : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                    }`}
-                  >
-                    {selectedStock.recommendation}
-                  </span>
-                  <div className="text-[11px] text-slate-400">
-                    Score:{' '}
-                    <span className="font-bold text-teal-300">{selectedStock.score}/100</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Google Finance External Link + Period Bar */}
-            <div className="px-5 py-3 bg-slate-950/60 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
-              {/* Google Finance Direct Link Button */}
-              <a
-                href={selectedStock.googleFinanceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-950/60 hover:bg-teal-900/60 border border-teal-600/30 text-teal-300 font-semibold transition-all hover:scale-102"
-              >
-                <Globe2 className="h-3.5 w-3.5 text-teal-400" />
-                <span>Ver cotação oficial no Google Finance ({selectedStock.ticker})</span>
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </a>
-
-              {/* Chart Period Switcher */}
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-                {(['1D', '5D', '1M', '6M', '1A', '5A'] as ChartPeriod[]).map((period) => (
-                  <button
-                    key={period}
-                    type="button"
-                    onClick={() => {
-                      setSelectedPeriod(period);
-                      setHoveredPoint(null);
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      selectedPeriod === period
-                        ? 'bg-teal-600 text-white shadow-xs'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {period}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Interactive SVG Chart */}
-            <div className="p-4 sm:p-6 relative">
-              {/* Hover point tooltip */}
-              {hoveredPoint && (
-                <div className="absolute top-2 left-6 z-10 bg-slate-900/95 border border-teal-500/40 px-3 py-1.5 rounded-xl shadow-lg text-xs">
-                  <div className="text-[10px] text-slate-400">Data/Hora: {hoveredPoint.date}</div>
-                  <div className="text-white font-bold">
-                    {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                    {hoveredPoint.price.toFixed(2)}
-                  </div>
-                </div>
-              )}
-
-              {/* Responsive SVG */}
-              <div className="w-full h-64 relative">
-                <svg
-                  viewBox="0 0 800 260"
-                  preserveAspectRatio="none"
-                  className="w-full h-full cursor-crosshair overflow-visible"
-                  onMouseLeave={() => setHoveredPoint(null)}
-                >
-                  <defs>
-                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop
-                        offset="0%"
-                        stopColor={chartData.isPositive ? '#10b981' : '#f43f5e'}
-                        stopOpacity="0.25"
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor={chartData.isPositive ? '#10b981' : '#f43f5e'}
-                        stopOpacity="0.0"
-                      />
-                    </linearGradient>
-                  </defs>
-
-                  {/* Horizontal Grid lines */}
-                  <line x1="20" y1="50" x2="780" y2="50" stroke="#1e293b" strokeDasharray="3 3" />
-                  <line x1="20" y1="120" x2="780" y2="120" stroke="#1e293b" strokeDasharray="3 3" />
-                  <line x1="20" y1="190" x2="780" y2="190" stroke="#1e293b" strokeDasharray="3 3" />
-
-                  {/* Area fill */}
-                  {chartData.area && (
-                    <path d={chartData.area} fill="url(#chartGradient)" />
-                  )}
-
-                  {/* Price Path line */}
-                  {chartData.path && (
-                    <path
-                      d={chartData.path}
-                      fill="none"
-                      stroke={chartData.isPositive ? '#10b981' : '#f43f5e'}
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  )}
-
-                  {/* Target Price dashed line */}
-                  <line
-                    x1="20"
-                    y1={20}
-                    x2="780"
-                    y2={20}
-                    stroke="#14b8a6"
-                    strokeWidth="1.5"
-                    strokeDasharray="4 4"
-                    opacity="0.6"
-                  />
-
-                  {/* Interactive tracking points */}
-                  {chartData.coords?.map((c, i) => (
-                    <circle
-                      key={i}
-                      cx={c.x}
-                      cy={c.y}
-                      r={hoveredPoint?.date === c.point.date ? 6 : 3}
-                      className="cursor-pointer transition-all"
-                      fill={hoveredPoint?.date === c.point.date ? '#ffffff' : (chartData.isPositive ? '#10b981' : '#f43f5e')}
-                      stroke="#0f172a"
-                      strokeWidth="2"
-                      onMouseEnter={() => setHoveredPoint(c.point)}
-                    />
-                  ))}
-                </svg>
-
-                {/* Target Price indicator badge on chart */}
-                <div className="absolute top-2 right-4 text-[11px] font-semibold text-teal-400 bg-teal-950/80 px-2 py-0.5 rounded border border-teal-800">
-                  Preço Alvo / Teto: {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                  {selectedStock.targetPrice.toFixed(2)} (+{selectedStock.upsidePercent.toFixed(1)}%)
-                </div>
-              </div>
-
-              {/* Chart footer metrics (Min, Max, Period return) */}
-              <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-3">
-                <div>
-                  Mínima do período:{' '}
-                  <span className="font-semibold text-slate-200">
-                    {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                    {chartData.min.toFixed(2)}
-                  </span>
-                </div>
-                <div>
-                  Máxima do período:{' '}
-                  <span className="font-semibold text-slate-200">
-                    {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                    {chartData.max.toFixed(2)}
-                  </span>
-                </div>
-                <div>
-                  Potencial (Upside):{' '}
-                  <span className="font-bold text-teal-300">
-                    +{selectedStock.upsidePercent.toFixed(1)}%
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Fundamental Valuation Grid */}
-            <div className="bg-slate-950/50 p-5 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">Preço Teto / Alvo</span>
-                <span className="text-base font-bold text-teal-300">
-                  {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                  {selectedStock.targetPrice.toFixed(2)}
-                </span>
-                <span className="text-[10px] text-emerald-400 block font-medium">
-                  +{selectedStock.upsidePercent.toFixed(1)}% upside
-                </span>
-              </div>
-
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">P/L (P/E Ratio)</span>
-                <span className="text-base font-bold text-white">
-                  {selectedStock.peRatio.toFixed(1)}x
-                </span>
-                <span className="text-[10px] text-slate-400 block font-medium">
-                  {selectedStock.peRatio < 10 ? 'Muito Barato' : selectedStock.peRatio < 25 ? 'Justo' : 'Crescimento'}
-                </span>
-              </div>
-
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">Dividend Yield</span>
-                <span className="text-base font-bold text-emerald-400">
-                  {selectedStock.dividendYield.toFixed(2)}%
-                </span>
-                <span className="text-[10px] text-slate-400 block font-medium">
-                  Projeção anual
-                </span>
-              </div>
-
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">RSI (14 Dias)</span>
-                <span className="text-base font-bold text-white">
-                  {selectedStock.rsi}
-                </span>
-                <span className="text-[10px] text-slate-400 block font-medium">
-                  {selectedStock.rsi < 45 ? 'Zona de Compra' : 'Neutro'}
-                </span>
-              </div>
-
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">52 Semanas (Mín / Máx)</span>
-                <span className="text-xs font-bold text-slate-200 block truncate">
-                  {selectedStock.fiftyTwoWeekLow.toFixed(1)} - {selectedStock.fiftyTwoWeekHigh.toFixed(1)}
-                </span>
-                <span className="text-[10px] text-slate-400 block font-medium">
-                  Faixa de 1 ano
-                </span>
-              </div>
-
-              <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-                <span className="text-[11px] text-slate-400 block mb-0.5">Preço Ideal de Entrada</span>
-                <span className="text-base font-bold text-amber-300">
-                  {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
-                  {selectedStock.thesis.idealBuyPrice.toFixed(2)}
-                </span>
-                <span className="text-[10px] text-amber-400/80 block font-medium">
-                  Margem de segurança
-                </span>
-              </div>
-            </div>
-
-            {/* AI Investment Thesis & Highlights */}
-            <div className="p-5 sm:p-6 border-t border-slate-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                    <Sparkles className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-white">
-                      Tese de Investimento & Parecer com IA
-                    </h3>
-                    <span className="text-[11px] text-slate-400">
-                      Racional estratégico e análise de risco para compra hoje
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGenerateAIThesis}
-                  disabled={isAiLoading}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
-                >
-                  <RefreshCw className={`h-3.5 w-3.5 ${isAiLoading ? 'animate-spin' : ''}`} />
-                  {isAiLoading ? 'Analisando Mercado...' : 'Atualizar Análise com IA'}
-                </button>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
-                {selectedStock.thesis.summary}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                {/* Highlights */}
-                <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
-                  <span className="font-bold text-emerald-400 flex items-center gap-1.5 mb-2">
-                    <CheckCircle2 className="h-4 w-4" />
-                    Pontos Fortes & Catalisadores
-                  </span>
-                  <ul className="space-y-1.5 text-slate-300">
-                    {selectedStock.thesis.highlights.map((h, i) => (
-                      <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-emerald-500 font-bold">&bull;</span>
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Risks */}
-                <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-900/30">
-                  <span className="font-bold text-rose-400 flex items-center gap-1.5 mb-2">
-                    <Info className="h-4 w-4" />
-                    Principais Fatores de Risco
-                  </span>
-                  <ul className="space-y-1.5 text-slate-300">
-                    {selectedStock.thesis.risks.map((r, i) => (
-                      <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-rose-500 font-bold">&bull;</span>
-                        <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
         {/* TAB 1: TOP 10 MELHORES AÇÕES DO DIA                                       */}
         {/* ========================================================================= */}
         {activeTab === 'top10' && (
-          <div className="mt-8">
+          <div className="mt-6">
+            {/* Raio-X card only if opened by user, with Fechar button */}
+            {isAnalysisOpen && renderStockAnalysisCard(true)}
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
@@ -713,17 +881,14 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {top10Stocks.map((stock, index) => {
-                const isSelected = selectedStockTicker === stock.ticker;
+                const isSelected = selectedStockTicker === stock.ticker && isAnalysisOpen;
                 return (
                   <div
                     key={stock.ticker}
-                    onClick={() => {
-                      setSelectedStockTicker(stock.ticker);
-                      window.scrollTo({ top: 120, behavior: 'smooth' });
-                    }}
+                    onClick={() => handleOpenStockAnalysis(stock.ticker)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
                       isSelected
-                        ? 'bg-slate-900 border-teal-500 shadow-lg shadow-teal-950/50'
+                        ? 'bg-slate-900 border-teal-500 shadow-lg shadow-teal-950/50 ring-1 ring-teal-500/50'
                         : 'bg-slate-900/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900'
                     }`}
                   >
@@ -805,9 +970,16 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                       >
                         {stock.recommendation}
                       </span>
-                      <span className="text-slate-400 hover:text-white flex items-center gap-0.5 font-medium text-[11px]">
-                        Ver Gráfico &rarr;
-                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenStockAnalysis(stock.ticker);
+                        }}
+                        className="text-teal-400 hover:text-teal-300 flex items-center gap-1 font-semibold text-[11px] bg-teal-950/40 px-2 py-1 rounded-lg border border-teal-800/40 hover:border-teal-700"
+                      >
+                        Ver Raio-X & Gráfico &rarr;
+                      </button>
                     </div>
                   </div>
                 );
@@ -817,10 +989,114 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 2: TODAS AS AÇÕES COM FILTROS E BUSCA                                 */}
+        {/* TAB 2: ANALISAR QUALQUER AÇÃO (BUSCA LIVRE B3 OU EUA)                      */}
+        {/* ========================================================================= */}
+        {activeTab === 'analyze' && (
+          <div className="mt-6">
+            {/* Universal Search & Analysis Hero Input */}
+            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl mb-6 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2.5 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                  <Search className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                    Analisador Universal de Ações & Valuation
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Digite qualquer código de ação da <strong>B3</strong> (ex: PETR4, VALE3, WEGE3, MGLU3, TAEE11) ou dos <strong>EUA</strong> (ex: NVDA, TSLA, AAPL, MSFT, PLTR).
+                  </p>
+                </div>
+              </div>
+
+              {/* Search Form */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAnalyzeCustomTicker();
+                }}
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-4"
+              >
+                <div className="relative flex-1">
+                  <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={tickerSearchInput}
+                    onChange={(e) => {
+                      setTickerSearchInput(e.target.value.toUpperCase());
+                      setTickerSearchError(null);
+                    }}
+                    placeholder="Ex: PETR4, VALE3, NVDA, TSLA, AAPL, WEGE3, MGLU3, PRIO3..."
+                    className="w-full pl-10 pr-10 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-sm font-bold text-white placeholder-slate-500 uppercase tracking-wider focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                  {tickerSearchInput && (
+                    <button
+                      type="button"
+                      onClick={() => setTickerSearchInput('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-1"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSearchingTicker || !tickerSearchInput.trim()}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white text-xs sm:text-sm font-bold shadow-md shadow-teal-900/30 transition-all cursor-pointer"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isSearchingTicker ? 'animate-spin' : ''}`} />
+                  {isSearchingTicker ? 'Analisando Mercado...' : 'Analisar Ativo com IA'}
+                </button>
+              </form>
+
+              {tickerSearchError && (
+                <div className="mt-3 p-3 rounded-xl bg-rose-950/40 border border-rose-800/40 text-rose-300 text-xs flex items-center gap-2">
+                  <Info className="h-4 w-4 shrink-0" />
+                  <span>{tickerSearchError}</span>
+                </div>
+              )}
+
+              {/* Quick suggestion chips */}
+              <div className="mt-4 pt-3 border-t border-slate-800/80">
+                <span className="text-[11px] font-semibold text-slate-400 block mb-2">
+                  Ações populares sugeridas para análise imediata:
+                </span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {QUICK_SUGGESTION_TICKERS.map((chip) => {
+                    const isSelected = selectedStockTicker === chip;
+                    return (
+                      <button
+                        key={chip}
+                        type="button"
+                        onClick={() => handleAnalyzeCustomTicker(chip)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                          isSelected
+                            ? 'bg-teal-600 text-white border-teal-500 shadow-sm'
+                            : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-800'
+                        }`}
+                      >
+                        {chip}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Analysis Card */}
+            {renderStockAnalysisCard(false)}
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 3: TODAS AS AÇÕES COM FILTROS E BUSCA                                 */}
         {/* ========================================================================= */}
         {activeTab === 'all' && (
-          <div className="mt-8">
+          <div className="mt-6">
+            {/* Raio-X card only if opened by user */}
+            {isAnalysisOpen && renderStockAnalysisCard(true)}
+
             {/* Filters Bar */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
               {/* Search input */}
@@ -908,16 +1184,13 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {displayedStocks.map((stock) => {
-                      const isSelected = selectedStockTicker === stock.ticker;
+                      const isSelected = selectedStockTicker === stock.ticker && isAnalysisOpen;
                       return (
                         <tr
                           key={stock.ticker}
-                          onClick={() => {
-                            setSelectedStockTicker(stock.ticker);
-                            window.scrollTo({ top: 120, behavior: 'smooth' });
-                          }}
+                          onClick={() => handleOpenStockAnalysis(stock.ticker)}
                           className={`hover:bg-slate-800/50 transition-colors cursor-pointer ${
-                            isSelected ? 'bg-teal-950/20' : ''
+                            isSelected ? 'bg-teal-950/40 ring-1 ring-inset ring-teal-500/40' : ''
                           }`}
                         >
                           <td className="py-3.5 px-4">
@@ -1009,9 +1282,13 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                           <td className="py-3.5 px-4 text-right">
                             <button
                               type="button"
-                              className="text-xs text-teal-400 hover:text-teal-300 font-semibold"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenStockAnalysis(stock.ticker);
+                              }}
+                              className="text-xs text-teal-400 hover:text-teal-300 font-semibold cursor-pointer"
                             >
-                              Ver Detalhes &rarr;
+                              Ver Raio-X &rarr;
                             </button>
                           </td>
                         </tr>
