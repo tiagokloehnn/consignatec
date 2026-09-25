@@ -1222,66 +1222,77 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               </div>
             </div>
 
-            {/* Filters & Search Bar */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
-              <div className="relative flex-1 max-w-md">
-                <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Pesquisar por nome, ticker (ex: PETR4, NVDA) ou setor..."
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 font-medium"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setMarketFilter('ALL')}
-                    className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer ${
-                      marketFilter === 'ALL'
-                        ? 'bg-teal-600 text-white'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Todas ({stocks.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMarketFilter('B3')}
-                    className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer ${
-                      marketFilter === 'B3'
-                        ? 'bg-amber-600 text-white'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    🇧🇷 B3 Brasil
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMarketFilter('US')}
-                    className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer ${
-                      marketFilter === 'US'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    🇺🇸 EUA / Wall St
-                  </button>
+            {/* Search & Global Ticker Facilitator */}
+            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-4 sm:p-5 shadow-xl mb-5">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                <div className="relative flex-1">
+                  <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-teal-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="🔍 Pesquise por nome, ticker (ex: PETR4, BBAS3, NVDA, AAPL) ou setor..."
+                    className="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:border-teal-500 font-semibold"
+                  />
                 </div>
 
-                <select
-                  value={sortBy}
-                  onChange={(e: any) => setSortBy(e.target.value)}
-                  className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-teal-500"
-                >
-                  <option value="score">Maior Nota / Score</option>
-                  <option value="upside">Maior Potencial (%)</option>
-                  <option value="dy">Maior Dividend Yield</option>
-                  <option value="pe">Menor P/L (Mais Baratas)</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setMarketFilter('ALL')}
+                      className={`px-3 py-2 rounded-lg font-bold cursor-pointer transition-all ${
+                        marketFilter === 'ALL' ? 'bg-teal-600 text-white' : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Todas ({stocks.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMarketFilter('B3')}
+                      className={`px-3 py-2 rounded-lg font-bold cursor-pointer transition-all ${
+                        marketFilter === 'B3' ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      🇧🇷 Brasil (B3)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMarketFilter('US')}
+                      className={`px-3 py-2 rounded-lg font-bold cursor-pointer transition-all ${
+                        marketFilter === 'US' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      🇺🇸 EUA (Wall St)
+                    </button>
+                  </div>
+
+                  <select
+                    value={sortBy}
+                    onChange={(e: any) => setSortBy(e.target.value)}
+                    className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-teal-500 font-semibold"
+                  >
+                    <option value="score">Maior Nota</option>
+                    <option value="upside">Maior Potencial</option>
+                    <option value="dy">Maior Dividend Yield</option>
+                    <option value="pe">Mais Baratas (P/L)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Quick Suggestion Chips */}
+              <div className="mt-3 pt-3 border-t border-slate-800 flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-slate-400 font-semibold mr-1">Sugestões rápidas:</span>
+                {['BBAS3', 'PETR4', 'VALE3', 'ITUB4', 'WEGE3', 'BBDC4', 'BPAC11', 'NVDA', 'META', 'AAPL', 'GOOGL', 'TSLA', 'AMZN', 'NFLX', 'V'].map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setSearchQuery(t)}
+                    className="px-2.5 py-1 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-800 text-teal-300 font-bold transition-colors cursor-pointer"
+                  >
+                    {t}
+                  </button>
+                ))}
               </div>
             </div>
 
