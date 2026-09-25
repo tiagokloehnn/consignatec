@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
 
-export type ToolId = 'finance_manager' | 'consignado_sim' | 'margem_calc' | 'quitar_dividas';
+export type ToolId = 'finance_manager' | 'amortization_calc' | 'consignado_sim' | 'margem_calc' | 'quitar_dividas';
 
 interface ToolsDashboardProps {
   userName?: string;
@@ -73,6 +73,25 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
         'Classificação automática e metas de orçamento',
         'Controle mês a mês com persistência segura',
         'Exportação de relatórios em CSV',
+      ],
+      isAvailable: true,
+    },
+    {
+      id: 'amortization_calc',
+      title: 'Calculadora de Amortização Extraordinária',
+      subtitle: 'Simule quitação antecipada, corte de anos e economia de juros',
+      badge: 'Ativo & Disponível',
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+      description:
+        'Compare o impacto de amortizações extras no seu financiamento imobiliário ou empréstimo (SAC ou Price). Descubra quanto você economiza e se vale mais a pena reduzir prazo ou parcela.',
+      icon: Calculator,
+      iconBg: 'bg-emerald-50 border-emerald-200',
+      iconColor: 'text-emerald-700',
+      features: [
+        'Sistemas SAC e Tabela Price (Caixa, Bancos e Imobiliário)',
+        'Estratégias: Redução de Prazo vs. Redução de Parcela',
+        'Aportes recorrentes e pontuais (FGTS, 13º salário, bônus)',
+        'Cronograma detalhado mês a mês e exportação para Excel/CSV',
       ],
       isAvailable: true,
     },

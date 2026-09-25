@@ -12,6 +12,7 @@ import { ConfirmModal } from './components/ConfirmModal';
 import { ResetModal } from './components/ResetModal';
 import { AuthScreen } from './components/AuthScreen';
 import { ToolsDashboard, ToolId } from './components/ToolsDashboard';
+import { AmortizationCalculator } from './components/AmortizationCalculator';
 import { ProfileSettings, UserProfileData } from './components/ProfileSettings';
 import { CategoryIcon } from './components/CategoryIcon';
 import { MobileBottomNav, MobileTab } from './components/MobileBottomNav';
@@ -645,6 +646,19 @@ export default function App() {
           onSelectTool={handleSelectTool}
           onOpenProfile={() => setIsProfileOpen(true)}
           onLogout={handleLogout}
+        />
+        <OfflineIndicator />
+      </>
+    );
+  }
+
+  // If user selected Amortization Calculator
+  if (selectedTool === 'amortization_calc') {
+    return (
+      <>
+        <AmortizationCalculator
+          userName={currentUser.name}
+          onBack={handleBackToTools}
         />
         <OfflineIndicator />
       </>
