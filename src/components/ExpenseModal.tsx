@@ -96,21 +96,21 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-auto max-h-[94vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs animate-fadeIn overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all my-auto max-h-[94vh] flex flex-col">
         {/* Modal Header */}
-        <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60 shrink-0">
+        <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/60 dark:bg-slate-900/80 shrink-0">
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">
               {initialExpense ? 'Editar Despesa' : 'Novo Lançamento de Despesa'}
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Preencha os detalhes da transação financeira.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -119,14 +119,14 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto">
           {error && (
-            <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
+            <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-xs text-rose-700 dark:text-rose-300 font-medium">
               {error}
             </div>
           )}
 
           {/* Descrição */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               Descrição do Gasto *
             </label>
             <input
@@ -135,18 +135,18 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               placeholder="Ex: Supermercado Semanal, Abastecimento, Aluguel"
-              className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
+              className="w-full text-base sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
             />
           </div>
 
           {/* Grid: Valor & Data */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                 Valor (R$) *
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-slate-400">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-xs font-bold text-slate-400 dark:text-slate-500">
                   R$
                 </span>
                 <input
@@ -157,13 +157,13 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                   value={valorStr}
                   onChange={(e) => setValorStr(e.target.value)}
                   placeholder="0,00"
-                  className="w-full text-base sm:text-sm rounded-lg border border-slate-200 pl-10 pr-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent font-medium"
+                  className="w-full text-base sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-10 pr-3 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent font-medium"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                 Data do Lançamento *
               </label>
               <input
@@ -171,7 +171,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 required
                 value={data}
                 onChange={(e) => setData(e.target.value)}
-                className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
+                className="w-full text-base sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                   Categoria *
                 </label>
                 {onOpenNewCategory && (
@@ -190,7 +190,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                       onClose();
                       onOpenNewCategory();
                     }}
-                    className="text-[11px] font-semibold text-teal-800 hover:text-teal-950 hover:underline flex items-center gap-0.5"
+                    className="text-[11px] font-semibold text-teal-800 dark:text-teal-400 hover:text-teal-950 dark:hover:text-teal-300 hover:underline flex items-center gap-0.5"
                   >
                     <Plus className="h-3 w-3" />
                     <span>Nova Categoria</span>
@@ -198,7 +198,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 )}
               </div>
               {categories.length === 0 ? (
-                <div className="p-2 border border-dashed border-rose-300 rounded-lg bg-rose-50 text-xs text-rose-700">
+                <div className="p-2 border border-dashed border-rose-300 dark:border-rose-800 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-xs text-rose-700 dark:text-rose-300">
                   <span>Nenhuma categoria cadastrada. </span>
                   {onOpenNewCategory && (
                     <button
@@ -207,7 +207,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                         onClose();
                         onOpenNewCategory();
                       }}
-                      className="font-bold underline text-rose-900"
+                      className="font-bold underline text-rose-900 dark:text-rose-200"
                     >
                       Criar agora
                     </button>
@@ -217,10 +217,10 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 <select
                   value={categoria}
                   onChange={(e) => setCategoria(e.target.value)}
-                  className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent bg-white"
+                  className="w-full text-base sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
                 >
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
+                    <option key={cat.id} value={cat.name} className="dark:bg-slate-800 dark:text-white">
                       {cat.name}
                     </option>
                   ))}
@@ -229,16 +229,16 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
                 Forma de Pagamento *
               </label>
               <select
                 value={formaPagamento}
                 onChange={(e) => setFormaPagamento(e.target.value as PaymentMethod)}
-                className="w-full text-base sm:text-sm rounded-lg border border-slate-200 px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent bg-white"
+                className="w-full text-base sm:text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-700 focus:border-transparent"
               >
                 {PAYMENT_METHODS.map((pm) => (
-                  <option key={pm} value={pm}>
+                  <option key={pm} value={pm} className="dark:bg-slate-800 dark:text-white">
                     {pm}
                   </option>
                 ))}
@@ -248,7 +248,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
           {/* Status */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               Status da Transação *
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -257,16 +257,16 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 let activeStyle = '';
                 if (st === 'Pago') {
                   activeStyle = isSelected
-                    ? 'bg-emerald-50 text-emerald-800 border-emerald-500 font-bold'
-                    : 'text-slate-600 hover:bg-slate-50 border-slate-200';
+                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-500 font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700';
                 } else if (st === 'Pendente') {
                   activeStyle = isSelected
-                    ? 'bg-amber-50 text-amber-800 border-amber-500 font-bold'
-                    : 'text-slate-600 hover:bg-slate-50 border-slate-200';
+                    ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-500 font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700';
                 } else {
                   activeStyle = isSelected
-                    ? 'bg-blue-50 text-blue-800 border-blue-500 font-bold'
-                    : 'text-slate-600 hover:bg-slate-50 border-slate-200';
+                    ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border-blue-500 font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700';
                 }
 
                 return (
@@ -274,7 +274,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                     key={st}
                     type="button"
                     onClick={() => setStatus(st)}
-                    className={`py-2 px-2 text-xs rounded-lg border text-center transition-all min-h-[40px] flex items-center justify-center ${activeStyle}`}
+                    className={`py-2 px-2 text-xs rounded-lg border text-center transition-all min-h-[40px] flex items-center justify-center cursor-pointer ${activeStyle}`}
                   >
                     {st === 'Pago' && '🟢 Pago'}
                     {st === 'Pendente' && '🟡 Pendente'}
@@ -286,17 +286,17 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="pt-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 shrink-0">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2.5 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="w-full sm:w-auto px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 sm:border-transparent text-center"
+              className="w-full sm:w-auto px-4 py-2.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-700 sm:border-transparent text-center cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white bg-teal-800 hover:bg-teal-900 rounded-lg shadow-sm shadow-teal-900/20 transition-all min-h-[44px]"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white bg-teal-800 hover:bg-teal-700 rounded-lg shadow-sm shadow-teal-900/20 transition-all min-h-[44px] cursor-pointer"
             >
               <Check className="h-4 w-4" />
               <span>{initialExpense ? 'Salvar Alterações' : 'Adicionar Despesa'}</span>

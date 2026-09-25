@@ -20,6 +20,7 @@ import {
   User as UserIcon,
 } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
+import { ThemeToggle } from './ThemeToggle';
 
 export type ToolId =
   | 'finance_manager'
@@ -177,56 +178,59 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-100 selection:text-teal-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-white flex flex-col transition-colors duration-200">
       {/* Header Corporativo Consignatec */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      <header className="bg-white/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs backdrop-blur-md transition-colors">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-teal-800 text-white flex items-center justify-center shadow-sm shadow-teal-900/20 shrink-0">
+            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-teal-800 dark:bg-teal-700 text-white flex items-center justify-center shadow-sm shadow-teal-900/20 shrink-0">
               <Layers className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <h1 className="text-base sm:text-xl font-bold tracking-tight text-slate-900 truncate">
+                <h1 className="text-base sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
                   Consignatec
                 </h1>
-                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 shrink-0 hidden sm:inline-block">
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 shrink-0 hidden sm:inline-block">
                   Hub de Ferramentas
                 </span>
               </div>
-              <p className="text-[10px] sm:text-xs text-slate-500 truncate">
+              <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 truncate">
                 Central de Ferramentas &bull; consignatec.com.br
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* PWA Install Quick Action */}
             <PWAInstallButton variant="header" />
+
+            {/* Global Theme Toggle */}
+            <ThemeToggle showLabel={false} />
 
             {onOpenProfile && (
               <button
                 type="button"
                 onClick={onOpenProfile}
                 title="Configurações da Conta (Nome, E-mail, Senha, Celular)"
-                className="inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-teal-50 hover:text-teal-800 border border-slate-200 hover:border-teal-200 rounded-xl transition-colors cursor-pointer touch-manipulation"
+                className="inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-slate-700 hover:text-teal-800 dark:hover:text-teal-300 border border-slate-200 dark:border-slate-700 rounded-xl transition-colors cursor-pointer touch-manipulation"
               >
-                <div className="h-6 w-6 rounded-lg bg-teal-800 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
+                <div className="h-6 w-6 rounded-lg bg-teal-800 dark:bg-teal-700 text-white flex items-center justify-center text-[11px] font-bold shrink-0">
                   {userName ? userName.slice(0, 1).toUpperCase() : 'U'}
                 </div>
                 <div className="hidden sm:flex flex-col text-left">
-                  <span className="text-xs font-semibold leading-tight text-slate-900">
+                  <span className="text-xs font-semibold leading-tight text-slate-900 dark:text-white">
                     {userName ? userName.split(' ')[0] : 'Minha Conta'}
                   </span>
-                  <span className="text-[10px] text-teal-700 font-medium">Configurações</span>
+                  <span className="text-[10px] text-teal-700 dark:text-teal-400 font-medium">Configurações</span>
                 </div>
-                <Settings className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                <Settings className="h-3.5 w-3.5 text-slate-400 shrink-0" />
               </button>
             )}
 
             <button
               onClick={onLogout}
-              className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 text-xs font-medium text-slate-600 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 rounded-xl transition-colors cursor-pointer touch-manipulation"
+              className="inline-flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700 hover:border-rose-200 dark:hover:border-rose-800 rounded-xl transition-colors cursor-pointer touch-manipulation"
               title="Sair da conta"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -239,20 +243,20 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10 flex-1 w-full space-y-5 sm:space-y-8">
         {/* Welcome Banner */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-8 shadow-xs relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-8 shadow-xs relative overflow-hidden transition-colors">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="max-w-2xl relative z-10 space-y-2 sm:space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 text-xs font-semibold">
               <Sparkles className="h-3.5 w-3.5" />
               <span>Plataforma Integrada Consignatec</span>
             </div>
 
-            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               Olá, {userName ? userName.split(' ')[0] : 'seja bem-vindo(a)'}! Escolha uma ferramenta:
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Tenha controle total sobre suas receitas, despesas, planejamento e simulações de crédito.
               Selecione abaixo o módulo que deseja utilizar no momento:
             </p>
@@ -266,10 +270,10 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
             return (
               <div
                 key={tool.id}
-                className={`bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between p-5 sm:p-7 relative ${
+                className={`bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-200 flex flex-col justify-between p-5 sm:p-7 relative ${
                   tool.isAvailable
-                    ? 'border-slate-200/90 hover:border-teal-500/60 hover:shadow-lg hover:shadow-teal-900/5 cursor-pointer ring-1 ring-transparent hover:ring-teal-500/20 active:scale-[0.99]'
-                    : 'border-slate-200/60 bg-slate-50/50 opacity-80'
+                    ? 'border-slate-200/90 dark:border-slate-800 hover:border-teal-500/60 dark:hover:border-teal-500/60 hover:shadow-lg hover:shadow-teal-900/5 dark:hover:shadow-teal-950/40 cursor-pointer ring-1 ring-transparent hover:ring-teal-500/20 active:scale-[0.99]'
+                    : 'border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/40 opacity-80'
                 }`}
                 onClick={() => {
                   if (tool.isAvailable) {
@@ -281,13 +285,13 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
                   {/* Top line: Icon & Badge */}
                   <div className="flex items-start justify-between gap-3">
                     <div
-                      className={`h-11 w-11 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center border ${tool.iconBg} ${tool.iconColor} shrink-0`}
+                      className={`h-11 w-11 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center border ${tool.iconBg} ${tool.iconColor} shrink-0 dark:bg-slate-800 dark:border-slate-700`}
                     >
                       <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
 
                     <span
-                      className={`text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border ${tool.badgeColor} shrink-0`}
+                      className={`text-[11px] sm:text-xs font-semibold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border ${tool.badgeColor} shrink-0 dark:bg-slate-800 dark:text-teal-300 dark:border-slate-700`}
                     >
                       {tool.badge}
                     </span>
@@ -295,25 +299,25 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
 
                   {/* Title & Description */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-teal-800 transition-colors">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
                       {tool.title}
                     </h3>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                       {tool.subtitle}
                     </p>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
                       {tool.description}
                     </p>
                   </div>
 
                   {/* Bullet features */}
-                  <ul className="space-y-1.5 pt-2 border-t border-slate-100">
+                  <ul className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
                     {tool.features.map((feature, idx) => (
                       <li
                         key={idx}
-                        className="text-xs text-slate-600 flex items-center gap-2"
+                        className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-2"
                       >
-                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-600 shrink-0" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -321,20 +325,20 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
                 </div>
 
                 {/* Action Button */}
-                <div className="mt-6 pt-4 border-t border-slate-100">
+                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                   {tool.isAvailable ? (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelectTool(tool.id);
                       }}
-                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-semibold text-xs transition-colors shadow-xs cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs transition-colors shadow-xs cursor-pointer"
                     >
                       <span>Acessar Ferramenta</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   ) : (
-                    <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-400 font-semibold text-xs cursor-not-allowed border border-slate-200">
+                    <div className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 font-semibold text-xs cursor-not-allowed border border-slate-200 dark:border-slate-700">
                       <Clock className="h-3.5 w-3.5" />
                       <span>Módulo em desenvolvimento</span>
                     </div>
@@ -346,13 +350,13 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
         </div>
 
         {/* Security & Support Info */}
-        <div className="rounded-xl border border-slate-200/80 bg-slate-50 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-center text-center gap-2.5 sm:gap-3 text-xs text-slate-600 max-w-2xl mx-auto">
-          <ShieldCheck className="h-5 w-5 text-teal-700 shrink-0" />
+        <div className="rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-center text-center gap-2.5 sm:gap-3 text-xs text-slate-600 dark:text-slate-300 max-w-2xl mx-auto shadow-xs">
+          <ShieldCheck className="h-5 w-5 text-teal-600 dark:text-teal-400 shrink-0" />
           <div className="text-center sm:text-left">
-            <p className="font-semibold text-slate-800">
+            <p className="font-semibold text-slate-800 dark:text-slate-200">
               Ambiente Seguro &amp; Protegido
             </p>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               Seus dados financeiros são criptografados e isolados por conta de usuário.
             </p>
           </div>
@@ -360,11 +364,11 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <p>
           Consignatec &copy; {new Date().getFullYear()} &mdash; Hub Central de Ferramentas e Soluções Financeiras.
         </p>
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
           Todos os direitos reservados &bull; consignatec.com.br
         </p>
       </footer>

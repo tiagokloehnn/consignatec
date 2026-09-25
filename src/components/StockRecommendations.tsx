@@ -41,6 +41,7 @@ import {
   SimulatorStrategy,
   SimulationResult,
 } from '../types/stocks';
+import { ThemeToggle } from './ThemeToggle';
 import {
   INITIAL_STOCKS,
   getSavedStocks,
@@ -233,44 +234,44 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 
     if (isAnalysisMinimized) {
       return (
-        <div className="mb-6 bg-slate-900 border border-teal-500/30 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
+        <div className="mb-6 bg-white dark:bg-slate-900 border border-teal-500/30 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4 transition-all">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-teal-900/60 border border-teal-500/30 flex items-center justify-center font-bold text-white text-sm">
+            <div className="h-10 w-10 rounded-xl bg-teal-50 dark:bg-teal-900/60 border border-teal-200 dark:border-teal-500/30 flex items-center justify-center font-bold text-teal-800 dark:text-white text-sm">
               {selectedStock.ticker.slice(0, 3)}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-base">{selectedStock.ticker}</span>
-                <span className="text-xs text-slate-400 truncate max-w-[180px]">&bull; {selectedStock.name}</span>
+                <span className="font-bold text-slate-900 dark:text-white text-base">{selectedStock.ticker}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[180px]">&bull; {selectedStock.name}</span>
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
                     selectedStock.market === 'B3'
-                      ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                      : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-300 border-amber-500/30'
+                      : 'bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30'
                   }`}
                 >
                   {selectedStock.market === 'B3' ? '🇧🇷 B3' : '🇺🇸 EUA'}
                 </span>
               </div>
               <div className="flex items-center gap-3 text-xs mt-0.5">
-                <span className="font-bold text-white">
+                <span className="font-bold text-slate-900 dark:text-white">
                   {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
                   {selectedStock.price.toFixed(2)}
                 </span>
                 <span
                   className={`font-semibold ${
-                    selectedStock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                    selectedStock.changePercent >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'
                   }`}
                 >
                   {selectedStock.changePercent >= 0 ? '+' : ''}
                   {selectedStock.changePercent.toFixed(2)}%
                 </span>
-                <span className="text-slate-400 hidden sm:inline">
-                  Score: <strong className="text-teal-300">{selectedStock.score}/100</strong>
+                <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">
+                  Score: <strong className="text-teal-600 dark:text-teal-300">{selectedStock.score}/100</strong>
                 </span>
-                <span className="text-slate-400 hidden md:inline">
+                <span className="text-slate-500 dark:text-slate-400 hidden md:inline">
                   Alvo:{' '}
-                  <strong className="text-emerald-400">
+                  <strong className="text-emerald-600 dark:text-emerald-400">
                     {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
                     {selectedStock.targetPrice.toFixed(2)} (+{selectedStock.upsidePercent.toFixed(1)}%)
                   </strong>
@@ -284,9 +285,9 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               href={selectedStock.googleFinanceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-medium border border-slate-200 dark:border-slate-700 transition-colors"
             >
-              <Globe2 className="h-3.5 w-3.5 text-teal-400" />
+              <Globe2 className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
               <span className="hidden sm:inline">Google Finance</span>
               <ArrowUpRight className="h-3 w-3" />
             </a>
@@ -302,7 +303,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               <button
                 type="button"
                 onClick={() => setIsAnalysisOpen(false)}
-                className="p-1.5 rounded-xl bg-slate-800 hover:bg-rose-950/60 hover:text-rose-300 text-slate-400 text-xs transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-100 dark:hover:bg-rose-950/60 hover:text-rose-700 dark:hover:text-rose-300 text-slate-500 dark:text-slate-400 text-xs transition-colors cursor-pointer"
                 title="Fechar Análise"
               >
                 <X className="h-4 w-4" />
@@ -314,19 +315,19 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
     }
 
     return (
-      <div className="mb-8 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl overflow-hidden backdrop-blur-sm">
+      <div className="mb-8 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden backdrop-blur-sm transition-colors">
         {/* Stock Header & Live Price */}
-        <div className="p-5 sm:p-6 border-b border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-900/70 to-slate-800 border border-teal-500/20 flex items-center justify-center font-bold text-white text-base shadow-sm">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-50 to-slate-100 dark:from-teal-900/70 dark:to-slate-800 border border-teal-200 dark:border-teal-500/20 flex items-center justify-center font-bold text-teal-900 dark:text-white text-base shadow-sm">
               {selectedStock.ticker.slice(0, 3)}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {selectedStock.ticker}
                 </h2>
-                <span className="text-xs text-slate-400 font-medium">
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                   &bull; {selectedStock.name}
                 </span>
                 <span
@@ -362,13 +363,13 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
           {/* Price & Signal Badges + Controls */}
           <div className="flex flex-wrap items-center gap-4">
             <div className="text-right">
-              <div className="text-2xl sm:text-3xl font-black text-white">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
                 {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
                 {selectedStock.price.toFixed(2)}
               </div>
               <div
                 className={`text-xs font-bold inline-flex items-center gap-1 ${
-                  selectedStock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                  selectedStock.changePercent >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                 }`}
               >
                 {selectedStock.changePercent >= 0 ? '+' : ''}
@@ -382,30 +383,30 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               </div>
             </div>
 
-            <div className="border-l border-slate-800 pl-4 flex flex-col items-end gap-1.5">
+            <div className="border-l border-slate-200 dark:border-slate-800 pl-4 flex flex-col items-end gap-1.5">
               <span
                 className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider uppercase border shadow-sm ${
                   selectedStock.recommendation === 'COMPRA FORTE'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                    ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-emerald-500/40'
                     : selectedStock.recommendation === 'COMPRA'
-                    ? 'bg-teal-500/20 text-teal-300 border-teal-500/40'
-                    : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                    ? 'bg-teal-500/20 text-teal-800 dark:text-teal-300 border-teal-500/40'
+                    : 'bg-blue-500/20 text-blue-800 dark:text-blue-300 border-blue-500/40'
                 }`}
               >
                 {selectedStock.recommendation}
               </span>
-              <div className="text-[11px] text-slate-400">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
                 Score:{' '}
-                <span className="font-bold text-teal-300">{selectedStock.score}/100</span>
+                <span className="font-bold text-teal-700 dark:text-teal-300">{selectedStock.score}/100</span>
               </div>
             </div>
 
             {/* Window Controls: Minimize & Close */}
-            <div className="border-l border-slate-800 pl-3 flex items-center gap-1.5">
+            <div className="border-l border-slate-200 dark:border-slate-800 pl-3 flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => setIsAnalysisMinimized(true)}
-                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
                 title="Minimizar Raio-X"
               >
                 <Minimize2 className="h-4 w-4" />
@@ -414,7 +415,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsAnalysisOpen(false)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 text-rose-300 hover:text-white text-xs font-bold transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800/40 text-rose-700 dark:text-rose-300 hover:text-rose-900 dark:hover:text-white text-xs font-bold transition-all cursor-pointer"
                   title="Fechar Raio-X da Ação"
                 >
                   <X className="h-4 w-4" />
@@ -426,20 +427,20 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         </div>
 
         {/* Google Finance External Link + Period Bar */}
-        <div className="px-5 py-3 bg-slate-950/60 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="px-5 py-3 bg-slate-50/80 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
           <a
             href={selectedStock.googleFinanceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-950/60 hover:bg-teal-900/60 border border-teal-600/30 text-teal-300 font-semibold transition-all hover:scale-102"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 border border-teal-200 dark:border-teal-600/30 text-teal-800 dark:text-teal-300 font-semibold transition-all hover:scale-102"
           >
-            <Globe2 className="h-3.5 w-3.5 text-teal-400" />
+            <Globe2 className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
             <span>Ver cotação oficial no Google Finance ({selectedStock.ticker})</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
           </a>
 
           {/* Chart Period Switcher */}
-          <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
             {(['1D', '5D', '1M', '6M', '1A', '5A'] as ChartPeriod[]).map((period) => (
               <button
                 key={period}
@@ -451,7 +452,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                   selectedPeriod === period
                     ? 'bg-teal-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                 }`}
               >
                 {period}
@@ -539,30 +540,30 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               ))}
             </svg>
 
-            <div className="absolute top-2 right-4 text-[11px] font-semibold text-teal-400 bg-teal-950/80 px-2 py-0.5 rounded border border-teal-800">
+            <div className="absolute top-2 right-4 text-[11px] font-semibold text-teal-800 dark:text-teal-400 bg-teal-50/90 dark:bg-teal-950/80 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800">
               Preço Alvo / Teto: {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
               {selectedStock.targetPrice.toFixed(2)} (+{selectedStock.upsidePercent.toFixed(1)}%)
             </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-800/80 pt-3">
+          <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800/80 pt-3">
             <div>
               Mínima do período:{' '}
-              <span className="font-semibold text-slate-200">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
                 {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
                 {chartData.min.toFixed(2)}
               </span>
             </div>
             <div>
               Máxima do período:{' '}
-              <span className="font-semibold text-slate-200">
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
                 {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
                 {chartData.max.toFixed(2)}
               </span>
             </div>
             <div>
               Potencial (Upside):{' '}
-              <span className="font-bold text-teal-300">
+              <span className="font-bold text-teal-700 dark:text-teal-300">
                 +{selectedStock.upsidePercent.toFixed(1)}%
               </span>
             </div>
@@ -570,82 +571,82 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         </div>
 
         {/* Fundamental Valuation Grid */}
-        <div className="bg-slate-950/50 p-5 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block mb-0.5">Preço Teto / Alvo</span>
-            <span className="text-base font-bold text-teal-300">
+        <div className="bg-slate-50/70 dark:bg-slate-950/50 p-5 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">Preço Teto / Alvo</span>
+            <span className="text-base font-bold text-teal-700 dark:text-teal-300">
               {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
               {selectedStock.targetPrice.toFixed(2)}
             </span>
-            <span className="text-[10px] text-emerald-400 block font-medium">
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block font-medium">
               +{selectedStock.upsidePercent.toFixed(1)}% upside
             </span>
           </div>
 
-          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block mb-0.5">P/L (P/E Ratio)</span>
-            <span className="text-base font-bold text-white">
+          <div className="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">P/L (P/E Ratio)</span>
+            <span className="text-base font-bold text-slate-900 dark:text-white">
               {selectedStock.peRatio.toFixed(1)}x
             </span>
-            <span className="text-[10px] text-slate-400 block font-medium">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">
               {selectedStock.peRatio < 10 ? 'Muito Barato' : selectedStock.peRatio < 25 ? 'Justo' : 'Crescimento'}
             </span>
           </div>
 
-          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block mb-0.5">Dividend Yield</span>
-            <span className="text-base font-bold text-emerald-400">
+          <div className="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">Dividend Yield</span>
+            <span className="text-base font-bold text-emerald-600 dark:text-emerald-400">
               {selectedStock.dividendYield.toFixed(2)}%
             </span>
-            <span className="text-[10px] text-slate-400 block font-medium">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">
               Projeção anual
             </span>
           </div>
 
-          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block mb-0.5">RSI (14 Dias)</span>
-            <span className="text-base font-bold text-white">
+          <div className="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">RSI (14 Dias)</span>
+            <span className="text-base font-bold text-slate-900 dark:text-white">
               {selectedStock.rsi}
             </span>
-            <span className="text-[10px] text-slate-400 block font-medium">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">
               {selectedStock.rsi < 45 ? 'Zona de Compra' : 'Neutro'}
             </span>
           </div>
 
-          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block mb-0.5">52 Semanas (Mín / Máx)</span>
-            <span className="text-xs font-bold text-slate-200 block truncate">
+          <div className="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">52 Semanas (Mín / Máx)</span>
+            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate">
               {selectedStock.fiftyTwoWeekLow.toFixed(1)} - {selectedStock.fiftyTwoWeekHigh.toFixed(1)}
             </span>
-            <span className="text-[10px] text-slate-400 block font-medium">
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">
               Faixa de 1 ano
             </span>
           </div>
 
-          <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <span className="text-[11px] text-slate-400 block mb-0.5">Preço Ideal de Entrada</span>
-            <span className="text-base font-bold text-amber-300">
+          <div className="bg-white dark:bg-slate-900/60 p-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 block mb-0.5">Preço Ideal de Entrada</span>
+            <span className="text-base font-bold text-amber-600 dark:text-amber-300">
               {selectedStock.currency === 'BRL' ? 'R$ ' : '$ '}
               {selectedStock.thesis.idealBuyPrice.toFixed(2)}
             </span>
-            <span className="text-[10px] text-amber-400/80 block font-medium">
+            <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80 block font-medium">
               Margem de segurança
             </span>
           </div>
         </div>
 
         {/* AI Investment Thesis & Highlights */}
-        <div className="p-5 sm:p-6 border-t border-slate-800">
+        <div className="p-5 sm:p-6 border-t border-slate-200 dark:border-slate-800">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                   Tese de Investimento & Parecer com IA
                 </h3>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">
                   Racional estratégico e análise de risco para compra hoje
                 </span>
               </div>
@@ -662,17 +663,17 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
             </button>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-4">
             {selectedStock.thesis.summary}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-900/30">
-              <span className="font-bold text-emerald-400 flex items-center gap-1.5 mb-2">
+            <div className="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30">
+              <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5 mb-2">
                 <CheckCircle2 className="h-4 w-4" />
                 Pontos Fortes & Catalisadores
               </span>
-              <ul className="space-y-1.5 text-slate-300">
+              <ul className="space-y-1.5 text-slate-700 dark:text-slate-300">
                 {selectedStock.thesis.highlights.map((h, i) => (
                   <li key={i} className="flex items-start gap-1.5">
                     <span className="text-emerald-500 font-bold">&bull;</span>
@@ -682,12 +683,12 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               </ul>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-rose-950/20 border border-rose-900/30">
-              <span className="font-bold text-rose-400 flex items-center gap-1.5 mb-2">
+            <div className="p-3.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30">
+              <span className="font-bold text-rose-700 dark:text-rose-400 flex items-center gap-1.5 mb-2">
                 <Info className="h-4 w-4" />
                 Principais Fatores de Risco
               </span>
-              <ul className="space-y-1.5 text-slate-300">
+              <ul className="space-y-1.5 text-slate-700 dark:text-slate-300">
                 {selectedStock.thesis.risks.map((r, i) => (
                   <li key={i} className="flex items-start gap-1.5">
                     <span className="text-rose-500 font-bold">&bull;</span>
@@ -703,40 +704,40 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-teal-500 selection:text-white pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-teal-500 selection:text-white pb-16 transition-colors duration-200">
       {/* Top Ticker Bar (Global Indices & Dólar) */}
-      <div className="bg-slate-900/90 border-b border-slate-800 text-xs py-2 px-4 sticky top-0 z-30 backdrop-blur-md">
+      <div className="bg-white/95 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 text-xs py-2 px-4 sticky top-0 z-30 backdrop-blur-md transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 overflow-x-auto scrollbar-none">
           <div className="flex items-center gap-6 text-[11px] whitespace-nowrap">
-            <span className="flex items-center gap-1.5 text-slate-400">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               Mercado Aberto
             </span>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-slate-300">IBOVESPA:</span>
-              <span className="text-white font-medium">134.820 pts</span>
-              <span className="text-emerald-400 font-semibold flex items-center">
+              <span className="font-semibold text-slate-500 dark:text-slate-300">IBOVESPA:</span>
+              <span className="text-slate-900 dark:text-white font-medium">134.820 pts</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center">
                 +0.62% <TrendingUp className="h-3 w-3 inline ml-0.5" />
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-slate-300">S&P 500:</span>
-              <span className="text-white font-medium">5.782 pts</span>
-              <span className="text-emerald-400 font-semibold flex items-center">
+              <span className="font-semibold text-slate-500 dark:text-slate-300">S&P 500:</span>
+              <span className="text-slate-900 dark:text-white font-medium">5.782 pts</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center">
                 +0.45% <TrendingUp className="h-3 w-3 inline ml-0.5" />
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-slate-300">NASDAQ:</span>
-              <span className="text-white font-medium">18.275 pts</span>
-              <span className="text-emerald-400 font-semibold flex items-center">
+              <span className="font-semibold text-slate-500 dark:text-slate-300">NASDAQ:</span>
+              <span className="text-slate-900 dark:text-white font-medium">18.275 pts</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center">
                 +0.81% <TrendingUp className="h-3 w-3 inline ml-0.5" />
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-slate-300">DÓLAR (USD/BRL):</span>
-              <span className="text-white font-medium">R$ 5,42</span>
-              <span className="text-emerald-400 font-semibold flex items-center">
+              <span className="font-semibold text-slate-500 dark:text-slate-300">DÓLAR (USD/BRL):</span>
+              <span className="text-slate-900 dark:text-white font-medium">R$ 5,42</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center">
                 -0.38% <TrendingDown className="h-3 w-3 inline ml-0.5" />
               </span>
             </div>
@@ -747,9 +748,9 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
               href="https://www.google.com/finance"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-medium border border-slate-700 transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-medium border border-slate-200 dark:border-slate-700 transition-colors"
             >
-              <Globe2 className="h-3 w-3 text-teal-400" />
+              <Globe2 className="h-3 w-3 text-teal-600 dark:text-teal-400" />
               Google Finance
               <ExternalLink className="h-2.5 w-2.5 opacity-60" />
             </a>
@@ -759,25 +760,25 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
 
       {/* Main Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <button
                 type="button"
                 onClick={onBack}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer mr-2 py-1 px-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700"
+                className="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer mr-2 py-1 px-2.5 rounded-lg bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Voltar à Central
               </button>
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-500/20 text-teal-300 border border-teal-500/30 uppercase tracking-wide">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-teal-50 dark:bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30 uppercase tracking-wide">
                 Google Finance &bull; B3 & EUA
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               Radar de Ações & Auxiliar de Compra
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
               Top 10 do dia, valuation fundamentalista, gráficos interativos e simulador de aporte.
             </p>
           </div>
@@ -786,28 +787,29 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
             <button
               type="button"
               onClick={() => exportStocksToCSV(stocks, simulationResult)}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs font-semibold text-slate-300 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-all cursor-pointer"
             >
-              <Download className="h-3.5 w-3.5 text-teal-400" />
+              <Download className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
               Exportar CSV
             </button>
+            <ThemeToggle showLabel={false} />
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mt-5 border-b border-slate-800 pb-3 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-2 mt-5 border-b border-slate-200 dark:border-slate-800 pb-3 overflow-x-auto scrollbar-none">
           <button
             type="button"
             onClick={() => setActiveTab('top10')}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'top10'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
           >
-            <Sparkles className="h-4 w-4 text-amber-300" />
+            <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-300" />
             Top 10 Melhores Ações
-            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-950/60 text-teal-200">
+            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 dark:bg-slate-950/60 text-teal-800 dark:text-teal-200 font-bold">
               Hoje
             </span>
           </button>
@@ -822,12 +824,12 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'analyze'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
           >
-            <Search className="h-4 w-4 text-teal-300" />
+            <Search className="h-4 w-4 text-teal-600 dark:text-teal-300" />
             Analisar Qualquer Ação
-            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-teal-500/20 text-teal-200 border border-teal-500/30">
+            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-teal-50 dark:bg-teal-500/20 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-500/30">
               Raio-X & IA
             </span>
           </button>
@@ -838,7 +840,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'all'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
           >
             <Layers className="h-4 w-4" />
@@ -851,7 +853,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
               activeTab === 'simulator'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
           >
             <Calculator className="h-4 w-4" />
@@ -888,20 +890,20 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                     onClick={() => handleOpenStockAnalysis(stock.ticker)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
                       isSelected
-                        ? 'bg-slate-900 border-teal-500 shadow-lg shadow-teal-950/50 ring-1 ring-teal-500/50'
-                        : 'bg-slate-900/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900'
+                        ? 'bg-white dark:bg-slate-900 border-teal-500 shadow-lg shadow-teal-900/10 dark:shadow-teal-950/50 ring-1 ring-teal-500/50'
+                        : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-slate-800 hover:border-teal-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xs'
                     }`}
                   >
                     {/* Rank Number Badge */}
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="h-6 w-6 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center justify-center text-xs font-black">
+                        <span className="h-6 w-6 rounded-full bg-teal-50 dark:bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30 flex items-center justify-center text-xs font-black">
                           #{index + 1}
                         </span>
-                        <span className="font-black text-white text-base">
+                        <span className="font-black text-slate-900 dark:text-white text-base">
                           {stock.ticker}
                         </span>
-                        <span className="text-[10px] text-slate-400 truncate max-w-[120px]">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
                           {stock.name}
                         </span>
                       </div>
@@ -909,8 +911,8 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
                           stock.market === 'B3'
-                            ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                            : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-300 border-amber-500/30'
+                            : 'bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30'
                         }`}
                       >
                         {stock.market === 'B3' ? 'B3' : 'EUA'}
@@ -920,13 +922,13 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                     {/* Price & Upside */}
                     <div className="flex items-baseline justify-between mt-3">
                       <div>
-                        <div className="text-lg font-black text-white">
+                        <div className="text-lg font-black text-slate-900 dark:text-white">
                           {stock.currency === 'BRL' ? 'R$ ' : '$ '}
                           {stock.price.toFixed(2)}
                         </div>
                         <span
                           className={`text-xs font-bold ${
-                            stock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                            stock.changePercent >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
                           }`}
                         >
                           {stock.changePercent >= 0 ? '+' : ''}
@@ -935,27 +937,27 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                       </div>
 
                       <div className="text-right">
-                        <span className="text-[11px] text-slate-400 block">Preço Teto</span>
-                        <span className="text-sm font-bold text-teal-300">
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block">Preço Teto</span>
+                        <span className="text-sm font-bold text-teal-700 dark:text-teal-300">
                           {stock.currency === 'BRL' ? 'R$ ' : '$ '}
                           {stock.targetPrice.toFixed(2)}
                         </span>
-                        <span className="text-[10px] font-bold text-emerald-400 block">
+                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block">
                           +{stock.upsidePercent.toFixed(1)}% upside
                         </span>
                       </div>
                     </div>
 
                     {/* Quick Metrics Bar */}
-                    <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                       <div>
-                        P/L: <span className="font-semibold text-slate-200">{stock.peRatio.toFixed(1)}x</span>
+                        P/L: <span className="font-semibold text-slate-800 dark:text-slate-200">{stock.peRatio.toFixed(1)}x</span>
                       </div>
                       <div>
-                        DY: <span className="font-semibold text-emerald-400">{stock.dividendYield.toFixed(1)}%</span>
+                        DY: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{stock.dividendYield.toFixed(1)}%</span>
                       </div>
                       <div>
-                        Score: <span className="font-bold text-teal-300">{stock.score}/100</span>
+                        Score: <span className="font-bold text-teal-700 dark:text-teal-300">{stock.score}/100</span>
                       </div>
                     </div>
 
@@ -964,8 +966,8 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
                           stock.recommendation === 'COMPRA FORTE'
-                            ? 'bg-emerald-500/20 text-emerald-300'
-                            : 'bg-teal-500/20 text-teal-300'
+                            ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300'
+                            : 'bg-teal-500/20 text-teal-800 dark:text-teal-300'
                         }`}
                       >
                         {stock.recommendation}
@@ -976,7 +978,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                           e.stopPropagation();
                           handleOpenStockAnalysis(stock.ticker);
                         }}
-                        className="text-teal-400 hover:text-teal-300 flex items-center gap-1 font-semibold text-[11px] bg-teal-950/40 px-2 py-1 rounded-lg border border-teal-800/40 hover:border-teal-700"
+                        className="text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 flex items-center gap-1 font-semibold text-[11px] bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 rounded-lg border border-teal-200 dark:border-teal-800/40 hover:bg-teal-100 dark:hover:border-teal-700 transition-colors cursor-pointer"
                       >
                         Ver Raio-X & Gráfico &rarr;
                       </button>
@@ -994,9 +996,9 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         {activeTab === 'analyze' && (
           <div className="mt-6">
             {/* Universal Search & Analysis Hero Input */}
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl mb-6 backdrop-blur-sm">
+            <div className="bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xl mb-6 backdrop-blur-sm transition-colors">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2.5 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                <div className="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30">
                   <Search className="h-5 w-5" />
                 </div>
                 <div>

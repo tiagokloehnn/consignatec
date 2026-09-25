@@ -20,6 +20,7 @@ import {
 import {
   updateFirebaseUserProfile,
 } from '../services/firebase';
+import { ThemeToggle } from './ThemeToggle';
 
 export interface UserProfileData {
   id: string;
@@ -155,56 +156,59 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-100 selection:text-teal-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-white flex flex-col transition-colors duration-200">
       {/* Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs transition-colors">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-teal-900 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 border border-teal-200 dark:border-teal-800 rounded-xl transition-all cursor-pointer shadow-2xs active:scale-95"
             >
               <ChevronLeft className="h-4 w-4" />
               <span>Voltar</span>
             </button>
-            <div className="h-5 w-px bg-slate-200 mx-1" />
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 mx-1" />
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                <UserIcon className="h-5 w-5 text-teal-800" />
+              <h1 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <UserIcon className="h-5 w-5 text-teal-800 dark:text-teal-400" />
                 Configurações da Conta
               </h1>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Gerencie seus dados pessoais, credenciais de login e contato
               </p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onLogout}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-lg transition-colors cursor-pointer"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Sair da Conta</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle showLabel={false} />
+            <button
+              type="button"
+              onClick={onLogout}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-transparent hover:border-rose-200 dark:hover:border-rose-800 rounded-lg transition-colors cursor-pointer"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Sair da Conta</span>
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Main Container */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-6">
         {/* Banner de Identificação */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-teal-800 text-white flex items-center justify-center text-xl font-bold shadow-sm shadow-teal-900/20">
+            <div className="h-14 w-14 rounded-2xl bg-teal-800 dark:bg-teal-700 text-white flex items-center justify-center text-xl font-bold shadow-sm shadow-teal-900/20">
               {name ? name.slice(0, 2).toUpperCase() : 'CT'}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">{name || 'Usuário Consignatec'}</h2>
-              <p className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{name || 'Usuário Consignatec'}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5">
                 <span>{email}</span>
                 {currentUser.isGuest && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                     Modo Visitante
                   </span>
                 )}
@@ -213,8 +217,8 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               Conta Ativa &bull; Consignatec
             </span>
           </div>
@@ -222,15 +226,15 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
         {/* Feedback alerts */}
         {successMessage && (
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-start gap-3 animate-fadeIn">
-            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs sm:text-sm flex items-start gap-3 animate-fadeIn">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             <div className="flex-1 font-medium">{successMessage}</div>
           </div>
         )}
 
         {errorMessage && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-sm flex items-start gap-3 animate-fadeIn">
-            <AlertCircle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200 text-xs sm:text-sm flex items-start gap-3 animate-fadeIn">
+            <AlertCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
             <div className="flex-1 font-medium">{errorMessage}</div>
           </div>
         )}
@@ -238,13 +242,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         {/* Form Container */}
         <form onSubmit={handleSaveProfile} className="space-y-6">
           {/* Seção 1: Dados Pessoais & Contato */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs space-y-5">
-            <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <UserIcon className="h-4 w-4 text-teal-800" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-xs space-y-5 transition-colors">
+            <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <UserIcon className="h-4 w-4 text-teal-800 dark:text-teal-400" />
                 Dados Pessoais & Contato
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Mantenha suas informações sempre atualizadas para comunicações e notificações do sistema.
               </p>
             </div>
@@ -252,11 +256,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Nome Completo */}
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Nome Completo <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                     <UserIcon className="h-4 w-4" />
                   </div>
                   <input
@@ -265,18 +269,18 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Tiago Kloehn"
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base sm:text-sm text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
                   />
                 </div>
               </div>
 
               {/* Endereço de E-mail */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   E-mail de Acesso <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                     <Mail className="h-4 w-4" />
                   </div>
                   <input
@@ -285,21 +289,21 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seuemail@exemplo.com"
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base sm:text-sm text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
                   />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                   Usado para login em todas as ferramentas da Consignatec.
                 </p>
               </div>
 
               {/* Número de Celular / WhatsApp */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Número de Celular / WhatsApp
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                     <Smartphone className="h-4 w-4" />
                   </div>
                   <input
@@ -308,10 +312,10 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     onChange={handlePhoneChange}
                     maxLength={15}
                     placeholder="(41) 99999-9999"
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base sm:text-sm text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
                   />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
                   Para avisos de margem, simulações de crédito e suporte.
                 </p>
               </div>
@@ -319,13 +323,13 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
           </div>
 
           {/* Seção 2: Alteração de Senha */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-5">
-            <div className="border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <Lock className="h-4 w-4 text-teal-800" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-5 transition-colors">
+            <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <Lock className="h-4 w-4 text-teal-800 dark:text-teal-400" />
                 Segurança & Senha de Acesso
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Deixe os campos em branco se não desejar alterar sua senha atual.
               </p>
             </div>
@@ -333,11 +337,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Nova Senha */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Nova Senha
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                     <KeyRound className="h-4 w-4" />
                   </div>
                   <input
@@ -345,12 +349,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Mínimo 6 caracteres"
-                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base sm:text-sm text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
                   >
                     {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -359,11 +363,11 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
               {/* Confirmar Nova Senha */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Confirmar Nova Senha
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                     <KeyRound className="h-4 w-4" />
                   </div>
                   <input
@@ -371,12 +375,12 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repita a nova senha"
-                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-base sm:text-sm text-slate-900 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-base sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-hidden focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -384,8 +388,8 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
               </div>
             </div>
 
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-2.5 text-xs text-slate-600">
-              <Info className="h-4 w-4 text-teal-800 shrink-0 mt-0.5" />
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300">
+              <Info className="h-4 w-4 text-teal-800 dark:text-teal-400 shrink-0 mt-0.5" />
               <span>
                 Sua senha é protegida por hash criptográfico unidirecional. Nunca compartilhe sua senha com terceiros.
               </span>
@@ -397,7 +401,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             <button
               type="button"
               onClick={onBack}
-              className="w-full sm:w-auto px-5 py-2.5 border border-slate-200 text-slate-700 hover:bg-slate-100 font-semibold text-xs rounded-xl transition-colors cursor-pointer text-center"
+              className="w-full sm:w-auto px-5 py-2.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-xs rounded-xl transition-colors cursor-pointer text-center"
             >
               Cancelar
             </button>
@@ -405,7 +409,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-teal-800 hover:bg-teal-900 text-white font-semibold text-xs rounded-xl transition-all shadow-sm shadow-teal-900/20 active:scale-95 cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-teal-800 hover:bg-teal-700 text-white font-semibold text-xs rounded-xl transition-all shadow-sm shadow-teal-900/20 active:scale-95 cursor-pointer disabled:opacity-50"
             >
               <Save className="h-4 w-4" />
               <span>{loading ? 'Salvando Alterações...' : 'Salvar Alterações'}</span>

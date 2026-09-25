@@ -35,6 +35,7 @@ import {
   convertAnnualToMonthlyRate,
 } from '../utils/amortization';
 import { formatBRL } from '../utils/formatters';
+import { ThemeToggle } from './ThemeToggle';
 
 interface AmortizationCalculatorProps {
   userName?: string;
@@ -262,32 +263,32 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
   }, [simulation.cronogramaAmortizado, page]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-100 selection:text-teal-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-white flex flex-col transition-colors duration-200">
       {/* Top Header Corporativo */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+      <header className="bg-white/95 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs backdrop-blur-md transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer"
               title="Voltar para Central de Ferramentas"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Voltar</span>
             </button>
-            <div className="h-5 w-px bg-slate-200" />
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-700" />
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-teal-800 text-white flex items-center justify-center shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-teal-800 dark:bg-teal-700 text-white flex items-center justify-center shadow-xs">
                 <Calculator className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-sm sm:text-base font-bold text-slate-900 leading-tight flex items-center gap-1.5">
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-1.5">
                   Calculadora de Amortização
-                  <span className="hidden md:inline-block text-[10px] font-semibold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-0.5 rounded-full">
+                  <span className="hidden md:inline-block text-[10px] font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded-full">
                     SAC & Price
                   </span>
                 </h1>
-                <p className="text-[11px] text-slate-500 hidden sm:block">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
                   Simulador de antecipação de parcelas e economia de juros da Consignatec
                 </p>
               </div>
@@ -298,7 +299,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleSaveSimulation}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 border border-teal-200 dark:border-teal-800 rounded-lg transition-colors cursor-pointer"
               title="Salvar esta simulação"
             >
               <BookmarkPlus className="w-3.5 h-3.5" />
@@ -306,19 +307,20 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
             </button>
             <button
               onClick={handleDownloadCSV}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer"
               title="Baixar planilha CSV"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
               <span className="hidden sm:inline">Exportar CSV</span>
             </button>
             <button
               onClick={handleReset}
-              className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title="Redefinir campos"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
+            <ThemeToggle showLabel={false} />
           </div>
         </div>
       </header>
@@ -326,13 +328,13 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
         {/* Presets Rápidos */}
-        <div className="mb-6 bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-2xs">
+        <div className="mb-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 sm:p-4 shadow-2xs">
           <div className="flex items-center justify-between mb-2.5">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-teal-700" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
               Modelos Prontos de Financiamento
             </span>
-            <span className="text-[11px] text-slate-400">Clique para preencher automaticamente</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500">Clique para preencher automaticamente</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {PRESETS.map((preset) => {
@@ -347,21 +349,21 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                   onClick={() => handleApplyPreset(preset)}
                   className={`text-left p-3 rounded-lg border transition-all cursor-pointer flex items-start gap-3 ${
                     isSelected
-                      ? 'border-teal-700 bg-teal-50/50 shadow-xs'
-                      : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                      ? 'border-teal-700 dark:border-teal-500 bg-teal-50/50 dark:bg-teal-950/40 shadow-xs'
+                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-slate-50/40 dark:bg-slate-800/20'
                   }`}
                 >
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                      isSelected ? 'bg-teal-800 text-white' : 'bg-slate-100 text-slate-600'
+                      isSelected ? 'bg-teal-800 dark:bg-teal-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">{preset.label}</p>
-                    <p className="text-[11px] text-slate-500 line-clamp-1">{preset.descricao}</p>
-                    <p className="text-[10px] font-semibold text-teal-800 mt-0.5">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{preset.label}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{preset.descricao}</p>
+                    <p className="text-[10px] font-semibold text-teal-800 dark:text-teal-400 mt-0.5">
                       {formatBRL(preset.saldo)} · {preset.prazo}m ({preset.sistema})
                     </p>
                   </div>
@@ -378,8 +380,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
           {/* ======================================================== */}
           <div className="lg:col-span-4 space-y-5">
             {/* Card de Configuração Básica */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-2xs space-y-4">
-              <h2 className="text-sm font-bold text-slate-900 pb-2 border-b border-slate-100 flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs space-y-4">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <span>Dados do Contrato</span>
                 <Sliders className="w-4 h-4 text-slate-400" />
               </h2>
@@ -387,8 +389,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               {/* Saldo Devedor */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-semibold text-slate-700">Saldo Devedor Atual</label>
-                  <span className="text-xs font-bold text-teal-900">{formatBRL(saldoDevedor)}</span>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Saldo Devedor Atual</label>
+                  <span className="text-xs font-bold text-teal-900 dark:text-teal-300">{formatBRL(saldoDevedor)}</span>
                 </div>
                 <input
                   type="range"
@@ -397,7 +399,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                   step={5000}
                   value={saldoDevedor}
                   onChange={(e) => setSaldoDevedor(Number(e.target.value))}
-                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 rounded-lg mb-2"
+                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"
                 />
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-medium">R$</span>
@@ -405,7 +407,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     type="number"
                     value={saldoDevedor || ''}
                     onChange={(e) => setSaldoDevedor(Math.max(0, Number(e.target.value)))}
-                    className="w-full pl-8 pr-3 py-1.5 text-xs font-semibold text-slate-800 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white dark:focus:bg-slate-850"
                   />
                 </div>
               </div>
@@ -413,8 +415,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               {/* Prazo Restante em Meses */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-semibold text-slate-700">Prazo Restante</label>
-                  <span className="text-xs font-bold text-slate-900">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Prazo Restante</label>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
                     {prazoMeses} meses ({(prazoMeses / 12).toFixed(1)} anos)
                   </span>
                 </div>
@@ -425,7 +427,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                   step={6}
                   value={prazoMeses}
                   onChange={(e) => setPrazoMeses(Number(e.target.value))}
-                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 rounded-lg mb-2"
+                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"
                 />
                 <div className="grid grid-cols-4 gap-1.5">
                   {[60, 120, 240, 360].map((m) => (
@@ -436,7 +438,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                       className={`text-[11px] py-1 font-medium rounded border transition-colors cursor-pointer ${
                         prazoMeses === m
                           ? 'bg-teal-800 text-white border-teal-800'
-                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                          : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-750'
                       }`}
                     >
                       {m / 12} anos
@@ -448,10 +450,10 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               {/* Taxa de Juros Anual */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-semibold text-slate-700">Taxa de Juros Anual</label>
-                  <span className="text-xs font-bold text-slate-900">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Taxa de Juros Anual</label>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">
                     {taxaJurosAnual.toFixed(2)}% a.a.{' '}
-                    <span className="text-[10px] font-normal text-slate-500">
+                    <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400">
                       (~{taxaMensalPerc.toFixed(2)}% a.m.)
                     </span>
                   </span>
@@ -463,7 +465,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                   step={0.1}
                   value={taxaJurosAnual}
                   onChange={(e) => setTaxaJurosAnual(Number(e.target.value))}
-                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 rounded-lg mb-2"
+                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"
                 />
                 <div className="relative">
                   <input
@@ -471,7 +473,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     step="0.01"
                     value={taxaJurosAnual || ''}
                     onChange={(e) => setTaxaJurosAnual(Math.max(0.1, Number(e.target.value)))}
-                    className="w-full px-3 py-1.5 text-xs font-semibold text-slate-800 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white dark:focus:bg-slate-850"
                   />
                   <span className="absolute right-3 top-2 text-xs text-slate-400 font-medium">% a.a.</span>
                 </div>
@@ -479,7 +481,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
 
               {/* Sistema de Amortização: SAC vs PRICE */}
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                   Sistema de Amortização
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -488,15 +490,15 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     onClick={() => setSistema('SAC')}
                     className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
                       sistema === 'SAC'
-                        ? 'border-teal-700 bg-teal-50/60 shadow-2xs'
-                        : 'border-slate-200 hover:bg-slate-50'
+                        ? 'border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 shadow-2xs'
+                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-slate-50/40 dark:bg-slate-800/20'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-900">SAC</span>
-                      {sistema === 'SAC' && <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" />}
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">SAC</span>
+                      {sistema === 'SAC' && <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />}
                     </div>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Parcelas decrescentes (Constante)</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Parcelas decrescentes (Constante)</p>
                   </button>
 
                   <button
@@ -504,15 +506,15 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     onClick={() => setSistema('PRICE')}
                     className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
                       sistema === 'PRICE'
-                        ? 'border-teal-700 bg-teal-50/60 shadow-2xs'
-                        : 'border-slate-200 hover:bg-slate-50'
+                        ? 'border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 shadow-2xs'
+                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-slate-50/40 dark:bg-slate-800/20'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-900">Tabela Price</span>
-                      {sistema === 'PRICE' && <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" />}
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">Tabela Price</span>
+                      {sistema === 'PRICE' && <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />}
                     </div>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Parcelas fixas (Sistema Francês)</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Parcelas fixas (Sistema Francês)</p>
                   </button>
                 </div>
               </div>
@@ -520,34 +522,34 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               {/* Taxas mensais fixas / seguros MIP/DFI */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-medium text-slate-600">Taxas e Seguros Mensais (MIP/DFI)</label>
-                  <span className="text-xs font-semibold text-slate-700">{formatBRL(taxasMensais)}/mês</span>
+                  <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Taxas e Seguros Mensais (MIP/DFI)</label>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{formatBRL(taxasMensais)}/mês</span>
                 </div>
                 <input
                   type="number"
                   value={taxasMensais || ''}
                   onChange={(e) => setTaxasMensais(Math.max(0, Number(e.target.value)))}
-                  className="w-full px-3 py-1.5 text-xs text-slate-800 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full px-3 py-1.5 text-xs text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white dark:focus:bg-slate-850"
                   placeholder="0,00"
                 />
               </div>
             </div>
 
             {/* Card de Configuração de Amortização Extraordinária */}
-            <div className="bg-white border border-teal-200/80 rounded-xl p-4 sm:p-5 shadow-2xs space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-teal-100">
-                <h2 className="text-sm font-bold text-teal-950 flex items-center gap-1.5">
-                  <TrendingDown className="w-4 h-4 text-teal-700" />
+            <div className="bg-white dark:bg-slate-900 border border-teal-200/80 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-teal-100 dark:border-slate-800">
+                <h2 className="text-sm font-bold text-teal-950 dark:text-white flex items-center gap-1.5">
+                  <TrendingDown className="w-4 h-4 text-teal-700 dark:text-teal-400" />
                   Estratégia de Amortização
                 </h2>
-                <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-full">
                   Economia
                 </span>
               </div>
 
               {/* Estratégia: Redução de Prazo vs Redução de Parcela */}
               <div>
-                <label className="text-xs font-semibold text-slate-700 block mb-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
                   Como aplicar a amortização extra?
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -556,17 +558,17 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     onClick={() => setEstrategia('REDUCE_TERM')}
                     className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
                       estrategia === 'REDUCE_TERM'
-                        ? 'border-emerald-600 bg-emerald-50/70 shadow-2xs'
-                        : 'border-slate-200 hover:bg-slate-50'
+                        ? 'border-emerald-600 dark:border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 shadow-2xs'
+                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-slate-50/40 dark:bg-slate-800/20'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-emerald-950">Reduzir Prazo</span>
+                      <span className="text-xs font-bold text-emerald-950 dark:text-emerald-200">Reduzir Prazo</span>
                       {estrategia === 'REDUCE_TERM' && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                       )}
                     </div>
-                    <p className="text-[10px] text-emerald-800 font-medium mt-0.5">
+                    <p className="text-[10px] text-emerald-800 dark:text-emerald-400 font-medium mt-0.5">
                       ⭐ Maior economia em juros
                     </p>
                   </button>
@@ -576,17 +578,17 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     onClick={() => setEstrategia('REDUCE_INSTALLMENT')}
                     className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all ${
                       estrategia === 'REDUCE_INSTALLMENT'
-                        ? 'border-indigo-600 bg-indigo-50/70 shadow-2xs'
-                        : 'border-slate-200 hover:bg-slate-50'
+                        ? 'border-indigo-600 dark:border-indigo-500 bg-indigo-50/70 dark:bg-indigo-950/40 shadow-2xs'
+                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 bg-slate-50/40 dark:bg-slate-800/20'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-indigo-950">Reduzir Parcela</span>
+                      <span className="text-xs font-bold text-indigo-950 dark:text-indigo-200">Reduzir Parcela</span>
                       {estrategia === 'REDUCE_INSTALLMENT' && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-700" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-indigo-700 dark:text-indigo-400" />
                       )}
                     </div>
-                    <p className="text-[10px] text-indigo-800 font-medium mt-0.5">
+                    <p className="text-[10px] text-indigo-800 dark:text-indigo-400 font-medium mt-0.5">
                       Alívio no fluxo de caixa
                     </p>
                   </button>
@@ -596,10 +598,10 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               {/* Aporte Mensal Recorrente */}
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-semibold text-slate-700">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Aporte Extra Todo Mês
                   </label>
-                  <span className="text-xs font-bold text-teal-800">{formatBRL(aporteMensal)}</span>
+                  <span className="text-xs font-bold text-teal-800 dark:text-teal-300">{formatBRL(aporteMensal)}</span>
                 </div>
                 <input
                   type="range"
@@ -608,7 +610,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                   step={100}
                   value={aporteMensal}
                   onChange={(e) => setAporteMensal(Number(e.target.value))}
-                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 rounded-lg mb-2"
+                  className="w-full accent-teal-800 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg mb-2"
                 />
                 <div className="relative">
                   <span className="absolute left-3 top-2 text-xs text-slate-400 font-medium">R$</span>
@@ -617,21 +619,21 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     step="50"
                     value={aporteMensal || ''}
                     onChange={(e) => setAporteMensal(Math.max(0, Number(e.target.value)))}
-                    className="w-full pl-8 pr-3 py-1.5 text-xs font-semibold text-slate-800 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full pl-8 pr-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-700 focus:bg-white dark:focus:bg-slate-850"
                     placeholder="0,00"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
                   Ex: sobra do salário mensal para antecipar prestações.
                 </p>
               </div>
 
               {/* Aportes Pontuais (FGTS, 13º, Bônus) */}
-              <div className="pt-2 border-t border-slate-100">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
                     Aportes Pontuais
-                    <span className="text-[10px] font-normal text-slate-500">
+                    <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400">
                       ({aportesPontuais.length})
                     </span>
                   </label>
@@ -639,7 +641,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsAddingAporte(true)}
-                      className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 flex items-center gap-0.5 cursor-pointer"
+                      className="text-[11px] font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-200 flex items-center gap-0.5 cursor-pointer"
                     >
                       <Plus className="w-3 h-3" />
                       Adicionar
@@ -649,11 +651,11 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
 
                 {/* Formulário de inclusão de aporte pontual */}
                 {isAddingAporte && (
-                  <div className="p-3 bg-teal-50/50 border border-teal-200 rounded-lg mb-3 space-y-2.5">
-                    <p className="text-[11px] font-bold text-teal-900">Novo Aporte Extraordinário</p>
+                  <div className="p-3 bg-teal-50/50 dark:bg-slate-800 border border-teal-200 dark:border-slate-700 rounded-lg mb-3 space-y-2.5">
+                    <p className="text-[11px] font-bold text-teal-900 dark:text-teal-300">Novo Aporte Extraordinário</p>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-[10px] font-medium text-slate-600 block mb-0.5">
+                        <label className="text-[10px] font-medium text-slate-600 dark:text-slate-400 block mb-0.5">
                           Mês do Aporte
                         </label>
                         <input
@@ -662,12 +664,12 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           max={prazoMeses}
                           value={novoAporteMes}
                           onChange={(e) => setNovoAporteMes(Number(e.target.value))}
-                          className="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white"
+                          className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-850 text-slate-900 dark:text-white"
                           placeholder="Mês (ex: 12)"
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] font-medium text-slate-600 block mb-0.5">
+                        <label className="text-[10px] font-medium text-slate-600 dark:text-slate-400 block mb-0.5">
                           Valor (R$)
                         </label>
                         <input
@@ -675,20 +677,20 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           step="500"
                           value={novoAporteValor}
                           onChange={(e) => setNovoAporteValor(Number(e.target.value))}
-                          className="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white"
+                          className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-850 text-slate-900 dark:text-white"
                           placeholder="10000"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-medium text-slate-600 block mb-0.5">
+                      <label className="text-[10px] font-medium text-slate-600 dark:text-slate-400 block mb-0.5">
                         Descrição / Origem
                       </label>
                       <input
                         type="text"
                         value={novoAporteDesc}
                         onChange={(e) => setNovoAporteDesc(e.target.value)}
-                        className="w-full px-2 py-1 text-xs border border-slate-200 rounded bg-white"
+                        className="w-full px-2 py-1 text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-850 text-slate-900 dark:text-white"
                         placeholder="Ex: FGTS, 13º Salário, Restituição IR"
                       />
                     </div>
@@ -696,7 +698,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsAddingAporte(false)}
-                        className="px-2.5 py-1 text-[11px] text-slate-600 hover:text-slate-800 rounded cursor-pointer"
+                        className="px-2.5 py-1 text-[11px] text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 rounded cursor-pointer"
                       >
                         Cancelar
                       </button>
@@ -713,27 +715,27 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
 
                 {/* Lista de Aportes já adicionados */}
                 {aportesPontuais.length === 0 ? (
-                  <p className="text-[11px] text-slate-400 italic">Nenhum aporte pontual adicionado.</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">Nenhum aporte pontual adicionado.</p>
                 ) : (
                   <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
                     {aportesPontuais.map((ap) => (
                       <div
                         key={ap.id}
-                        className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs"
+                        className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs"
                       >
                         <div>
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">
                             {formatBRL(ap.amount)}
-                            <span className="text-[10px] font-normal text-slate-500 ml-1.5">
+                            <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400 ml-1.5">
                               (Mês {ap.month})
                             </span>
                           </p>
-                          <p className="text-[10px] text-teal-800 font-medium">{ap.description}</p>
+                          <p className="text-[10px] text-teal-800 dark:text-teal-400 font-medium">{ap.description}</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoveAporte(ap.id)}
-                          className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                          className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                           title="Remover aporte"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -774,15 +776,15 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               </div>
 
               {/* Card 2: Tempo Antecipado */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-2xs relative overflow-hidden">
-                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs relative overflow-hidden">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                   Tempo Eliminado do Contrato
                 </span>
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
                   {simulation.comparativo.mesesEconomizados}{' '}
-                  <span className="text-base font-semibold text-slate-600">meses</span>
+                  <span className="text-base font-semibold text-slate-600 dark:text-slate-400">meses</span>
                 </div>
-                <div className="mt-2 text-xs font-semibold text-teal-800 flex items-center gap-1">
+                <div className="mt-2 text-xs font-semibold text-teal-800 dark:text-teal-400 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
                   {simulation.comparativo.anosEconomizados > 0 ? (
                     <span>
@@ -796,16 +798,16 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
               </div>
 
               {/* Card 3: Multiplicador de Retorno (ROI) */}
-              <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-2xs relative overflow-hidden sm:col-span-2 lg:col-span-1">
-                <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs relative overflow-hidden sm:col-span-2 lg:col-span-1">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                   Eficiência de Cada R$ 1 Aportado
                 </span>
-                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
                   R$ {(1 + simulation.comparativo.multiplicadorRetorno).toFixed(2)}
                 </div>
-                <div className="mt-2 text-xs text-slate-600">
+                <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
                   Cada R$ 1,00 extra amortizado poupa{' '}
-                  <strong className="text-emerald-700">
+                  <strong className="text-emerald-700 dark:text-emerald-400">
                     R$ {simulation.comparativo.multiplicadorRetorno.toFixed(2)}
                   </strong>{' '}
                   em juros futuros.
@@ -814,14 +816,14 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
             </div>
 
             {/* Barra de Abas */}
-            <div className="border-b border-slate-200 flex gap-2 sm:gap-6 overflow-x-auto pb-px">
+            <div className="border-b border-slate-200 dark:border-slate-800 flex gap-2 sm:gap-6 overflow-x-auto pb-px">
               <button
                 type="button"
                 onClick={() => setActiveTab('overview')}
                 className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === 'overview'
-                    ? 'border-teal-800 text-teal-900'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                    ? 'border-teal-800 dark:border-teal-400 text-teal-900 dark:text-teal-300'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 <Layers className="w-4 h-4" />
@@ -833,8 +835,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                 onClick={() => setActiveTab('comparison')}
                 className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === 'comparison'
-                    ? 'border-teal-800 text-teal-900'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                    ? 'border-teal-800 dark:border-teal-400 text-teal-900 dark:text-teal-300'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 <TrendingDown className="w-4 h-4" />
@@ -846,8 +848,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                 onClick={() => setActiveTab('schedule')}
                 className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === 'schedule'
-                    ? 'border-teal-800 text-teal-900'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                    ? 'border-teal-800 dark:border-teal-400 text-teal-900 dark:text-teal-300'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 <FileSpreadsheet className="w-4 h-4" />
@@ -859,8 +861,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                 onClick={() => setActiveTab('saved')}
                 className={`pb-3 text-xs sm:text-sm font-semibold transition-colors border-b-2 cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                   activeTab === 'saved'
-                    ? 'border-teal-800 text-teal-900'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                    ? 'border-teal-800 dark:border-teal-400 text-teal-900 dark:text-teal-300'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 <BookmarkPlus className="w-4 h-4" />
@@ -874,42 +876,42 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {/* Comparação dos Valores Totais (Com vs Sem Amortização) */}
-                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-2xs">
-                  <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs">
+                  <h3 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">
                     Comparativo Financeiro Direto
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Cenário Original */}
-                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2.5">
+                    <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 space-y-2.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-700">Contrato Original</span>
-                        <span className="text-[10px] font-semibold text-slate-500 bg-slate-200 px-2 py-0.5 rounded">
+                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Contrato Original</span>
+                        <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">
                           Sem Amortização
                         </span>
                       </div>
                       <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between py-1 border-b border-slate-200/60">
-                          <span className="text-slate-500">Prazo Previsto:</span>
-                          <span className="font-semibold text-slate-800">
+                        <div className="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+                          <span className="text-slate-500 dark:text-slate-400">Prazo Previsto:</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {simulation.cenarioOriginal.prazoMeses} meses (
                             {(simulation.cenarioOriginal.prazoMeses / 12).toFixed(1)} anos)
                           </span>
                         </div>
-                        <div className="flex justify-between py-1 border-b border-slate-200/60">
-                          <span className="text-slate-500">Total em Juros:</span>
-                          <span className="font-bold text-rose-700">
+                        <div className="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+                          <span className="text-slate-500 dark:text-slate-400">Total em Juros:</span>
+                          <span className="font-bold text-rose-700 dark:text-rose-400">
                             {formatBRL(simulation.cenarioOriginal.totalJuros)}
                           </span>
                         </div>
-                        <div className="flex justify-between py-1 border-b border-slate-200/60">
-                          <span className="text-slate-500">1ª Parcela:</span>
-                          <span className="font-semibold text-slate-800">
+                        <div className="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60">
+                          <span className="text-slate-500 dark:text-slate-400">1ª Parcela:</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {formatBRL(simulation.cenarioOriginal.primeiraParcela)}
                           </span>
                         </div>
                         <div className="flex justify-between py-1">
-                          <span className="text-slate-700 font-bold">Custo Total Final:</span>
-                          <span className="font-extrabold text-slate-900">
+                          <span className="text-slate-700 dark:text-slate-300 font-bold">Custo Total Final:</span>
+                          <span className="font-extrabold text-slate-900 dark:text-white">
                             {formatBRL(simulation.cenarioOriginal.totalPago)}
                           </span>
                         </div>
@@ -917,36 +919,36 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     </div>
 
                     {/* Cenário Com Amortização */}
-                    <div className="p-4 rounded-xl border border-emerald-300 bg-emerald-50/40 space-y-2.5">
+                    <div className="p-4 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/30 space-y-2.5">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-emerald-950">Com Antecipação</span>
-                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                        <span className="text-xs font-bold text-emerald-950 dark:text-emerald-200">Com Antecipação</span>
+                        <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded">
                           {estrategia === 'REDUCE_TERM' ? 'Reduzindo Prazo' : 'Reduzindo Parcela'}
                         </span>
                       </div>
                       <div className="space-y-1.5 text-xs">
-                        <div className="flex justify-between py-1 border-b border-emerald-200/60">
-                          <span className="text-slate-600">Prazo Efetivo:</span>
-                          <span className="font-bold text-emerald-900">
+                        <div className="flex justify-between py-1 border-b border-emerald-200/60 dark:border-emerald-800/60">
+                          <span className="text-slate-600 dark:text-slate-400">Prazo Efetivo:</span>
+                          <span className="font-bold text-emerald-900 dark:text-emerald-300">
                             {simulation.cenarioAmortizado.prazoMesesReal} meses (
                             {(simulation.cenarioAmortizado.prazoMesesReal / 12).toFixed(1)} anos)
                           </span>
                         </div>
-                        <div className="flex justify-between py-1 border-b border-emerald-200/60">
-                          <span className="text-slate-600">Total em Juros:</span>
-                          <span className="font-bold text-emerald-800">
+                        <div className="flex justify-between py-1 border-b border-emerald-200/60 dark:border-emerald-800/60">
+                          <span className="text-slate-600 dark:text-slate-400">Total em Juros:</span>
+                          <span className="font-bold text-emerald-800 dark:text-emerald-400">
                             {formatBRL(simulation.cenarioAmortizado.totalJuros)}
                           </span>
                         </div>
-                        <div className="flex justify-between py-1 border-b border-emerald-200/60">
-                          <span className="text-slate-600">Total Aportado Extra:</span>
-                          <span className="font-semibold text-slate-800">
+                        <div className="flex justify-between py-1 border-b border-emerald-200/60 dark:border-emerald-800/60">
+                          <span className="text-slate-600 dark:text-slate-400">Total Aportado Extra:</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {formatBRL(simulation.cenarioAmortizado.totalAmortizacaoExtra)}
                           </span>
                         </div>
                         <div className="flex justify-between py-1">
-                          <span className="text-emerald-950 font-bold">Custo Total Final:</span>
-                          <span className="font-extrabold text-emerald-900">
+                          <span className="text-emerald-950 dark:text-emerald-200 font-bold">Custo Total Final:</span>
+                          <span className="font-extrabold text-emerald-900 dark:text-emerald-300">
                             {formatBRL(simulation.cenarioAmortizado.totalPago)}
                           </span>
                         </div>
@@ -956,30 +958,30 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                 </div>
 
                 {/* Gráfico Visual de Evolução do Saldo Devedor (SVG Puro Responsivo) */}
-                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-2xs">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs">
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <h3 className="text-sm font-bold text-slate-900">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                         Curva de Queda do Saldo Devedor
                       </h3>
-                      <p className="text-[11px] text-slate-500">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
                         Veja visualmente a rapidez com que a dívida chega a zero com suas amortizações
                       </p>
                     </div>
                     <div className="flex items-center gap-3 text-xs">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-1 bg-slate-300 rounded" />
-                        <span className="text-slate-600">Original</span>
+                        <span className="w-3 h-1 bg-slate-300 dark:bg-slate-600 rounded" />
+                        <span className="text-slate-600 dark:text-slate-400">Original</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <span className="w-3 h-1.5 bg-emerald-600 rounded" />
-                        <span className="font-semibold text-emerald-900">Com Amortização</span>
+                        <span className="w-3 h-1.5 bg-emerald-600 dark:bg-emerald-400 rounded" />
+                        <span className="font-semibold text-emerald-900 dark:text-emerald-300">Com Amortização</span>
                       </div>
                     </div>
                   </div>
 
                   {/* SVG Chart */}
-                  <div className="w-full h-56 relative border-b border-l border-slate-200 mt-2">
+                  <div className="w-full h-56 relative border-b border-l border-slate-200 dark:border-slate-800 mt-2">
                     <svg
                       className="w-full h-full overflow-visible"
                       viewBox={`0 0 ${Math.max(100, simulation.cenarioOriginal.prazoMeses)} 100`}
@@ -996,7 +998,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           })
                           .join(' ')}`}
                         fill="none"
-                        stroke="#CBD5E1"
+                        stroke="#94A3B8"
                         strokeWidth="1.8"
                         strokeDasharray="2,2"
                       />
@@ -1011,7 +1013,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                             return `L ${x} ${Math.min(100, Math.max(0, y))}`;
                           })
                           .join(' ')} L ${simulation.cenarioAmortizado.prazoMesesReal} 100 L 0 100 Z`}
-                        fill="rgba(16, 185, 129, 0.08)"
+                        fill="rgba(16, 185, 129, 0.12)"
                       />
 
                       {/* Linha Forte da Curva Amortizada */}
@@ -1025,32 +1027,32 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           })
                           .join(' ')}`}
                         fill="none"
-                        stroke="#059669"
+                        stroke="#10B981"
                         strokeWidth="2.5"
                       />
                     </svg>
 
                     {/* Labels de Eixo */}
-                    <div className="absolute left-0 bottom-[-22px] text-[10px] text-slate-400">Mês 0</div>
-                    <div className="absolute right-0 bottom-[-22px] text-[10px] text-slate-400">
+                    <div className="absolute left-0 bottom-[-22px] text-[10px] text-slate-400 dark:text-slate-500">Mês 0</div>
+                    <div className="absolute right-0 bottom-[-22px] text-[10px] text-slate-400 dark:text-slate-500">
                       Mês {simulation.cenarioOriginal.prazoMeses}
                     </div>
                   </div>
 
                   {/* Legenda explicativa */}
-                  <div className="mt-8 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-500 gap-2">
+                  <div className="mt-8 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
                     <p>
-                      Dívida quitada no <strong>Mês {simulation.cenarioAmortizado.prazoMesesReal}</strong> em
+                      Dívida quitada no <strong className="text-slate-800 dark:text-slate-200">Mês {simulation.cenarioAmortizado.prazoMesesReal}</strong> em
                       vez do Mês {simulation.cenarioOriginal.prazoMeses}.
                     </p>
-                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-1 rounded">
+                    <span className="text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-1 rounded">
                       🎉 {simulation.comparativo.mesesEconomizados} meses adiantados
                     </span>
                   </div>
                 </div>
 
                 {/* Dicas Estratégicas de Financiamento */}
-                <div className="bg-slate-900 text-white rounded-xl p-5 shadow-xs">
+                <div className="bg-slate-900 dark:bg-slate-850 text-white rounded-xl p-5 shadow-xs border border-slate-800">
                   <div className="flex items-center gap-2 mb-3">
                     <ShieldCheck className="w-5 h-5 text-teal-400" />
                     <h4 className="text-sm font-bold text-white">
@@ -1062,7 +1064,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                       <p className="font-semibold text-teal-200">
                         1. Por que a Redução de Prazo economiza tanto?
                       </p>
-                      <p className="leading-relaxed">
+                      <p className="leading-relaxed text-slate-400">
                         Ao reduzir o prazo, o dinheiro do aporte abate diretamente o saldo principal da dívida,
                         eliminando integralmente todos os juros que incidiriam sobre aquele montante ao longo
                         de anos futuros.
@@ -1072,7 +1074,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                       <p className="font-semibold text-teal-200">
                         2. Uso inteligente do FGTS
                       </p>
-                      <p className="leading-relaxed">
+                      <p className="leading-relaxed text-slate-400">
                         Em financiamentos imobiliários pelo SFH, você pode usar seu FGTS a cada 2 anos para
                         amortizar o saldo devedor. Como o FGTS rende pouco, usá-lo para abater juros de 9% a 12%
                         a.a. é matematicamente muito vantajoso.
@@ -1088,65 +1090,65 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
             {/* ======================================================== */}
             {activeTab === 'comparison' && (
               <div className="space-y-5">
-                <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-2xs">
-                  <h3 className="text-sm font-bold text-slate-900 mb-1">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-2xs">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">
                     Comparação de Decisão: Reduzir Prazo vs. Reduzir Parcela
                   </h3>
-                  <p className="text-xs text-slate-500 mb-5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
                     Entenda o que acontece aplicando exatamente os mesmos aportes em cada uma das opções
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {/* Cenário Original */}
-                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+                    <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex flex-col justify-between">
                       <div>
-                        <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+                        <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                           Cenário 1
                         </span>
-                        <h4 className="text-sm font-bold text-slate-900 mb-2">Original (Sem Aportes)</h4>
-                        <div className="space-y-2 text-xs text-slate-600">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Original (Sem Aportes)</h4>
+                        <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
                           <div>
-                            <span className="block text-[10px] text-slate-400">Total Pago:</span>
-                            <span className="font-bold text-slate-900 text-sm">
+                            <span className="block text-[10px] text-slate-400 dark:text-slate-500">Total Pago:</span>
+                            <span className="font-bold text-slate-900 dark:text-white text-sm">
                               {formatBRL(simulation.cenarioOriginal.totalPago)}
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] text-slate-400">Total Juros:</span>
-                            <span className="font-semibold text-rose-700">
+                            <span className="block text-[10px] text-slate-400 dark:text-slate-500">Total Juros:</span>
+                            <span className="font-semibold text-rose-700 dark:text-rose-400">
                               {formatBRL(simulation.cenarioOriginal.totalJuros)}
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] text-slate-400">Prazo:</span>
-                            <span className="font-semibold text-slate-800">
+                            <span className="block text-[10px] text-slate-400 dark:text-slate-500">Prazo:</span>
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
                               {simulation.cenarioOriginal.prazoMeses} meses (
                               {(simulation.cenarioOriginal.prazoMeses / 12).toFixed(1)} anos)
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className="mt-4 pt-3 border-t border-slate-200 text-[11px] text-slate-500">
+                      <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
                         Linha base do seu contrato atual.
                       </div>
                     </div>
 
                     {/* Cenário Redução de Prazo */}
-                    <div className="p-4 rounded-xl border border-emerald-300 bg-emerald-50/50 flex flex-col justify-between">
+                    <div className="p-4 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider">
+                          <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
                             Cenário 2
                           </span>
-                          <span className="text-[10px] font-bold bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] font-bold bg-emerald-200 dark:bg-emerald-900/60 text-emerald-900 dark:text-emerald-200 px-1.5 py-0.5 rounded">
                             Recomendado
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-emerald-950 mb-2">Redução de Prazo</h4>
-                        <div className="space-y-2 text-xs text-slate-700">
+                        <h4 className="text-sm font-bold text-emerald-950 dark:text-emerald-200 mb-2">Redução de Prazo</h4>
+                        <div className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
                           <div>
-                            <span className="block text-[10px] text-emerald-800">Total Pago:</span>
-                            <span className="font-bold text-emerald-950 text-sm">
+                            <span className="block text-[10px] text-emerald-800 dark:text-emerald-400">Total Pago:</span>
+                            <span className="font-bold text-emerald-950 dark:text-white text-sm">
                               {formatBRL(
                                 estrategia === 'REDUCE_TERM'
                                   ? simulation.cenarioAmortizado.totalPago
@@ -1155,8 +1157,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] text-emerald-800">Economia em Juros:</span>
-                            <span className="font-bold text-emerald-700">
+                            <span className="block text-[10px] text-emerald-800 dark:text-emerald-400">Economia em Juros:</span>
+                            <span className="font-bold text-emerald-700 dark:text-emerald-300">
                               {formatBRL(
                                 estrategia === 'REDUCE_TERM'
                                   ? simulation.comparativo.economiaJuros
@@ -1165,8 +1167,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] text-emerald-800">Novo Prazo:</span>
-                            <span className="font-bold text-emerald-900">
+                            <span className="block text-[10px] text-emerald-800 dark:text-emerald-400">Novo Prazo:</span>
+                            <span className="font-bold text-emerald-900 dark:text-emerald-200">
                               {estrategia === 'REDUCE_TERM'
                                 ? simulation.cenarioAmortizado.prazoMesesReal
                                 : simulationOpposite.cenarioAmortizado.prazoMesesReal}{' '}
@@ -1175,22 +1177,22 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           </div>
                         </div>
                       </div>
-                      <div className="mt-4 pt-3 border-t border-emerald-200 text-[11px] text-emerald-900 font-medium">
+                      <div className="mt-4 pt-3 border-t border-emerald-200 dark:border-emerald-800/80 text-[11px] text-emerald-900 dark:text-emerald-300 font-medium">
                         Ideal para quem quer se livrar logo da dívida e poupar a máxima quantia de juros.
                       </div>
                     </div>
 
                     {/* Cenário Redução de Parcela */}
-                    <div className="p-4 rounded-xl border border-indigo-200 bg-indigo-50/50 flex flex-col justify-between">
+                    <div className="p-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-950/30 flex flex-col justify-between">
                       <div>
-                        <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wider block mb-1">
+                        <span className="text-[11px] font-bold text-indigo-800 dark:text-indigo-300 uppercase tracking-wider block mb-1">
                           Cenário 3
                         </span>
-                        <h4 className="text-sm font-bold text-indigo-950 mb-2">Redução de Parcela</h4>
-                        <div className="space-y-2 text-xs text-slate-700">
+                        <h4 className="text-sm font-bold text-indigo-950 dark:text-indigo-200 mb-2">Redução de Parcela</h4>
+                        <div className="space-y-2 text-xs text-slate-700 dark:text-slate-300">
                           <div>
-                            <span className="block text-[10px] text-indigo-800">Total Pago:</span>
-                            <span className="font-bold text-indigo-950 text-sm">
+                            <span className="block text-[10px] text-indigo-800 dark:text-indigo-400">Total Pago:</span>
+                            <span className="font-bold text-indigo-950 dark:text-white text-sm">
                               {formatBRL(
                                 estrategia === 'REDUCE_INSTALLMENT'
                                   ? simulation.cenarioAmortizado.totalPago
@@ -1199,8 +1201,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] text-indigo-800">Economia em Juros:</span>
-                            <span className="font-bold text-indigo-700">
+                            <span className="block text-[10px] text-indigo-800 dark:text-indigo-400">Economia em Juros:</span>
+                            <span className="font-bold text-indigo-700 dark:text-indigo-300">
                               {formatBRL(
                                 estrategia === 'REDUCE_INSTALLMENT'
                                   ? simulation.comparativo.economiaJuros
@@ -1209,8 +1211,8 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                             </span>
                           </div>
                           <div>
-                            <span className="block text-[10px] text-indigo-800">Parcela Recalculada:</span>
-                            <span className="font-bold text-indigo-900">
+                            <span className="block text-[10px] text-indigo-800 dark:text-indigo-400">Parcela Recalculada:</span>
+                            <span className="font-bold text-indigo-900 dark:text-indigo-200">
                               {formatBRL(
                                 (estrategia === 'REDUCE_INSTALLMENT'
                                   ? simulation.cronogramaAmortizado[1]?.parcelaOrdinaria
@@ -1220,7 +1222,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           </div>
                         </div>
                       </div>
-                      <div className="mt-4 pt-3 border-t border-indigo-200 text-[11px] text-indigo-900 font-medium">
+                      <div className="mt-4 pt-3 border-t border-indigo-200 dark:border-indigo-800/80 text-[11px] text-indigo-900 dark:text-indigo-300 font-medium">
                         Ideal para quem está com o orçamento mensal apertado e precisa de fôlego no mês.
                       </div>
                     </div>
@@ -1233,11 +1235,11 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
             {/* ABA 3: CRONOGRAMA COMPLETO MÊS A MÊS                     */}
             {/* ======================================================== */}
             {activeTab === 'schedule' && (
-              <div className="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">
-                <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xs overflow-hidden">
+                <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Cronograma Detalhado da Dívida</h3>
-                    <p className="text-[11px] text-slate-500">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Cronograma Detalhado da Dívida</h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
                       Exibindo meses {(page - 1) * pageSize + 1} a{' '}
                       {Math.min(page * pageSize, simulation.cronogramaAmortizado.length)} de{' '}
                       {simulation.cronogramaAmortizado.length}
@@ -1246,7 +1248,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleDownloadCSV}
-                      className="px-3 py-1.5 text-xs font-semibold text-teal-800 bg-white border border-teal-200 hover:bg-teal-50 rounded-lg shadow-2xs flex items-center gap-1.5 cursor-pointer"
+                      className="px-3 py-1.5 text-xs font-semibold text-teal-800 dark:text-teal-300 bg-white dark:bg-slate-800 border border-teal-200 dark:border-teal-800 hover:bg-teal-50 dark:hover:bg-slate-700 rounded-lg shadow-2xs flex items-center gap-1.5 cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
                       Baixar Planilha Completa
@@ -1257,47 +1259,47 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                 {/* Tabela Responsiva */}
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-100/80 text-slate-600 font-semibold border-b border-slate-200">
+                    <thead className="bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
                       <tr>
                         <th className="py-2.5 px-3">Mês</th>
                         <th className="py-2.5 px-3">Saldo Inicial</th>
                         <th className="py-2.5 px-3">Amortização</th>
-                        <th className="py-2.5 px-3 text-emerald-800">Aporte Extra</th>
+                        <th className="py-2.5 px-3 text-emerald-800 dark:text-emerald-400">Aporte Extra</th>
                         <th className="py-2.5 px-3">Juros</th>
                         <th className="py-2.5 px-3">Parcela Paga</th>
                         <th className="py-2.5 px-3">Saldo Final</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                       {pagedRecords.map((row) => {
                         const hasExtra = row.amortizacaoExtra > 0;
                         return (
                           <tr
                             key={row.mes}
-                            className={`hover:bg-slate-50 transition-colors ${
-                              hasExtra ? 'bg-emerald-50/30 font-medium' : ''
+                            className={`hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors ${
+                              hasExtra ? 'bg-emerald-50/30 dark:bg-emerald-950/20 font-medium' : ''
                             }`}
                           >
-                            <td className="py-2.5 px-3 font-bold text-slate-900">
+                            <td className="py-2.5 px-3 font-bold text-slate-900 dark:text-white">
                               {row.mes}º
                               {row.detalheAporte && (
-                                <span className="block text-[9px] font-normal text-emerald-700">
+                                <span className="block text-[9px] font-normal text-emerald-700 dark:text-emerald-400">
                                   {row.detalheAporte}
                                 </span>
                               )}
                             </td>
-                            <td className="py-2.5 px-3 text-slate-600">{formatBRL(row.saldoInicial)}</td>
-                            <td className="py-2.5 px-3 text-slate-700">
+                            <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400">{formatBRL(row.saldoInicial)}</td>
+                            <td className="py-2.5 px-3 text-slate-700 dark:text-slate-300">
                               {formatBRL(row.amortizacaoOrdinaria)}
                             </td>
-                            <td className="py-2.5 px-3 font-semibold text-emerald-700">
+                            <td className="py-2.5 px-3 font-semibold text-emerald-700 dark:text-emerald-400">
                               {hasExtra ? formatBRL(row.amortizacaoExtra) : '—'}
                             </td>
-                            <td className="py-2.5 px-3 text-rose-700">{formatBRL(row.juros)}</td>
-                            <td className="py-2.5 px-3 font-bold text-slate-900">
+                            <td className="py-2.5 px-3 text-rose-700 dark:text-rose-400">{formatBRL(row.juros)}</td>
+                            <td className="py-2.5 px-3 font-bold text-slate-900 dark:text-white">
                               {formatBRL(row.parcelaTotalPaga)}
                             </td>
-                            <td className="py-2.5 px-3 font-semibold text-slate-800">
+                            <td className="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-200">
                               {formatBRL(row.saldoFinal)}
                             </td>
                           </tr>
@@ -1309,21 +1311,21 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
 
                 {/* Paginação */}
                 {totalPages > 1 && (
-                  <div className="p-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs">
+                  <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 flex items-center justify-between text-xs">
                     <button
                       disabled={page <= 1}
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      className="px-3 py-1 font-semibold text-slate-700 bg-white border border-slate-200 rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100"
+                      className="px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
                     >
                       Anterior
                     </button>
-                    <span className="text-slate-500 font-medium">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">
                       Página {page} de {totalPages}
                     </span>
                     <button
                       disabled={page >= totalPages}
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      className="px-3 py-1 font-semibold text-slate-700 bg-white border border-slate-200 rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100"
+                      className="px-3 py-1 font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
                     >
                       Próxima
                     </button>
@@ -1336,11 +1338,11 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
             {/* ABA 4: SIMULAÇÕES SALVAS                                 */}
             {/* ======================================================== */}
             {activeTab === 'saved' && (
-              <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-2xs space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-2xs space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Minhas Simulações Salvas</h3>
-                    <p className="text-xs text-slate-500">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Minhas Simulações Salvas</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       Consulte ou compare diferentes contratos salvos neste dispositivo
                     </p>
                   </div>
@@ -1354,7 +1356,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                 </div>
 
                 {savedSimulations.length === 0 ? (
-                  <div className="text-center py-8 text-slate-400">
+                  <div className="text-center py-8 text-slate-400 dark:text-slate-500">
                     <BookmarkPlus className="w-10 h-10 mx-auto mb-2 opacity-50" />
                     <p className="text-xs font-medium">Você ainda não salvou nenhuma simulação.</p>
                     <p className="text-[11px]">
@@ -1366,35 +1368,35 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                     {savedSimulations.map((sim) => (
                       <div
                         key={sim.id}
-                        className="p-3.5 rounded-xl border border-slate-200 hover:border-teal-300 bg-slate-50/70 transition-all flex flex-col justify-between"
+                        className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-teal-300 dark:hover:border-teal-700 bg-slate-50/70 dark:bg-slate-800/40 transition-all flex flex-col justify-between"
                       >
                         <div>
                           <div className="flex items-start justify-between gap-2">
-                            <h4 className="text-xs font-bold text-slate-900 line-clamp-1">{sim.name}</h4>
-                            <span className="text-[10px] text-slate-400 shrink-0">{sim.date}</span>
+                            <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">{sim.name}</h4>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{sim.date}</span>
                           </div>
-                          <div className="mt-2 text-xs text-slate-600 space-y-1">
+                          <div className="mt-2 text-xs text-slate-600 dark:text-slate-400 space-y-1">
                             <p>
                               Saldo:{' '}
-                              <strong className="text-slate-900">
+                              <strong className="text-slate-900 dark:text-white">
                                 {formatBRL(sim.input.saldoDevedor)}
                               </strong>{' '}
                               · {sim.input.prazoMeses}m ({sim.input.sistema})
                             </p>
                             <p>
                               Aporte:{' '}
-                              <strong className="text-emerald-700">
+                              <strong className="text-emerald-700 dark:text-emerald-400">
                                 {formatBRL(sim.input.aporteMensalRecorrente)}/mês
                               </strong>
                             </p>
                           </div>
                         </div>
 
-                        <div className="mt-3 pt-2.5 border-t border-slate-200/80 flex items-center justify-between">
+                        <div className="mt-3 pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80 flex items-center justify-between">
                           <button
                             type="button"
                             onClick={() => handleLoadSimulation(sim)}
-                            className="text-xs font-bold text-teal-800 hover:text-teal-950 flex items-center gap-1 cursor-pointer"
+                            className="text-xs font-bold text-teal-800 dark:text-teal-400 hover:text-teal-950 dark:hover:text-teal-200 flex items-center gap-1 cursor-pointer"
                           >
                             Carregar Simulação
                             <ArrowRight className="w-3.5 h-3.5" />
@@ -1402,7 +1404,7 @@ export const AmortizationCalculator: React.FC<AmortizationCalculatorProps> = ({
                           <button
                             type="button"
                             onClick={() => handleDeleteSaved(sim.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                            className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
                             title="Excluir simulação"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

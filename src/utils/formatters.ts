@@ -228,27 +228,27 @@ export function getStatusBadgeConfig(status: CategoryStatusType) {
       return {
         label: 'Dentro da Meta',
         icon: '🟢',
-        bg: 'bg-emerald-50',
-        text: 'text-emerald-700',
-        border: 'border-emerald-200',
+        bg: 'bg-emerald-50 dark:bg-emerald-950/60',
+        text: 'text-emerald-700 dark:text-emerald-300',
+        border: 'border-emerald-200 dark:border-emerald-800',
         barColor: 'bg-emerald-500',
       };
     case 'Atenção':
       return {
         label: 'Atenção',
         icon: '🟡',
-        bg: 'bg-amber-50',
-        text: 'text-amber-700',
-        border: 'border-amber-200',
+        bg: 'bg-amber-50 dark:bg-amber-950/60',
+        text: 'text-amber-700 dark:text-amber-300',
+        border: 'border-amber-200 dark:border-amber-800',
         barColor: 'bg-amber-500',
       };
     case 'Estourado':
       return {
         label: 'Estourado',
         icon: '🔴',
-        bg: 'bg-rose-50',
-        text: 'text-rose-700',
-        border: 'border-rose-200',
+        bg: 'bg-rose-50 dark:bg-rose-950/60',
+        text: 'text-rose-700 dark:text-rose-300',
+        border: 'border-rose-200 dark:border-rose-800',
         barColor: 'bg-rose-500',
       };
     case 'Sem Orçamento':
@@ -256,10 +256,10 @@ export function getStatusBadgeConfig(status: CategoryStatusType) {
       return {
         label: 'Sem Orçamento',
         icon: '⚠️',
-        bg: 'bg-slate-50',
-        text: 'text-slate-600',
-        border: 'border-slate-200',
-        barColor: 'bg-slate-300',
+        bg: 'bg-slate-50 dark:bg-slate-800',
+        text: 'text-slate-600 dark:text-slate-400',
+        border: 'border-slate-200 dark:border-slate-700',
+        barColor: 'bg-slate-300 dark:bg-slate-700',
       };
   }
 }

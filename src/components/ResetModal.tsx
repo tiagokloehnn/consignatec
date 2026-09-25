@@ -46,20 +46,20 @@ export const ResetModal: React.FC<ResetModalProps> = ({
   const otherMonthsCount = Math.max(0, totalExpenseCount - selectedMonthExpenseCount);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn overflow-y-auto">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-auto max-h-[94vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 dark:bg-black/70 backdrop-blur-xs animate-fadeIn overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transform transition-all my-auto max-h-[94vh] flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 flex items-start gap-3 sm:gap-3.5 bg-gradient-to-r from-rose-50/60 via-amber-50/30 to-white shrink-0">
-          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+        <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-start gap-3 sm:gap-3.5 bg-gradient-to-r from-rose-50/60 via-amber-50/30 to-white dark:from-rose-950/40 dark:via-amber-950/20 dark:to-slate-900 shrink-0">
+          <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
           </div>
           <div className="flex-1 pr-2 min-w-0">
-            <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug">
               {isAllView
                 ? 'Zerar Lançamentos de Todos os Meses'
                 : `Zerar Apenas o Mês de ${currentMonth}`}
             </h3>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
               {isAllView
                 ? 'Você está visualizando todos os meses consolidados. Deseja zerar as despesas e receitas?'
                 : `Esta operação irá apagar somente os lançamentos e valores referentes a ${currentMonth}. Seus dados de outros meses não serão afetados.`}
@@ -67,42 +67,42 @@ export const ResetModal: React.FC<ResetModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Breakdown Card */}
-        <div className="p-4 sm:p-5 space-y-3 bg-slate-50/70 border-b border-slate-100 overflow-y-auto">
+        <div className="p-4 sm:p-5 space-y-3 bg-slate-50/70 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {/* Active Month Box */}
-            <div className="p-3 bg-white rounded-xl border border-rose-200 shadow-2xs">
-              <div className="flex items-center gap-1.5 text-rose-700 font-bold text-xs">
+            <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-rose-200 dark:border-rose-900/60 shadow-2xs">
+              <div className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 font-bold text-xs">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>Será Zerado ({isAllView ? 'Geral' : currentMonth})</span>
               </div>
               <div className="mt-1.5">
-                <div className="text-lg font-extrabold text-rose-600">
+                <div className="text-lg font-extrabold text-rose-600 dark:text-rose-400">
                   {selectedMonthExpenseCount} lançamento(s)
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   Total de {formatBRL(selectedMonthTotalSpent)} e receita redefinida para R$ 0,00.
                 </p>
               </div>
             </div>
 
             {/* Other Months Protected Box */}
-            <div className="p-3 bg-white rounded-xl border border-emerald-200 shadow-2xs">
-              <div className="flex items-center gap-1.5 text-emerald-700 font-bold text-xs">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <div className="p-3 bg-white dark:bg-slate-800 rounded-xl border border-emerald-200 dark:border-emerald-900/60 shadow-2xs">
+              <div className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-bold text-xs">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Permanece 100% Salvo</span>
               </div>
               <div className="mt-1.5">
-                <div className="text-lg font-extrabold text-emerald-700">
+                <div className="text-lg font-extrabold text-emerald-700 dark:text-emerald-400">
                   {otherMonthsCount} lançamento(s)
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                   {otherMonthsCount > 0
                     ? 'Despesas de meses anteriores e futuros continuam arquivadas no histórico.'
                     : 'Nenhum outro mês possui despesas cadastradas no momento.'}
@@ -111,8 +111,8 @@ export const ResetModal: React.FC<ResetModalProps> = ({
             </div>
           </div>
 
-          <div className="p-2.5 rounded-lg bg-emerald-50/80 border border-emerald-200/80 flex items-start gap-2 text-xs text-emerald-900">
-            <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+          <div className="p-2.5 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900 text-xs text-emerald-900 dark:text-emerald-300 flex items-start gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             <p className="text-[11px] leading-relaxed">
               <strong>Garantia de histórico:</strong> Seus orçamentos por categoria e os lançamentos dos outros períodos permanecem intactos no seu navegador.
             </p>
@@ -121,12 +121,12 @@ export const ResetModal: React.FC<ResetModalProps> = ({
 
         {/* Optional Expandable: Zerar histórico total */}
         {!isAllView && (
-          <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div className="px-5 py-2.5 bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>Deseja apagar todos os meses juntos?</span>
             <button
               type="button"
               onClick={() => setShowAllMonthsOption(!showAllMonthsOption)}
-              className="font-semibold text-slate-700 hover:text-slate-900 underline ml-2"
+              className="font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white underline ml-2 cursor-pointer"
             >
               {showAllMonthsOption ? 'Ocultar opção geral' : 'Ver opção de zerar tudo'}
             </button>
@@ -134,15 +134,15 @@ export const ResetModal: React.FC<ResetModalProps> = ({
         )}
 
         {showAllMonthsOption && !isAllView && (
-          <div className="p-3 mx-4 my-2 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center justify-between gap-3">
+          <div className="p-3 mx-4 my-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-300 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <span>Zerar todas as despesas ({totalExpenseCount} lançamentos) de todos os anos?</span>
             </div>
             <button
               type="button"
               onClick={onResetAllMonths}
-              className="px-2.5 py-1 rounded bg-amber-600 text-white font-bold hover:bg-amber-700 text-[11px] shrink-0"
+              className="px-2.5 py-1 rounded bg-amber-600 text-white font-bold hover:bg-amber-700 text-[11px] shrink-0 cursor-pointer"
             >
               Zerar Histórico Todo
             </button>
@@ -150,9 +150,9 @@ export const ResetModal: React.FC<ResetModalProps> = ({
         )}
 
         {/* Gerenciamento de Metas & Orçamentos */}
-        <div className="px-4 sm:px-5 py-3 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-          <div className="flex items-center gap-2 text-xs text-slate-700 font-semibold">
-            <Target className="h-4 w-4 text-teal-800 shrink-0" />
+        <div className="px-4 sm:px-5 py-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+          <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 font-semibold">
+            <Target className="h-4 w-4 text-teal-800 dark:text-teal-400 shrink-0" />
             <span>Orçamentos & Metas por Categoria:</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -160,7 +160,7 @@ export const ResetModal: React.FC<ResetModalProps> = ({
               <button
                 type="button"
                 onClick={onResetBudgetsToZero}
-                className="px-2.5 py-1 rounded-lg bg-amber-100/80 hover:bg-amber-200 text-amber-900 text-[11px] font-bold transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-amber-100/80 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-300 text-[11px] font-bold transition-colors cursor-pointer border border-transparent dark:border-amber-800"
                 title="Define o limite de todas as categorias para R$ 0,00 para preencher novos valores"
               >
                 Zerar Metas (R$ 0,00)
@@ -170,7 +170,7 @@ export const ResetModal: React.FC<ResetModalProps> = ({
               <button
                 type="button"
                 onClick={onRestoreDefaultCategories}
-                className="px-2.5 py-1 rounded-lg bg-teal-100/80 hover:bg-teal-200 text-teal-950 text-[11px] font-bold transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-teal-100/80 dark:bg-teal-950/60 hover:bg-teal-200 dark:hover:bg-teal-900/60 text-teal-950 dark:text-teal-300 text-[11px] font-bold transition-colors cursor-pointer border border-transparent dark:border-teal-800"
                 title="Restaura a lista e tetos das categorias padrão"
               >
                 Restaurar Categorias Padrão
@@ -180,12 +180,12 @@ export const ResetModal: React.FC<ResetModalProps> = ({
         </div>
 
         {/* Actions */}
-        <div className="p-4 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="p-4 bg-white dark:bg-slate-900 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3 self-start sm:self-auto">
             <button
               type="button"
               onClick={onRestoreDemoData}
-              className="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline flex items-center gap-1.5 py-1"
+              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:underline flex items-center gap-1.5 py-1 cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
               <span>Restaurar dados de exemplo</span>
@@ -195,9 +195,9 @@ export const ResetModal: React.FC<ResetModalProps> = ({
               <button
                 type="button"
                 onClick={onRestoreDefaultCategories}
-                className="text-xs font-semibold text-teal-800 hover:text-teal-950 hover:underline flex items-center gap-1.5 py-1"
+                className="text-xs font-semibold text-teal-800 dark:text-teal-400 hover:text-teal-950 dark:hover:text-teal-200 hover:underline flex items-center gap-1.5 py-1 cursor-pointer"
               >
-                <Layers className="h-3.5 w-3.5 text-teal-700" />
+                <Layers className="h-3.5 w-3.5 text-teal-700 dark:text-teal-400" />
                 <span>Restaurar categorias padrão</span>
               </button>
             )}
@@ -207,14 +207,14 @@ export const ResetModal: React.FC<ResetModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+              className="px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
             >
               Cancelar
             </button>
             <button
               type="button"
               onClick={onResetSelectedMonth}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-lg shadow-sm shadow-rose-600/20 transition-all"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-95 rounded-lg shadow-sm shadow-rose-600/20 transition-all cursor-pointer"
             >
               <Trash2 className="h-4 w-4" />
               <span>

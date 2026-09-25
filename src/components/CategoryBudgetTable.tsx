@@ -71,26 +71,26 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
   const totalBadge = getStatusBadgeConfig(totalStatus);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
       {/* Table Header Section */}
-      <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/50">
+      <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/40">
         <div>
           <div className="flex items-center gap-2">
-            <Target className="h-4 w-4 text-teal-800" />
-            <h2 className="text-base font-bold text-slate-900">
+            <Target className="h-4 w-4 text-teal-800 dark:text-teal-400" />
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">
               Tabela de Metas & Orçamento por Categoria
             </h2>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200/70 text-slate-700">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300/50 dark:border-slate-700">
               {categories.length} categorias
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Acompanhe tetos de gastos, crie novas categorias ou exclua conforme sua necessidade orçamentária.
           </p>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-500">
+          <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
             <span className="inline-flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500"></span> &lt;90%
             </span>
@@ -107,16 +107,16 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
               type="button"
               onClick={onRestoreDefaultCategories}
               title="Restaurar categorias e metas padrão recomendadas"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold text-xs rounded-lg transition-colors cursor-pointer"
             >
-              <RotateCcw className="h-3.5 w-3.5 text-slate-500" />
+              <RotateCcw className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
               <span>Restaurar Padrão</span>
             </button>
           )}
 
           <button
             onClick={onOpenNewCategoryModal}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-800 hover:bg-teal-900 text-white font-semibold text-xs rounded-lg shadow-sm shadow-teal-900/10 transition-all self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-800 hover:bg-teal-900 text-white font-semibold text-xs rounded-lg shadow-sm shadow-teal-900/10 transition-all self-start sm:self-auto cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Nova Categoria</span>
@@ -125,17 +125,17 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
       </div>
 
       {/* MOBILE CARDS VIEW (md:hidden) */}
-      <div className="block md:hidden divide-y divide-slate-100">
+      <div className="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
         {categories.length === 0 ? (
-          <div className="py-10 px-4 text-center text-slate-500 space-y-3">
-            <div className="h-12 w-12 rounded-2xl bg-teal-50 text-teal-800 flex items-center justify-center mx-auto border border-teal-200">
+          <div className="py-10 px-4 text-center text-slate-500 dark:text-slate-400 space-y-3">
+            <div className="h-12 w-12 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 flex items-center justify-center mx-auto border border-teal-200 dark:border-teal-800">
               <Plus className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-800">
+              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
                 Nenhum orçamento ou meta cadastrada
               </p>
-              <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
                 Crie suas categorias de gastos com seus limites mensais ou carregue a estrutura padrão.
               </p>
             </div>
@@ -143,7 +143,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
               <button
                 type="button"
                 onClick={onOpenNewCategoryModal}
-                className="w-full py-2.5 px-4 bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 touch-manipulation"
+                className="w-full py-2.5 px-4 bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 touch-manipulation cursor-pointer"
               >
                 <Plus className="h-4 w-4" />
                 <span>+ Criar Primeira Categoria</span>
@@ -152,7 +152,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                 <button
                   type="button"
                   onClick={onRestoreDefaultCategories}
-                  className="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors touch-manipulation"
+                  className="w-full py-2 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold text-xs rounded-xl transition-colors touch-manipulation cursor-pointer"
                 >
                   Restaurar Categorias Padrão
                 </button>
@@ -170,7 +170,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
             const isEditing = editingCategoryId === cat.id;
 
             return (
-              <div key={cat.id} className="p-4 bg-white hover:bg-slate-50/60 transition-colors">
+              <div key={cat.id} className="p-4 bg-white dark:bg-slate-900 hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
                 {/* Header: Icon, Name, Category Classification & Actions */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -184,10 +184,10 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                       <CategoryIcon iconName={cat.icon} className="h-4 w-4" />
                     </div>
                     <div className="truncate">
-                      <span className="font-bold text-sm text-slate-900 block truncate">
+                      <span className="font-bold text-sm text-slate-900 dark:text-white block truncate">
                         {cat.name}
                       </span>
-                      <span className="text-[10px] text-slate-400 capitalize">
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">
                         {cat.classification === 'necessidades'
                           ? 'Necessidade'
                           : cat.classification === 'desejos'
@@ -208,14 +208,14 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
 
                     <button
                       onClick={() => onEditCategory(cat)}
-                      className="p-1.5 rounded-md text-slate-400 hover:text-teal-800 hover:bg-teal-50"
+                      className="p-1.5 rounded-md text-slate-400 hover:text-teal-800 dark:hover:text-teal-300 hover:bg-teal-50 dark:hover:bg-slate-800 cursor-pointer"
                       title="Editar Categoria"
                     >
                       <Settings2 className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => onDeleteCategory(cat)}
-                      className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                      className="p-1.5 rounded-md text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
                       title="Excluir Categoria"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -226,10 +226,10 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                 {/* Progress Bar */}
                 <div className="mt-3">
                   <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="text-slate-500">Uso da Meta:</span>
-                    <span className="font-bold text-slate-800">{formatPercent(percentUsed)}</span>
+                    <span className="text-slate-500 dark:text-slate-400">Uso da Meta:</span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200">{formatPercent(percentUsed)}</span>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-200">
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-200 dark:border-slate-700">
                     <div
                       className={`h-full rounded-full transition-all duration-300 ${badge.barColor}`}
                       style={{
@@ -240,33 +240,33 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                 </div>
 
                 {/* 3 Metrics: Limite, Gasto, Saldo */}
-                <div className="mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 p-2.5 rounded-lg bg-slate-50 border border-slate-100 text-xs">
+                <div className="mt-3 grid grid-cols-3 gap-1.5 sm:gap-2 p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-xs">
                   <div className="min-w-0">
-                    <span className="text-[10px] text-slate-400 block font-medium truncate">Meta (Limite)</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-medium truncate">Meta (Limite)</span>
                     {isEditing ? (
                       <div className="flex items-center gap-1 mt-0.5">
                         <input
                           type="number"
                           value={tempBudgetValue}
                           onChange={(e) => setTempBudgetValue(e.target.value)}
-                          className="w-full text-xs font-bold p-1 border border-teal-600 rounded bg-white min-w-0"
+                          className="w-full text-xs font-bold p-1 border border-teal-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white min-w-0"
                           autoFocus
                         />
                         <button
                           onClick={() => handleSaveBudget(cat)}
-                          className="p-1 rounded bg-teal-800 text-white shrink-0"
+                          className="p-1 rounded bg-teal-800 hover:bg-teal-900 text-white shrink-0 cursor-pointer"
                         >
                           <Check className="h-3 w-3" />
                         </button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1 mt-0.5 min-w-0">
-                        <span className="font-bold text-slate-800 text-[11px] sm:text-xs truncate" title={formatBRL(budget)}>
+                        <span className="font-bold text-slate-800 dark:text-slate-200 text-[11px] sm:text-xs truncate" title={formatBRL(budget)}>
                           {formatBRL(budget)}
                         </span>
                         <button
                           onClick={() => handleStartEdit(cat)}
-                          className="text-slate-400 hover:text-teal-800 p-0.5 shrink-0 touch-manipulation"
+                          className="text-slate-400 hover:text-teal-800 dark:hover:text-teal-300 p-0.5 shrink-0 touch-manipulation cursor-pointer"
                           title="Ajustar Meta"
                         >
                           <Edit2 className="h-2.5 w-2.5" />
@@ -276,17 +276,17 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                   </div>
 
                   <div className="min-w-0">
-                    <span className="text-[10px] text-slate-400 block font-medium truncate">Gasto Real</span>
-                    <span className="font-bold text-slate-900 text-[11px] sm:text-xs mt-0.5 block truncate" title={formatBRL(spent)}>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-medium truncate">Gasto Real</span>
+                    <span className="font-bold text-slate-900 dark:text-white text-[11px] sm:text-xs mt-0.5 block truncate" title={formatBRL(spent)}>
                       {formatBRL(spent)}
                     </span>
                   </div>
 
                   <div className="min-w-0">
-                    <span className="text-[10px] text-slate-400 block font-medium truncate">Saldo Livre</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 block font-medium truncate">Saldo Livre</span>
                     <span
                       className={`font-bold text-[11px] sm:text-xs mt-0.5 block truncate ${
-                        remaining < 0 ? 'text-rose-600' : 'text-emerald-700'
+                        remaining < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'
                       }`}
                       title={formatBRL(remaining)}
                     >
@@ -301,18 +301,18 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
 
         {/* Mobile Total Row */}
         {categories.length > 0 && (
-          <div className="p-3.5 bg-slate-50/90 border-t border-slate-200 grid grid-cols-3 gap-2 text-xs">
+          <div className="p-3.5 bg-slate-50/90 dark:bg-slate-800/90 border-t border-slate-200 dark:border-slate-800 grid grid-cols-3 gap-2 text-xs">
             <div className="min-w-0">
-              <span className="text-slate-500 font-semibold block text-[10px] sm:text-[11px] truncate">Total Orçado:</span>
-              <span className="font-bold text-slate-800 text-xs sm:text-sm truncate block">{formatBRL(totalBudget)}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[10px] sm:text-[11px] truncate">Total Orçado:</span>
+              <span className="font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm truncate block">{formatBRL(totalBudget)}</span>
             </div>
             <div className="min-w-0">
-              <span className="text-slate-500 font-semibold block text-[10px] sm:text-[11px] truncate">Total Gasto:</span>
-              <span className="font-bold text-slate-900 text-xs sm:text-sm truncate block">{formatBRL(totalSpent)}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[10px] sm:text-[11px] truncate">Total Gasto:</span>
+              <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm truncate block">{formatBRL(totalSpent)}</span>
             </div>
             <div className="text-right min-w-0">
-              <span className="text-slate-500 font-semibold block text-[10px] sm:text-[11px] truncate">Saldo Geral:</span>
-              <span className={`font-bold text-xs sm:text-sm truncate block ${totalRemaining < 0 ? 'text-rose-600' : 'text-emerald-700'}`}>
+              <span className="text-slate-500 dark:text-slate-400 font-semibold block text-[10px] sm:text-[11px] truncate">Saldo Geral:</span>
+              <span className={`font-bold text-xs sm:text-sm truncate block ${totalRemaining < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
                 {formatBRL(totalRemaining)}
               </span>
             </div>
@@ -324,7 +324,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm min-w-[760px]">
           <thead>
-            <tr className="bg-slate-50/80 text-[11px] font-semibold tracking-wider text-slate-500 uppercase border-b border-slate-200">
+            <tr className="bg-slate-50/80 dark:bg-slate-800/80 text-[11px] font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase border-b border-slate-200 dark:border-slate-800">
               <th className="py-3 px-4">Categoria</th>
               <th className="py-3 px-4 text-right">Orçamento Limite</th>
               <th className="py-3 px-4 text-right">Gasto Real</th>
@@ -335,33 +335,33 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
               <th className="py-3 px-4 text-center w-20">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 text-slate-700">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
             {categories.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-12 px-4 text-center text-slate-500">
+                <td colSpan={8} className="py-12 px-4 text-center text-slate-500 dark:text-slate-400">
                   <div className="max-w-sm mx-auto space-y-3">
-                    <div className="h-10 w-10 rounded-xl bg-teal-50 text-teal-800 flex items-center justify-center mx-auto border border-teal-200">
+                    <div className="h-10 w-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 flex items-center justify-center mx-auto border border-teal-200 dark:border-teal-800">
                       <Plus className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-slate-800">
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
                         Nenhuma categoria ou meta configurada
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Defina limites por categoria para acompanhar sua regra orçamentária 50-30-20.
                       </p>
                     </div>
                     <div className="flex items-center justify-center gap-2 pt-1">
                       <button
                         onClick={onOpenNewCategoryModal}
-                        className="px-3.5 py-1.5 rounded-lg bg-teal-800 text-white font-semibold text-xs hover:bg-teal-900 transition-colors"
+                        className="px-3.5 py-1.5 rounded-lg bg-teal-800 text-white font-semibold text-xs hover:bg-teal-900 transition-colors cursor-pointer"
                       >
                         + Criar Categoria
                       </button>
                       {onRestoreDefaultCategories && (
                         <button
                           onClick={onRestoreDefaultCategories}
-                          className="px-3.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200 transition-colors"
+                          className="px-3.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 font-semibold text-xs transition-colors cursor-pointer"
                         >
                           Carregar Categorias Padrão
                         </button>
@@ -384,7 +384,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
 
                 // Progress bar color rules:
                 // Verde até 89%, Amarelo entre 90% e 99%, Vermelho a partir de 100%
-                let barColorClass = 'bg-slate-300';
+                let barColorClass = 'bg-slate-300 dark:bg-slate-700';
                 if (budget > 0) {
                   if (percentUsed >= 100) {
                     barColorClass = 'bg-rose-500';
@@ -400,10 +400,10 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                 return (
                   <tr
                     key={cat.id}
-                    className="hover:bg-slate-50/60 transition-colors group"
+                    className="hover:bg-slate-50/60 dark:hover:bg-slate-800/60 transition-colors group"
                   >
                     {/* Categoria */}
-                    <td className="py-3.5 px-4 font-medium text-slate-900">
+                    <td className="py-3.5 px-4 font-medium text-slate-900 dark:text-white">
                       <div className="flex items-center gap-2.5">
                         <div
                           className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
@@ -415,10 +415,10 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                           <CategoryIcon iconName={cat.icon} className="h-4 w-4" />
                         </div>
                         <div>
-                          <span className="font-semibold text-xs sm:text-sm text-slate-800 block">
+                          <span className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-slate-200 block">
                             {cat.name}
                           </span>
-                          <span className="text-[10px] text-slate-400 capitalize">
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">
                             {cat.classification === 'necessidades'
                               ? 'Necessidade'
                               : cat.classification === 'desejos'
@@ -445,18 +445,18 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                               if (e.key === 'Enter') handleSaveBudget(cat);
                               if (e.key === 'Escape') handleCancelEdit();
                             }}
-                            className="w-24 text-right text-xs font-semibold py-1 px-1.5 border border-teal-600 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 bg-white"
+                            className="w-24 text-right text-xs font-semibold py-1 px-1.5 border border-teal-600 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
                           />
                           <button
                             onClick={() => handleSaveBudget(cat)}
-                            className="p-1 rounded text-teal-800 hover:bg-teal-50"
+                            className="p-1 rounded text-teal-800 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-slate-700 cursor-pointer"
                             title="Salvar Limite"
                           >
                             <Check className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={handleCancelEdit}
-                            className="p-1 rounded text-slate-400 hover:bg-slate-100"
+                            className="p-1 rounded text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                             title="Cancelar"
                           >
                             <X className="h-3.5 w-3.5" />
@@ -464,12 +464,12 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                         </div>
                       ) : (
                         <div className="flex items-center justify-end gap-1.5 group/edit">
-                          <span className="font-semibold text-slate-800 text-xs sm:text-sm">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
                             {formatBRL(budget)}
                           </span>
                           <button
                             onClick={() => handleStartEdit(cat)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-teal-800 transition-opacity"
+                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-teal-800 dark:hover:text-teal-400 transition-opacity cursor-pointer"
                             title="Editar teto de gastos rapidamente"
                           >
                             <Edit2 className="h-3 w-3" />
@@ -479,7 +479,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                     </td>
 
                     {/* Gasto Real (R$) */}
-                    <td className="py-3.5 px-4 text-right font-medium text-slate-900 text-xs sm:text-sm">
+                    <td className="py-3.5 px-4 text-right font-medium text-slate-900 dark:text-white text-xs sm:text-sm">
                       {formatBRL(spent)}
                     </td>
 
@@ -488,10 +488,10 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                       <span
                         className={`font-semibold ${
                           budget === 0
-                            ? 'text-slate-400'
+                            ? 'text-slate-400 dark:text-slate-500'
                             : remaining < 0
-                            ? 'text-rose-600'
-                            : 'text-emerald-700'
+                            ? 'text-rose-600 dark:text-rose-400'
+                            : 'text-emerald-700 dark:text-emerald-400'
                         }`}
                       >
                         {formatBRL(remaining)}
@@ -499,13 +499,13 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                     </td>
 
                     {/* % Utilizado */}
-                    <td className="py-3.5 px-4 text-center font-medium text-xs sm:text-sm text-slate-700">
+                    <td className="py-3.5 px-4 text-center font-medium text-xs sm:text-sm text-slate-700 dark:text-slate-300">
                       {budget === 0 ? '0,0%' : formatPercent(percentUsed)}
                     </td>
 
                     {/* Progresso Visual */}
                     <td className="py-3.5 px-4">
-                      <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-200/60">
+                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-200/60 dark:border-slate-700">
                         <div
                           className={`h-full rounded-full transition-all duration-300 ${barColorClass}`}
                           style={{ width: `${clampedPercent}%` }}
@@ -528,14 +528,14 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                       <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => onEditCategory(cat)}
-                          className="p-1.5 rounded text-slate-400 hover:text-teal-800 hover:bg-teal-50 transition-colors"
+                          className="p-1.5 rounded text-slate-400 hover:text-teal-800 dark:hover:text-teal-400 hover:bg-teal-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                           title="Personalizar Categoria (Nome, Ícone, Cor, Classificação)"
                         >
                           <Settings2 className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => onDeleteCategory(cat)}
-                          className="p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="p-1.5 rounded text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                           title="Excluir Categoria"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -551,10 +551,10 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
           {/* Linha de Total Geral */}
           {categories.length > 0 && (
             <tfoot>
-              <tr className="bg-slate-100/80 font-bold text-slate-900 border-t-2 border-slate-300">
+              <tr className="bg-slate-100/80 dark:bg-slate-800/90 font-bold text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-700">
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase tracking-wider text-slate-600">
+                    <span className="text-xs uppercase tracking-wider text-slate-600 dark:text-slate-400">
                       Total Geral ({categories.length} Categorias)
                     </span>
                   </div>
@@ -562,13 +562,13 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                 <td className="py-4 px-4 text-right text-xs sm:text-sm">
                   {formatBRL(totalBudget)}
                 </td>
-                <td className="py-4 px-4 text-right text-xs sm:text-sm text-slate-900">
+                <td className="py-4 px-4 text-right text-xs sm:text-sm text-slate-900 dark:text-white">
                   {formatBRL(totalSpent)}
                 </td>
                 <td className="py-4 px-4 text-right text-xs sm:text-sm">
                   <span
                     className={
-                      totalRemaining < 0 ? 'text-rose-600' : 'text-emerald-700'
+                      totalRemaining < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'
                     }
                   >
                     {formatBRL(totalRemaining)}
@@ -578,7 +578,7 @@ export const CategoryBudgetTable: React.FC<CategoryBudgetTableProps> = ({
                   {formatPercent(totalPercentUsed)}
                 </td>
                 <td className="py-4 px-4">
-                  <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden p-0.5">
+                  <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden p-0.5">
                     <div
                       className={`h-full rounded-full ${totalBadge.barColor}`}
                       style={{

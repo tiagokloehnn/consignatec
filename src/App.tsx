@@ -680,7 +680,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-100 selection:text-teal-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-white transition-colors duration-200">
       {/* Executive Header */}
       <Header
         currentMonth={currentMonth}
@@ -704,24 +704,24 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6 pb-24 md:pb-12">
         {/* Month Context Banner & Cloud Sync Guarantee (Desktop only to save mobile screen height) */}
         <section aria-label="Status do Mês e Nuvem" className="hidden md:block">
-          <div className="bg-white rounded-xl border border-slate-200/90 p-3.5 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 p-3.5 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 transition-colors">
             <div className="flex items-start sm:items-center gap-3">
-              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-teal-50 border border-teal-200/90 text-teal-800 flex items-center justify-center shrink-0">
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200/90 dark:border-teal-800 text-teal-800 dark:text-teal-300 flex items-center justify-center shrink-0">
                 <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-xs sm:text-sm font-bold text-slate-900">
+                  <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                     {currentMonth === 'all'
                       ? 'Visão Geral Consolidada (Todos os Meses)'
                       : `Mês de Referência: ${currentMonth}`}
                   </h2>
-                  <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">
-                    <Cloud className="h-3 w-3 text-emerald-600" />
+                  <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <Cloud className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                     <span>Sincronizado na Nuvem</span>
                   </span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   <strong>{activeExpenses.length} lançamento(s)</strong> no mês ({formatBRL(totalExpenses)}). Total acumulado de <strong>{expenses.length} despesa(s)</strong> gravadas no banco.
                 </p>
               </div>
@@ -741,22 +741,22 @@ export default function App() {
 
         {/* Informative notice if active month has no expenses (Fresh clean slate for new users / months) */}
         {activeExpenses.length === 0 && (
-          <div className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-50/80 via-emerald-50/50 to-white border border-teal-200/90 text-teal-950 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 animate-fadeIn shadow-xs">
+          <div className="p-3.5 sm:p-5 rounded-2xl bg-gradient-to-r from-teal-50/80 via-emerald-50/50 to-white dark:from-teal-950/40 dark:via-emerald-950/30 dark:to-slate-900 border border-teal-200/90 dark:border-teal-800 text-teal-950 dark:text-teal-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 animate-fadeIn shadow-xs transition-colors">
             <div className="flex items-start sm:items-center gap-3">
-              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-teal-800 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-teal-800 dark:bg-teal-700 text-white flex items-center justify-center shrink-0 shadow-xs">
                 <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-300" />
               </div>
               <div>
-                <h3 className="text-xs sm:text-sm font-bold text-slate-900">
+                <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                   {currentMonth === 'all'
                     ? 'Nenhum lançamento registrado no sistema.'
                     : `Lançamentos de ${currentMonth} estão zerados.`}
                 </h3>
-                <p className="text-[11px] sm:text-xs text-teal-800/90 mt-0.5">
+                <p className="text-[11px] sm:text-xs text-teal-800/90 dark:text-teal-200/80 mt-0.5">
                   1. Defina a receita prevista para este mês clicando no ícone de lápis em <strong>Receita Total</strong>.<br className="hidden sm:inline" />
                   2. Lance suas despesas pelo botão verde <strong>+ Novo Lançamento</strong> ou leitor rápido com IA.
                   {expenses.length > 0 && currentMonth !== 'all' && (
-                    <span className="block mt-1 font-semibold text-emerald-800">
+                    <span className="block mt-1 font-semibold text-emerald-800 dark:text-emerald-300">
                       ✓ Seus outros meses continuam gravados com segurança no banco ({expenses.length} no histórico).
                     </span>
                   )}
@@ -770,15 +770,15 @@ export default function App() {
                   setMobileTab('metas');
                   handleOpenNewCategoryModal();
                 }}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white text-teal-900 border border-teal-300 rounded-xl text-xs font-bold hover:bg-teal-50 transition-colors shadow-2xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 text-teal-900 dark:text-teal-200 border border-teal-300 dark:border-teal-700 rounded-xl text-xs font-bold hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors shadow-2xs cursor-pointer"
               >
-                <Target className="h-3.5 w-3.5 text-teal-700" />
+                <Target className="h-3.5 w-3.5 text-teal-700 dark:text-teal-400" />
                 <span>+ Configurar Metas</span>
               </button>
               <button
                 type="button"
                 onClick={handleOpenNewModal}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-800 text-white rounded-xl text-xs font-bold hover:bg-teal-900 transition-colors shrink-0 shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-teal-800 dark:bg-teal-600 text-white rounded-xl text-xs font-bold hover:bg-teal-900 dark:hover:bg-teal-700 transition-colors shrink-0 shadow-xs cursor-pointer"
               >
                 <span>+ Novo Lançamento</span>
               </button>
@@ -787,14 +787,14 @@ export default function App() {
         )}
 
         {/* Mobile Tab Segmented Quick Switcher */}
-        <div className="flex md:hidden items-center justify-between bg-slate-200/80 p-1 rounded-xl text-xs font-semibold text-slate-600">
+        <div className="flex md:hidden items-center justify-between bg-slate-200/80 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 transition-colors">
           <button
             type="button"
             onClick={() => setMobileTab('tudo')}
             className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
               mobileTab === 'tudo'
-                ? 'bg-white text-teal-900 shadow-xs font-bold'
-                : 'hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-900 text-teal-900 dark:text-teal-200 shadow-xs font-bold'
+                : 'hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Tudo
@@ -804,8 +804,8 @@ export default function App() {
             onClick={() => setMobileTab('dashboard')}
             className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
               mobileTab === 'dashboard'
-                ? 'bg-white text-teal-900 shadow-xs font-bold'
-                : 'hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-900 text-teal-900 dark:text-teal-200 shadow-xs font-bold'
+                : 'hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Resumo
@@ -815,8 +815,8 @@ export default function App() {
             onClick={() => setMobileTab('despesas')}
             className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
               mobileTab === 'despesas'
-                ? 'bg-white text-teal-900 shadow-xs font-bold'
-                : 'hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-900 text-teal-900 dark:text-teal-200 shadow-xs font-bold'
+                : 'hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Gastos ({activeExpenses.length})
@@ -826,8 +826,8 @@ export default function App() {
             onClick={() => setMobileTab('metas')}
             className={`flex-1 py-1.5 rounded-lg text-center transition-all ${
               mobileTab === 'metas'
-                ? 'bg-white text-teal-900 shadow-xs font-bold'
-                : 'hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-900 text-teal-900 dark:text-teal-200 shadow-xs font-bold'
+                : 'hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Metas
@@ -853,7 +853,7 @@ export default function App() {
         {/* 2. Visual Distribution Summary Card */}
         <section
           aria-label="Distribuição dos Gastos"
-          className={`bg-white rounded-xl border border-slate-200/90 p-4 sm:p-5 shadow-xs ${
+          className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 p-4 sm:p-5 shadow-xs transition-colors ${
             mobileTab === 'tudo' || mobileTab === 'dashboard' || mobileTab === 'metas'
               ? 'block'
               : 'hidden md:block'
@@ -861,21 +861,21 @@ export default function App() {
         >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 mb-3 sm:mb-4">
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-teal-800" />
-              <h3 className="text-xs sm:text-sm font-bold text-slate-900">
+              <BarChart3 className="h-4 w-4 text-teal-800 dark:text-teal-400" />
+              <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
                 Distribuição Proporcional dos Gastos ({currentMonth})
               </h3>
             </div>
-            <span className="text-[11px] sm:text-xs text-slate-500">
+            <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
               Total gasto no período:{' '}
-              <strong className="text-slate-800">{formatBRL(totalExpenses)}</strong>
+              <strong className="text-slate-800 dark:text-slate-200">{formatBRL(totalExpenses)}</strong>
             </span>
           </div>
 
           {/* Segmented Distribution Bar */}
           {totalExpenses > 0 ? (
             <div className="space-y-3">
-              <div className="h-3.5 w-full bg-slate-100 rounded-full flex overflow-hidden p-0.5 border border-slate-200">
+              <div className="h-3.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full flex overflow-hidden p-0.5 border border-slate-200 dark:border-slate-700">
                 {categories.map((cat) => {
                   const spent = spendingByCategory[cat.name] || 0;
                   const ratio = (spent / totalExpenses) * 100;
@@ -902,22 +902,22 @@ export default function App() {
                   return (
                     <div
                       key={cat.id}
-                      className="p-2 sm:p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex flex-col justify-between"
+                      className="p-2 sm:p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-800 flex flex-col justify-between transition-colors"
                     >
                       <div className="flex items-center gap-1.5 truncate">
                         <span
                           className="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full shrink-0"
                           style={{ backgroundColor: cat.color }}
                         />
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 truncate">
+                        <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 truncate">
                           {cat.name}
                         </span>
                       </div>
                       <div className="mt-1 flex items-baseline justify-between text-[10px] sm:text-[11px]">
-                        <span className="text-slate-500 font-medium">
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">
                           {ratio.toFixed(0)}%
                         </span>
-                        <span className="font-bold text-slate-800">
+                        <span className="font-bold text-slate-800 dark:text-slate-200">
                           {formatBRL(spent).replace('R$', '').trim()}
                         </span>
                       </div>
@@ -927,7 +927,7 @@ export default function App() {
               </div>
             </div>
           ) : (
-            <div className="py-6 text-center text-xs text-slate-400">
+            <div className="py-6 text-center text-xs text-slate-400 dark:text-slate-500">
               Nenhuma despesa registrada em {currentMonth} para calcular a distribuição.
             </div>
           )}
@@ -998,11 +998,11 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="mt-12 border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500 pb-20 md:pb-6">
+      <footer className="mt-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-center text-xs text-slate-500 dark:text-slate-400 pb-20 md:pb-6 transition-colors">
         <p>
           Consignatec &copy; {new Date().getFullYear()} &mdash; Ferramenta de Gestão Financeira &amp; Orçamento Pessoal.
         </p>
-        <p className="mt-1 text-[11px] text-slate-400">
+        <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
           Valores formatados no padrão nacional (R$). Sincronização em tempo real na nuvem (Firestore) &amp; inteligência artificial Google Gemini.
         </p>
       </footer>
@@ -1055,15 +1055,15 @@ export default function App() {
                   <CategoryIcon iconName={categoryToDelete.icon} className="h-4 w-4" />
                 </div>
                 <div>
-                  <div className="font-bold text-sm text-slate-900">
+                  <div className="font-bold text-sm text-slate-900 dark:text-white">
                     {categoryToDelete.name}
                   </div>
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
                     Teto orçamentário: {formatBRL(categoryToDelete.budget)}
                   </div>
                 </div>
               </div>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-semibold">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
                 {countExpensesForDeletedCategory} lançamento(s)
               </span>
             </div>
@@ -1085,14 +1085,14 @@ export default function App() {
           expenseToDelete && (
             <div className="flex items-center justify-between py-1">
               <div>
-                <div className="font-bold text-sm text-slate-900">
+                <div className="font-bold text-sm text-slate-900 dark:text-white">
                   {expenseToDelete.descricao}
                 </div>
-                <div className="text-xs text-slate-500 mt-0.5">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {formatDateBR(expenseToDelete.data)} &bull; {expenseToDelete.categoria} &bull; {expenseToDelete.forma_pagamento}
                 </div>
               </div>
-              <div className="text-base font-extrabold text-rose-600">
+              <div className="text-base font-extrabold text-rose-600 dark:text-rose-400">
                 {formatBRL(expenseToDelete.valor)}
               </div>
             </div>
