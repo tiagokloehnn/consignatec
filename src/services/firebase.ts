@@ -128,28 +128,36 @@ export async function registerUserWithFirebase(
     updatedAt: nowIso,
   };
 
-  try {
-    // 1. Check if email already registered in cloud Firestore
-    const emailDocRef = doc(db, 'users_by_email', emailKey);
-    let emailSnap;
-    try {
-      emailSnap = await getDocFromServer(emailDocRef);
-    } catch {
-      emailSnap = await getDoc(emailDocRef);
-    }
+  // Always save locally first so user never loses access or gets blocked
+  saveUserLocally(cleanEmail, password, userProfile);
 
-    if (emailSnap.exists()) {
-      return { error: 'Este e-mail já está cadastrado no sistema. Faça login com sua senha.' };
+  // Attempt cloud sync in background/best-effort
+  try {
+    const emailDocRef = doc(db, 'users_by_email', emailKey);
+
+    // 1. Check existing account in cloud
+    try {
+      const emailSnap = await getDocFromServer(emailDocRef);
+      if (emailSnap && emailSnap.exists()) {
+        return { error: 'Este e-mail já está cadastrado no sistema. Faça login com sua senha.' };
+      }
+    } catch {
+      // Server unreachable, ignore remote check to avoid blocking
     }
 
     // 2. Create user document & email index in Firestore
-    await setDoc(doc(db, 'users', userId), userProfile);
+    await setDoc(doc(db, 'users', userId), userProfile).catch((e) => {
+      console.warn('Firestore setDoc user warning:', e);
+    });
+
     await setDoc(emailDocRef, {
       userId,
       email: cleanEmail,
       name: cleanName,
       passwordHash,
       createdAt: nowIso,
+    }).catch((e) => {
+      console.warn('Firestore setDoc email index warning:', e);
     });
 
     // 3. Initialize user's financial profile with ZERO DATA by default
@@ -169,108 +177,76 @@ export async function registerUserWithFirebase(
       updatedAt: nowIso,
     };
 
-    await setDoc(doc(db, 'users', userId, 'financial', 'main'), initialFinancial);
-    saveUserLocally(cleanEmail, password, userProfile);
-
-    return { user: userProfile };
+    await setDoc(doc(db, 'users', userId, 'financial', 'main'), initialFinancial).catch((e) => {
+      console.warn('Firestore setDoc financial warning:', e);
+    });
   } catch (err: any) {
-    console.error('Firebase registration error:', err);
-    // If Firestore fails due to permission/connection, save user locally so they are not blocked
-    saveUserLocally(cleanEmail, password, userProfile);
-    return {
-      user: userProfile,
-      error: undefined,
-    };
+    console.warn('Cloud sync offline during registration, active in local mode:', err);
   }
+
+  return { user: userProfile };
 }
 
 /**
- * Login user from Firestore cloud database.
- * Allows instant synchronization between computer and mobile phone.
+ * Login user from Firestore cloud database with local fallback.
+ * Allows instant access regardless of cloud connectivity.
  */
 export async function loginUserWithFirebase(
   email: string,
   password: string
 ): Promise<{ user?: FirebaseUserProfile; error?: string }> {
   const cleanEmail = email.trim().toLowerCase();
+  const cleanName = cleanEmail.split('@')[0];
   const emailKey = getEmailKey(cleanEmail);
   const expectedHash = btoa(password);
 
+  // 1. Check local storage first
+  const localResult = getLocalUser(cleanEmail, password);
+
+  // 2. Try Firestore cloud database
   try {
     const emailDocRef = doc(db, 'users_by_email', emailKey);
     let emailSnap;
-    let serverFailed = false;
 
     try {
       emailSnap = await getDocFromServer(emailDocRef);
-    } catch (err: any) {
-      serverFailed = true;
-      console.warn('getDocFromServer failed, falling back to cached getDoc:', err?.message);
+    } catch {
       try {
         emailSnap = await getDoc(emailDocRef);
-      } catch (cacheErr) {
-        console.warn('Cache read also failed:', cacheErr);
+      } catch {
+        // Offline
       }
     }
 
-    if (!emailSnap || !emailSnap.exists()) {
-      // Check local offline fallback
-      const localResult = getLocalUser(cleanEmail, password);
-      if (localResult) {
-        return localResult;
+    if (emailSnap && emailSnap.exists()) {
+      const indexData = emailSnap.data();
+
+      if (indexData.passwordHash && indexData.passwordHash !== expectedHash && indexData.passwordHash !== password) {
+        return { error: 'Senha incorreta. Verifique seus dados e tente novamente.' };
       }
 
-      if (serverFailed) {
-        return {
-          error: 'Serviço de banco de dados na nuvem temporariamente indisponível. Se você já possui cadastro neste aparelho, tente entrar novamente.',
-        };
-      }
-
-      return { error: 'Usuário não encontrado com este e-mail. Crie uma nova conta para começar.' };
-    }
-
-    const indexData = emailSnap.data();
-
-    if (indexData.passwordHash && indexData.passwordHash !== expectedHash && indexData.passwordHash !== password) {
-      return { error: 'Senha incorreta. Verifique seus dados e tente novamente.' };
-    }
-
-    // Fetch full user profile
-    const userDocRef = doc(db, 'users', indexData.userId);
-    let userSnap;
-    try {
-      userSnap = await getDoc(userDocRef);
-    } catch {
-      // ignore
-    }
-
-    let userProfile: FirebaseUserProfile;
-    if (userSnap && userSnap.exists()) {
-      userProfile = userSnap.data() as FirebaseUserProfile;
-    } else {
-      userProfile = {
+      const userProfile: FirebaseUserProfile = {
         id: indexData.userId,
         email: cleanEmail,
-        name: indexData.name || cleanEmail.split('@')[0],
+        name: indexData.name || cleanName,
         phone: indexData.phone || '',
         createdAt: indexData.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      setDoc(userDocRef, userProfile).catch(() => {});
-    }
 
-    saveUserLocally(cleanEmail, password, userProfile);
-    return { user: userProfile };
+      saveUserLocally(cleanEmail, password, userProfile);
+      return { user: userProfile };
+    }
   } catch (err: any) {
-    console.error('Firebase login error:', err);
-
-    const localResult = getLocalUser(cleanEmail, password);
-    if (localResult) {
-      return localResult;
-    }
-
-    return { error: err?.message || 'Falha ao autenticar com o banco de dados na nuvem.' };
+    console.warn('Firebase login check error:', err);
   }
+
+  // 3. Fallback to local user if found
+  if (localResult) {
+    return localResult;
+  }
+
+  return { error: 'Usuário não encontrado. Se ainda não possui conta, cadastre-se na aba "Criar Nova Conta".' };
 }
 
 /**
