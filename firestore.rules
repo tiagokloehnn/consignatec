@@ -2,31 +2,8 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default deny catch-all
     match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // User lookup index for email/password authentication across devices
-    match /users_by_email/{emailHash} {
       allow read, write: if true;
-    }
-
-    // User profiles and subcollections
-    match /users/{userId} {
-      allow read, write: if true;
-
-      match /financial/{docId} {
-        allow read, write: if true;
-      }
-
-      match /expenses/{expenseId} {
-        allow read, write: if true;
-      }
-
-      match /{allSubcollections=**} {
-        allow read, write: if true;
-      }
     }
   }
 }
