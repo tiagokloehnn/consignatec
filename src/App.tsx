@@ -13,6 +13,7 @@ import { ResetModal } from './components/ResetModal';
 import { AuthScreen } from './components/AuthScreen';
 import { ToolsDashboard, ToolId } from './components/ToolsDashboard';
 import { AmortizationCalculator } from './components/AmortizationCalculator';
+import { StockRecommendations } from './components/StockRecommendations';
 import { ProfileSettings, UserProfileData } from './components/ProfileSettings';
 import { CategoryIcon } from './components/CategoryIcon';
 import { MobileBottomNav, MobileTab } from './components/MobileBottomNav';
@@ -657,6 +658,19 @@ export default function App() {
     return (
       <>
         <AmortizationCalculator
+          userName={currentUser.name}
+          onBack={handleBackToTools}
+        />
+        <OfflineIndicator />
+      </>
+    );
+  }
+
+  // If user selected Stock Advisor / Radar de Ações (Google Finance B3 & EUA)
+  if (selectedTool === 'stock_advisor') {
+    return (
+      <>
+        <StockRecommendations
           userName={currentUser.name}
           onBack={handleBackToTools}
         />

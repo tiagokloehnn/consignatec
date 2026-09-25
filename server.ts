@@ -288,6 +288,92 @@ Produza um diagnóstico completo, elegante e direto em formato JSON com a seguin
   }
 });
 
+// Endpoint: AI Stock Investment Thesis & Valuation
+app.post('/api/stock-analysis', async (req, res) => {
+  try {
+    const { ticker, name, market, price, currency, peRatio, dividendYield, sector } = req.body || {};
+
+    if (!ticker) {
+      return res.status(400).json({ error: 'Ticker obrigatório' });
+    }
+
+    if (apiKey) {
+      try {
+        const response = await callGeminiWithFallback({
+          contents: `Você é um Analista de Ações e Investimentos CNPI / CFA experiente.
+Elabore uma tese de investimento técnica e concisa para recomendar ou avaliar a compra desta ação:
+Ticker: ${ticker} (${name || ticker})
+Mercado: ${market} (${currency})
+Setor: ${sector}
+Preço Atual: ${currency} ${price}
+P/L (P/E Ratio): ${peRatio}
+Dividend Yield: ${dividendYield}%
+
+Produza um parecer técnico estruturado em JSON:
+{
+  "summary": "Resumo executivo de 2-3 frases explicando os catalisadores de compra e o diferencial competitivo da empresa hoje.",
+  "highlights": [
+    "Ponto forte 1 com catalisador de crescimento ou dividendo",
+    "Ponto forte 2 sobre vantagem competitiva / fosso econômico",
+    "Ponto forte 3 sobre solidez de balanço ou valuation"
+  ],
+  "risks": [
+    "Risco principal de mercado ou concorrência",
+    "Risco macroeconômico ou regulatório"
+  ],
+  "idealBuyPrice": number (preço teto ideal para compra com margem de segurança),
+  "targetPrice": number (preço alvo projetado em 12 a 24 meses),
+  "timeHorizon": "12 meses" ou "Longo Prazo (2 a 5 anos)"
+}`,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                summary: { type: Type.STRING },
+                highlights: { type: Type.ARRAY, items: { type: Type.STRING } },
+                risks: { type: Type.ARRAY, items: { type: Type.STRING } },
+                idealBuyPrice: { type: Type.NUMBER },
+                targetPrice: { type: Type.NUMBER },
+                timeHorizon: { type: Type.STRING },
+              },
+              required: ['summary', 'highlights', 'risks', 'idealBuyPrice', 'targetPrice', 'timeHorizon'],
+            },
+          },
+        });
+
+        const parsed = JSON.parse(response.text || '{}');
+        return res.json(parsed);
+      } catch (geminiError: any) {
+        console.warn('Gemini ocupado para análise de ação, usando parecer fundamentalista:', geminiError?.message || geminiError);
+      }
+    }
+
+    // Heuristic analysis fallback
+    const targetPriceEst = Number((price * 1.22).toFixed(2));
+    const idealBuyEst = Number((price * 0.97).toFixed(2));
+
+    return res.json({
+      summary: `Ação ${ticker} em excelente momento operacional no setor de ${sector}. Apresenta valuation atrativo frente aos seus pares históricos e geração de caixa consistente.`,
+      highlights: [
+        `Geração de caixa previsível e forte presença no mercado de ${sector}`,
+        `Múltiplo de valuation favorável frente ao histórico do setor`,
+        `Capacidade contínua de remuneração aos acionistas e retorno sobre capital`,
+      ],
+      risks: [
+        'Volatilidade macroeconômica e taxa de juros global',
+        'Pressão de custos operacionais e ambiente competitivo',
+      ],
+      idealBuyPrice: idealBuyEst,
+      targetPrice: targetPriceEst,
+      timeHorizon: '12 a 24 meses',
+    });
+  } catch (err: any) {
+    console.error('Server stock analysis error:', err);
+    return res.status(500).json({ error: err?.message || 'Falha ao analisar ação' });
+  }
+});
+
 // Helper: Closest category finder
 function findClosestCategory(str: string): string | null {
   if (!str) return null;

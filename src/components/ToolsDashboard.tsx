@@ -21,7 +21,13 @@ import {
 } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
 
-export type ToolId = 'finance_manager' | 'amortization_calc' | 'consignado_sim' | 'margem_calc' | 'quitar_dividas';
+export type ToolId =
+  | 'finance_manager'
+  | 'amortization_calc'
+  | 'stock_advisor'
+  | 'consignado_sim'
+  | 'margem_calc'
+  | 'quitar_dividas';
 
 interface ToolsDashboardProps {
   userName?: string;
@@ -73,6 +79,25 @@ export const ToolsDashboard: React.FC<ToolsDashboardProps> = ({
         'Classificação automática e metas de orçamento',
         'Controle mês a mês com persistência segura',
         'Exportação de relatórios em CSV',
+      ],
+      isAvailable: true,
+    },
+    {
+      id: 'stock_advisor',
+      title: 'Radar de Ações & Google Finance (B3 & EUA)',
+      subtitle: 'Top 10 do dia, valuation, gráficos interativos e simulador de aporte',
+      badge: 'Novo & Ativo',
+      badgeColor: 'bg-teal-50 text-teal-800 border-teal-200',
+      description:
+        'Acompanhe as 10 melhores ações para comprar no dia (Brasil e Wall Street), explore gráficos e históricos interativos, simule compras inteligentes de cotas e analise fundamentos.',
+      icon: TrendingUp,
+      iconBg: 'bg-emerald-50 border-emerald-200',
+      iconColor: 'text-emerald-700',
+      features: [
+        'Top 10 melhores ações para comprar hoje (B3 e Wall Street)',
+        'Gráficos interativos com períodos (1D, 5D, 1M, 6M, 1A, 5A)',
+        'Simulador inteligente de alocação de compras e dividendos',
+        'Integração oficial com Google Finance e teses com IA',
       ],
       isAvailable: true,
     },
