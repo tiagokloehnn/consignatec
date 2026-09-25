@@ -72,7 +72,7 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
   const [userPortfolio, setUserPortfolio] = useState<UserPortfolioItem[]>(() => getUserPortfolio());
   const [selectedStockTicker, setSelectedStockTicker] = useState<string>('BBAS3');
   const [selectedPeriod, setSelectedPeriod] = useState<ChartPeriod>('1M');
-  const [activeTab, setActiveTab] = useState<'top10' | 'analyze' | 'watchlist' | 'portfolio' | 'all' | 'simulator'>('top10');
+  const [activeTab, setActiveTab] = useState<'explore' | 'portfolio'>('explore');
   const [marketFilter, setMarketFilter] = useState<'ALL' | MarketType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'score' | 'upside' | 'dy' | 'pe'>('score');
@@ -807,94 +807,32 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center gap-2 mt-5 border-b border-slate-200 dark:border-slate-800 pb-3 overflow-x-auto scrollbar-none">
+        {/* Tab Navigation (2 Simplified Tabs for Beginners) */}
+        <div className="flex items-center gap-3 mt-5 border-b border-slate-200 dark:border-slate-800 pb-3">
           <button
             type="button"
-            onClick={() => setActiveTab('top10')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'top10'
+            onClick={() => setActiveTab('explore')}
+            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'explore'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
           >
-            <Sparkles className="h-4 w-4 text-amber-500 dark:text-amber-300" />
-            Top 10 Melhores Ações
-            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200 dark:bg-slate-950/60 text-teal-800 dark:text-teal-200 font-bold">
-              Hoje
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab('analyze');
-              setIsAnalysisOpen(true);
-              setIsAnalysisMinimized(false);
-            }}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'analyze'
-                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
-            }`}
-          >
-            <Search className="h-4 w-4 text-teal-600 dark:text-teal-300" />
-            Analisar Qualquer Ação
-            <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-teal-50 dark:bg-teal-500/20 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-500/30">
-              Raio-X & IA
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('watchlist')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'watchlist'
-                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
-            }`}
-          >
-            <Star className="h-4 w-4 text-amber-400 fill-amber-400" />
-            Watchlist ({watchlist.length})
+            <Search className="h-4 w-4 text-teal-300" />
+            1. Explorar & Pesquisar Histórico de Ações
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('portfolio')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+            className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
               activeTab === 'portfolio'
                 ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
             }`}
           >
-            <Wallet className="h-4 w-4 text-teal-400" />
-            Minha Carteira Real ({userPortfolio.length})
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'all'
-                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
-            }`}
-          >
-            <Layers className="h-4 w-4" />
-            Todas as Ações (B3 & Wall St)
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('simulator')}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
-              activeTab === 'simulator'
-                ? 'bg-teal-600 text-white shadow-md shadow-teal-900/30'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900'
-            }`}
-          >
-            <Calculator className="h-4 w-4" />
-            Simulador de Aporte & Carteira
+            <Wallet className="h-4 w-4 text-teal-300" />
+            2. Minha Carteira ({userPortfolio.length})
           </button>
         </div>
 
@@ -1260,130 +1198,214 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 1: TOP 10 MELHORES AÇÕES DO DIA                                       */}
+        {/* TAB 1: EXPLORAR & PESQUISAR HISTÓRICO DE AÇÕES                           */}
         {/* ========================================================================= */}
-        {activeTab === 'top10' && (
+        {activeTab === 'explore' && (
           <div className="mt-6">
-            {/* Raio-X card only if opened by user, with Fechar button */}
+            {/* Raio-X card only if opened by user */}
             {isAnalysisOpen && renderStockAnalysisCard(true)}
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-amber-400" />
-                  Top 10 Melhores Ações para Comprar Hoje
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Classificação baseada em Valuation (P/L), Margem de Segurança, Dividend Yield e Momentum.
-                </p>
+            {/* Beginner Guide Banner */}
+            <div className="mb-6 bg-gradient-to-r from-teal-900/40 to-slate-900 border border-teal-500/30 rounded-2xl p-5 sm:p-6 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30 shrink-0">
+                  <Sparkles className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-white mb-1">
+                    Guia de Ações para Iniciantes
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                    Pesquise o histórico de qualquer ação da Bolsa brasileira (<strong>B3</strong>) ou dos <strong>Estados Unidos</strong> (Wall Street). Clique em qualquer linha para ver o <strong>gráfico de preços</strong>, histórico e análise detalhada.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {top10Stocks.map((stock, index) => {
-                const isSelected = selectedStockTicker === stock.ticker && isAnalysisOpen;
-                return (
-                  <div
-                    key={stock.ticker}
-                    onClick={() => handleOpenStockAnalysis(stock.ticker)}
-                    className={`p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden ${
-                      isSelected
-                        ? 'bg-white dark:bg-slate-900 border-teal-500 shadow-lg shadow-teal-900/10 dark:shadow-teal-950/50 ring-1 ring-teal-500/50'
-                        : 'bg-white dark:bg-slate-900/70 border-slate-200 dark:border-slate-800 hover:border-teal-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900 shadow-xs'
+            {/* Filters & Search Bar */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
+              <div className="relative flex-1 max-w-md">
+                <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Pesquisar por nome, ticker (ex: PETR4, NVDA) ou setor..."
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 font-medium"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setMarketFilter('ALL')}
+                    className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer ${
+                      marketFilter === 'ALL'
+                        ? 'bg-teal-600 text-white'
+                        : 'text-slate-400 hover:text-white'
                     }`}
                   >
-                    {/* Rank Number Badge */}
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="h-6 w-6 rounded-full bg-teal-50 dark:bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30 flex items-center justify-center text-xs font-black">
-                          #{index + 1}
-                        </span>
-                        <span className="font-black text-slate-900 dark:text-white text-base">
-                          {stock.ticker}
-                        </span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
-                          {stock.name}
-                        </span>
-                      </div>
+                    Todas ({stocks.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMarketFilter('B3')}
+                    className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer ${
+                      marketFilter === 'B3'
+                        ? 'bg-amber-600 text-white'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    🇧🇷 B3 Brasil
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMarketFilter('US')}
+                    className={`px-3 py-1.5 rounded-lg font-semibold cursor-pointer ${
+                      marketFilter === 'US'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    🇺🇸 EUA / Wall St
+                  </button>
+                </div>
 
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
-                          stock.market === 'B3'
-                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-300 border-amber-500/30'
-                            : 'bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-500/30'
-                        }`}
-                      >
-                        {stock.market === 'B3' ? 'B3' : 'EUA'}
-                      </span>
-                    </div>
+                <select
+                  value={sortBy}
+                  onChange={(e: any) => setSortBy(e.target.value)}
+                  className="bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-teal-500"
+                >
+                  <option value="score">Maior Nota / Score</option>
+                  <option value="upside">Maior Potencial (%)</option>
+                  <option value="dy">Maior Dividend Yield</option>
+                  <option value="pe">Menor P/L (Mais Baratas)</option>
+                </select>
+              </div>
+            </div>
 
-                    {/* Price & Upside */}
-                    <div className="flex items-baseline justify-between mt-3">
-                      <div>
-                        <div className="text-lg font-black text-slate-900 dark:text-white">
-                          {stock.currency === 'BRL' ? 'R$ ' : '$ '}
-                          {stock.price.toFixed(2)}
-                        </div>
-                        <span
-                          className={`text-xs font-bold ${
-                            stock.changePercent >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+            {/* Table of stocks */}
+            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase font-semibold text-[11px]">
+                    <tr>
+                      <th className="py-3.5 px-4">Ativo / Empresa</th>
+                      <th className="py-3.5 px-3">Mercado</th>
+                      <th className="py-3.5 px-3">Preço Atual</th>
+                      <th className="py-3.5 px-3">Var. Hoje</th>
+                      <th className="py-3.5 px-3">Preço Alvo</th>
+                      <th className="py-3.5 px-3">Potencial</th>
+                      <th className="py-3.5 px-3">P/L</th>
+                      <th className="py-3.5 px-3">Dividend Yield</th>
+                      <th className="py-3.5 px-3">Nota</th>
+                      <th className="py-3.5 px-4 text-right">Ver Histórico & Raio-X</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {displayedStocks.map((stock) => {
+                      const isSelected = selectedStockTicker === stock.ticker && isAnalysisOpen;
+                      return (
+                        <tr
+                          key={stock.ticker}
+                          onClick={() => handleOpenStockAnalysis(stock.ticker)}
+                          className={`hover:bg-slate-800/50 transition-colors cursor-pointer ${
+                            isSelected ? 'bg-teal-950/40 ring-1 ring-inset ring-teal-500/40' : ''
                           }`}
                         >
-                          {stock.changePercent >= 0 ? '+' : ''}
-                          {stock.changePercent.toFixed(2)}%
-                        </span>
-                      </div>
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={(e) => handleToggleWatchlist(stock.ticker, e)}
+                                className="text-slate-600 hover:text-amber-400"
+                              >
+                                <Star
+                                  className={`h-3.5 w-3.5 ${
+                                    watchlist.includes(stock.ticker)
+                                      ? 'text-amber-400 fill-amber-400'
+                                      : ''
+                                  }`}
+                                />
+                              </button>
+                              <div>
+                                <span className="font-bold text-white text-sm block">
+                                  {stock.ticker}
+                                </span>
+                                <span className="text-[11px] text-slate-400">
+                                  {stock.name}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
 
-                      <div className="text-right">
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block">Preço Teto</span>
-                        <span className="text-sm font-bold text-teal-700 dark:text-teal-300">
-                          {stock.currency === 'BRL' ? 'R$ ' : '$ '}
-                          {stock.targetPrice.toFixed(2)}
-                        </span>
-                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 block">
-                          +{stock.upsidePercent.toFixed(1)}% upside
-                        </span>
-                      </div>
-                    </div>
+                          <td className="py-3.5 px-3">
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${
+                                stock.market === 'B3'
+                                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                                  : 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                              }`}
+                            >
+                              {stock.market === 'B3' ? 'B3' : 'EUA'}
+                            </span>
+                          </td>
 
-                    {/* Quick Metrics Bar */}
-                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                      <div>
-                        P/L: <span className="font-semibold text-slate-800 dark:text-slate-200">{stock.peRatio.toFixed(1)}x</span>
-                      </div>
-                      <div>
-                        DY: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{stock.dividendYield.toFixed(1)}%</span>
-                      </div>
-                      <div>
-                        Score: <span className="font-bold text-teal-700 dark:text-teal-300">{stock.score}/100</span>
-                      </div>
-                    </div>
+                          <td className="py-3.5 px-3 font-bold text-white">
+                            {stock.currency === 'BRL' ? 'R$ ' : '$ '}
+                            {stock.price.toFixed(2)}
+                          </td>
 
-                    {/* Action Indicator */}
-                    <div className="mt-3 flex items-center justify-between text-xs">
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                          stock.recommendation === 'COMPRA FORTE'
-                            ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300'
-                            : 'bg-teal-500/20 text-teal-800 dark:text-teal-300'
-                        }`}
-                      >
-                        {stock.recommendation}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenStockAnalysis(stock.ticker);
-                        }}
-                        className="text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 flex items-center gap-1 font-semibold text-[11px] bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 rounded-lg border border-teal-200 dark:border-teal-800/40 hover:bg-teal-100 dark:hover:border-teal-700 transition-colors cursor-pointer"
-                      >
-                        Ver Raio-X & Gráfico &rarr;
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                          <td
+                            className={`py-3.5 px-3 font-semibold ${
+                              stock.changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                            }`}
+                          >
+                            {stock.changePercent >= 0 ? '+' : ''}
+                            {stock.changePercent.toFixed(2)}%
+                          </td>
+
+                          <td className="py-3.5 px-3 font-semibold text-teal-300">
+                            {stock.currency === 'BRL' ? 'R$ ' : '$ '}
+                            {stock.targetPrice.toFixed(2)}
+                          </td>
+
+                          <td className="py-3.5 px-3 font-bold text-emerald-400">
+                            +{stock.upsidePercent.toFixed(1)}%
+                          </td>
+
+                          <td className="py-3.5 px-3 text-slate-300">
+                            {stock.peRatio.toFixed(1)}x
+                          </td>
+
+                          <td className="py-3.5 px-3 font-bold text-emerald-400">
+                            {stock.dividendYield.toFixed(1)}%
+                          </td>
+
+                          <td className="py-3.5 px-3">
+                            <span className="font-black text-teal-300">{stock.score}</span>
+                            <span className="text-[10px] text-slate-500">/100</span>
+                          </td>
+
+                          <td className="py-3.5 px-4 text-right">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenStockAnalysis(stock.ticker);
+                              }}
+                              className="text-xs text-teal-400 hover:text-teal-300 font-semibold cursor-pointer"
+                            >
+                              Ver Histórico &rarr;
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -1694,236 +1716,6 @@ export const StockRecommendations: React.FC<StockRecommendationsProps> = ({
                         </tr>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================================================= */}
-        {/* TAB 3: SIMULADOR DE COMPRA & APORTE INTELIGENTE                            */}
-        {/* ========================================================================= */}
-        {activeTab === 'simulator' && (
-          <div className="mt-8">
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 p-5 sm:p-6 shadow-xl mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30">
-                  <Calculator className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-white">
-                    Simulador Inteligente de Aporte em Ações
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Defina quanto você deseja investir hoje e o sistema distribuirá de forma otimizada entre as melhores ações.
-                  </p>
-                </div>
-              </div>
-
-              {/* Simulator Input Controls */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Valor a Investir
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">
-                      {simCurrency === 'BRL' ? 'R$' : '$'}
-                    </span>
-                    <input
-                      type="number"
-                      min={100}
-                      step={50}
-                      value={simBudget}
-                      onChange={(e) => setSimBudget(Math.max(0, Number(e.target.value)))}
-                      className="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-teal-500"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Mercado / Moeda
-                  </label>
-                  <div className="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-                    <button
-                      type="button"
-                      onClick={() => setSimCurrency('BRL')}
-                      className={`py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        simCurrency === 'BRL'
-                          ? 'bg-amber-600 text-white'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      🇧🇷 Brasil (R$)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSimCurrency('USD')}
-                      className={`py-1.5 text-xs font-bold rounded-lg cursor-pointer transition-all ${
-                        simCurrency === 'USD'
-                          ? 'bg-blue-600 text-white'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      🇺🇸 EUA ($)
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Estratégia de Alocação
-                  </label>
-                  <select
-                    value={simStrategy}
-                    onChange={(e: any) => setSimStrategy(e.target.value)}
-                    className="w-full py-2.5 px-3 bg-slate-950 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-teal-500"
-                  >
-                    <option value="top10">Top 10 Geral (Equilibrada)</option>
-                    <option value="dividends">Foco em Dividendos Altos (Renda Passiva)</option>
-                    <option value="growth">Foco em Crescimento & Upside</option>
-                    <option value="defensive">Defensiva / Valor com Margem de Segurança</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Simulation KPI Summary Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
-                <span className="text-xs text-slate-400 block mb-1">Total Alocado em Cotas</span>
-                <span className="text-xl font-black text-white">
-                  {simCurrency === 'BRL' ? 'R$ ' : '$ '}
-                  {simulationResult.totalAllocated.toFixed(2)}
-                </span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">
-                  Troco/Caixa:{' '}
-                  <span className="text-teal-400 font-semibold">
-                    {simCurrency === 'BRL' ? 'R$ ' : '$ '}
-                    {simulationResult.cashRemaining.toFixed(2)}
-                  </span>
-                </span>
-              </div>
-
-              <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
-                <span className="text-xs text-slate-400 block mb-1">Dividendos Anuais Projetados</span>
-                <span className="text-xl font-black text-emerald-400">
-                  {simCurrency === 'BRL' ? 'R$ ' : '$ '}
-                  {simulationResult.annualDividendsEstimated.toFixed(2)}
-                </span>
-                <span className="text-[11px] text-emerald-400 block mt-0.5">
-                  Renda passiva estimada
-                </span>
-              </div>
-
-              <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
-                <span className="text-xs text-slate-400 block mb-1">Yield Médio da Carteira</span>
-                <span className="text-xl font-black text-teal-300">
-                  {simulationResult.averageYieldPercent.toFixed(2)}% a.a.
-                </span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">
-                  Retorno em proventos
-                </span>
-              </div>
-
-              <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
-                <span className="text-xs text-slate-400 block mb-1">Potencial Médio (Upside)</span>
-                <span className="text-xl font-black text-emerald-400">
-                  +{simulationResult.estimatedReturnPercent.toFixed(1)}%
-                </span>
-                <span className="text-[11px] text-slate-400 block mt-0.5">
-                  Até o preço alvo
-                </span>
-              </div>
-            </div>
-
-            {/* Allocation Order Table */}
-            <div className="bg-slate-900/90 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
-              <div className="p-4 bg-slate-950/60 border-b border-slate-800 flex items-center justify-between">
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                  <PieChart className="h-4 w-4 text-teal-400" />
-                  Sugestão de Ordem de Compra
-                </h4>
-                <span className="text-xs text-slate-400">
-                  {simulationResult.allocations.length} ações selecionadas para o aporte
-                </span>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-950/90 text-slate-400 uppercase text-[11px]">
-                    <tr>
-                      <th className="py-3 px-4">Ação</th>
-                      <th className="py-3 px-3">Cotação Atual</th>
-                      <th className="py-3 px-3">Cotas a Comprar</th>
-                      <th className="py-3 px-3">Total Investido</th>
-                      <th className="py-3 px-3">Peso na Carteira</th>
-                      <th className="py-3 px-3">Dividendos Anuais</th>
-                      <th className="py-3 px-4 text-right">Link Google Finance</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {simulationResult.allocations.map((alloc) => (
-                      <tr key={alloc.stock.ticker} className="hover:bg-slate-800/40">
-                        <td className="py-3 px-4">
-                          <span className="font-bold text-white text-sm">
-                            {alloc.stock.ticker}
-                          </span>
-                          <span className="text-[11px] text-slate-400 block">
-                            {alloc.stock.name}
-                          </span>
-                        </td>
-
-                        <td className="py-3 px-3 text-slate-200">
-                          {alloc.stock.currency === 'BRL' ? 'R$ ' : '$ '}
-                          {alloc.stock.price.toFixed(2)}
-                        </td>
-
-                        <td className="py-3 px-3">
-                          <span className="px-2.5 py-1 rounded-lg bg-teal-500/20 text-teal-300 font-bold border border-teal-500/30 text-xs">
-                            {alloc.shares} cotas
-                          </span>
-                        </td>
-
-                        <td className="py-3 px-3 font-bold text-white">
-                          {alloc.stock.currency === 'BRL' ? 'R$ ' : '$ '}
-                          {alloc.totalInvested.toFixed(2)}
-                        </td>
-
-                        <td className="py-3 px-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 h-2 rounded-full bg-slate-800 overflow-hidden">
-                              <div
-                                className="h-full bg-teal-500 rounded-full"
-                                style={{ width: `${alloc.weightPercent}%` }}
-                              />
-                            </div>
-                            <span className="text-slate-300 font-semibold">
-                              {alloc.weightPercent}%
-                            </span>
-                          </div>
-                        </td>
-
-                        <td className="py-3 px-3 font-bold text-emerald-400">
-                          {alloc.stock.currency === 'BRL' ? 'R$ ' : '$ '}
-                          {alloc.annualDividendProjected.toFixed(2)}
-                        </td>
-
-                        <td className="py-3 px-4 text-right">
-                          <a
-                            href={alloc.stock.googleFinanceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-teal-400 hover:text-teal-300 font-semibold"
-                          >
-                            Abrir no Google Finance
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
                   </tbody>
                 </table>
               </div>
